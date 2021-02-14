@@ -17,7 +17,6 @@ const ProductScreen = ({match}) => {
        fetchProduct();
     }, []);
 
-    console.log('Sample test text');
 
     return (
         <>
