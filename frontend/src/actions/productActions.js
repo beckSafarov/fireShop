@@ -16,3 +16,10 @@ export const listProducts = () => async (dispatch) => {
     });
   }
 };
+
+export const listProducts2 = () => {
+  return async (dispatch) => {
+    try {
+    } catch (err) {}
+  };
+};
