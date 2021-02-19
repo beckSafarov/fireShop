@@ -1,11 +1,12 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { productListReducer } from './reducers/productReducers.js';
+import * as reducers from './reducers/productReducers.js';
 
 //this is the root reducer that includes all reducers
 const reducer = combineReducers({
-  productList: productListReducer,
+  productList: reducers.productListReducer,
+  productDetails: reducers.productDetailsReducer,
 });
 
 //this is the preloader that gets loaded in the build time
