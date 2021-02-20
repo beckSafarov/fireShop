@@ -12,7 +12,7 @@ const reducer = combineReducers({
 });
 
 //getting shopping cart items from the LS
-let cartItems = localStorage.getItem('cartItems');
+let cartItems = JSON.parse(localStorage.getItem('cartItems'));
 
 //this is the preloader that gets loaded in the build time
 const initialState = {
