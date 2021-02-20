@@ -1,16 +1,23 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import * as reducers from './reducers/productReducers.js';
+import * as productReducers from './reducers/productReducers.js';
+import * as cartReducers from './reducers/cartReducers.js';
 
 //this is the root reducer that includes all reducers
 const reducer = combineReducers({
-  productList: reducers.productListReducer,
-  productDetails: reducers.productDetailsReducer,
+  productList: productReducers.productListReducer,
+  productDetails: productReducers.productDetailsReducer,
+  cart: cartReducers.cartReducer,
 });
 
+//getting shopping cart items from the LS
+let cartItems = localStorage.getItem('cartItems');
+
 //this is the preloader that gets loaded in the build time
-const initialState = {};
+const initialState = {
+  cart: { cartItems: cartItems || [] },
+};
 
 //this is the list of middleware that are fired when an action is dispatched
 const middleware = [thunk];
