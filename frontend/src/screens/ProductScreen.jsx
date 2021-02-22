@@ -25,7 +25,9 @@ const initialCartLength = 0;
 const ProductScreen = ({ history, match }) => {
   const [qty, setQty] = useState(1);
   const [visibility, setVisibility] = useState(false);
-  const [alertMessage, setMessage] = useState(`Item has been added`);
+  const [alertMessage, setMessage] = useState(
+    `Item(s) has been added to your cart`
+  );
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.productDetails);
   const { cartItems } = useSelector((state) => state.cart);
@@ -36,16 +38,18 @@ const ProductScreen = ({ history, match }) => {
   }, [dispatch, match]);
 
   const addToCartHandler = async () => {
-    await dispatch(addToCart(product, qty));
+    dispatch(addToCart(product, Number(qty)));
     const currentItems = JSON.parse(localStorage.getItem('cartItems'));
 
     if (cartItems.length === currentItems.length) {
-      setMessage(`You have added ${qty} more item(s) to your cart`);
+      setMessage(`You have added ${qty} more ${product.name}(s) to your cart`);
+    } else {
+      setMessage(`${qty} ${product.name}(s) added to your cart`);
     }
     setVisibility(true);
     setTimeout(() => {
       setVisibility(false);
-    }, 2000);
+    }, 3000);
   };
 
   return (

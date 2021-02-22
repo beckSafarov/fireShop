@@ -1,7 +1,7 @@
 import * as constants from '../constants.js';
 import axios from 'axios';
 
-export const addToCart = (product, qty) => async (dispatch, getState) => {
+export const addToCart = (product, qty) => (dispatch, getState) => {
   dispatch({
     type: constants.CART_ADD_ITEM,
     payload: {
