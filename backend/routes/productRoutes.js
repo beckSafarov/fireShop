@@ -31,24 +31,36 @@ router.get(
   })
 );
 
+//@desc  Get prices of multiple products by id
+//@route POST /api/products/prices
+//@desc  Public
+router.post(
+  '/prices',
+  asyncHandler(async (req, res) => {
+    if (!req.body.productIDs || req.body.productIDs.length === 0) {
+      res.status(404);
+      throw new Error('Invalid product ids sent');
+    }
+    const productIDs = req.body.productIDs;
+    let product;
+    let prices = [];
+
+    productIDs.forEach(async (id, index) => {
+      product = await Product.findById(id);
+      if (!product) {
+        product = 'not found';
+      }
+
+      prices.push(product.price);
+
+      if (index + 1 === productIDs.length) {
+        res.status(200).json({
+          success: true,
+          prices,
+        });
+      }
+    }); //end of the loop
+  })
+);
+
 export default router;
-
-// const id = req.params.id;
-// let status = 404;
-// let success = false;
-// let message = `No product found with the id of ${id}`;
-// let outProduct = [];
-
-// outProduct = products.filter(product=>product._id===id);
-
-// if(outProduct.length > 0){
-//     status = 200;
-//     success = true;
-//     message = undefined;
-// }
-
-// res.status(status).json({
-//     success: true,
-//     message,
-//     data: outProduct
-// })

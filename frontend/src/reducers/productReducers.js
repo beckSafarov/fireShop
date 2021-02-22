@@ -28,3 +28,16 @@ export const productDetailsReducer = (
       return state;
   }
 };
+
+export const productPriceReducer = (state = { prices: [] }, action) => {
+  switch (action.type) {
+    case constants.PRODUCT_PRICE_REQUEST:
+      return { ...state, loading: true };
+    case constants.PRODUCT_PRICE_SUCCESS:
+      return { loading: false, prices: action.payload };
+    case constants.PRODUCT_PRICE_FAILURE:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};

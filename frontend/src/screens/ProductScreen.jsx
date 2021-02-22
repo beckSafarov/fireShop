@@ -41,10 +41,10 @@ const ProductScreen = ({ history, match }) => {
     dispatch(addToCart(product, Number(qty)));
     const currentItems = JSON.parse(localStorage.getItem('cartItems'));
 
-    if (cartItems.length === currentItems.length) {
-      setMessage(`You have added ${qty} more ${product.name}(s) to your cart`);
-    } else {
+    if (cartItems.length !== currentItems.length) {
       setMessage(`${qty} ${product.name}(s) added to your cart`);
+    } else {
+      setMessage(`You have added ${qty} more ${product.name}(s) to your cart`);
     }
     setVisibility(true);
     setTimeout(() => {

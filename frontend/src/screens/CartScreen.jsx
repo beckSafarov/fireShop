@@ -12,7 +12,9 @@ import {
 } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
+import Loader from '../components/Loader';
 import { addToCart } from '../actions/cartActions';
+import { getProductPrices } from '../actions/productActions';
 
 const CartScreen = ({ match, location, history }) => {
   const productId = match.params.id;
@@ -22,23 +24,25 @@ const CartScreen = ({ match, location, history }) => {
   //getting current cartItems from redux store
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
+  const ids = cartItems.map((item) => item._id);
+
+  //getting current cart item prices from store
+  const pricesFromStore = useSelector((state) => state.productPrices);
+  const { loading, prices, error } = pricesFromStore;
+
+  useEffect(() => {
+    dispatch(getProductPrices(ids));
+  }, [dispatch]);
 
   return (
     <>
-      <Row>
-        <Col md={8}>
-          <h1>Shopping Cart</h1>
-          {cartItems.length > 0 ? (
-            <ListGroup variant='flush'></ListGroup>
-          ) : (
-            <Message>
-              Your cart is empty <Link to='/'>Go back</Link>
-            </Message>
-          )}
-        </Col>
-        <Col md={2}></Col>
-        <Col md={2}></Col>
-      </Row>
+      {loading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant='danger'>{error}</Message>
+      ) : (
+        <p>{prices ? prices[0] : 'undefined'}</p>
+      )}
     </>
   );
 };

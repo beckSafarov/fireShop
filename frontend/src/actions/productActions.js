@@ -35,3 +35,32 @@ export const listProductDetails = (id) => async (dispatch) => {
     });
   }
 };
+
+export const getProductPrices = (ids) => async (dispatch) => {
+  let type = constants.PRODUCT_PRICE_SUCCESS;
+  let payload = [];
+  dispatch({ type: constants.PRODUCT_PRICE_REQUEST });
+
+  let response = await fetch('/api/products/prices', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/JSON',
+    },
+    body: JSON.stringify({
+      productIDs: ids,
+    }),
+  });
+
+  let pureResponse = await response.json();
+  if (pureResponse.success) {
+    payload = pureResponse.prices;
+  } else {
+    type = constants.PRODUCT_PRICE_FAILURE;
+    payload = pureResponse.message;
+  }
+
+  dispatch({
+    type,
+    payload,
+  });
+};

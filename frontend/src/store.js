@@ -8,6 +8,7 @@ import * as cartReducers from './reducers/cartReducers.js';
 const reducer = combineReducers({
   productList: productReducers.productListReducer,
   productDetails: productReducers.productDetailsReducer,
+  productPrices: productReducers.productPriceReducer,
   cart: cartReducers.cartReducer,
 });
 
