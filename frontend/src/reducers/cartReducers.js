@@ -15,9 +15,16 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
           cartItems: [...state.cartItems, item],
         };
       } else {
+        const newCartItems = state.cartItems.map((product) => {
+          if (product._id === item._id) {
+            return { ...product, qty: product.qty + item.qty };
+          }
+          return product;
+        });
+
         return {
           ...state,
-          cartItems: [...state.cartItems],
+          cartItems: newCartItems,
         };
       }
     default:

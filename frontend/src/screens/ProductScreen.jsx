@@ -26,7 +26,6 @@ const ProductScreen = ({ history, match }) => {
   const [qty, setQty] = useState(1);
   const [visibility, setVisibility] = useState(false);
   const [alertMessage, setMessage] = useState(`Item has been added`);
-  const [alertVariant, setVariant] = useState('success');
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.productDetails);
   const { cartItems } = useSelector((state) => state.cart);
@@ -37,24 +36,16 @@ const ProductScreen = ({ history, match }) => {
   }, [dispatch, match]);
 
   const addToCartHandler = async () => {
-    await dispatch(addToCart(product._id, qty));
+    await dispatch(addToCart(product, qty));
     const currentItems = JSON.parse(localStorage.getItem('cartItems'));
-    console.log(`Current: ${currentItems.length}, Old: ${cartItems.length}`);
-    console.log(cartItems.length === currentItems.length);
 
-    if (cartItems.length !== currentItems.length) {
-      setVisibility(true);
-      setTimeout(() => {
-        setVisibility(false);
-      }, 2000);
-    } else {
-      setMessage('This item already exists in your cart');
-      setVariant('warning');
-      setVisibility(true);
-      setTimeout(() => {
-        setVisibility(false);
-      }, 2000);
+    if (cartItems.length === currentItems.length) {
+      setMessage(`You have added ${qty} more item(s) to your cart`);
     }
+    setVisibility(true);
+    setTimeout(() => {
+      setVisibility(false);
+    }, 2000);
   };
 
   return (
@@ -62,7 +53,7 @@ const ProductScreen = ({ history, match }) => {
       <Link className='btn btn-light my-3 rounded' to='/'>
         <i className='fas fa-arrow-left fa-2x'></i>
       </Link>
-      {visibility && <Alert variant={alertVariant}>{alertMessage}</Alert>}
+      {visibility && <Alert variant='success'>{alertMessage}</Alert>}
       {loading ? (
         <Loader />
       ) : error ? (

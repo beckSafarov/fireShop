@@ -6,7 +6,7 @@ const Message = ({ variant, children }) => {
 };
 
 Message.defaultProps = {
-  variant: 'primary',
+  variant: 'info',
   children: 'Hello World!',
 };
 
