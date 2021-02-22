@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import {
   Row,
   Col,
@@ -15,16 +15,12 @@ import { addToCart } from '../actions/cartActions';
 
 const CartScreen = ({ match, location, history }) => {
   const productId = match.params.id;
-  const qty = Number(location.search.split('=')[1]) || 1;
+  const qty = new URLSearchParams(useLocation().search).get('qty');
   const dispatch = useDispatch();
+
+  //getting current cartItems from redux store
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
-  console.log(cartItems);
-  useEffect(() => {
-    if (productId) {
-      dispatch(addToCart(productId, qty));
-    }
-  }, [dispatch, productId, qty]);
 
   return <div>Cart</div>;
 };

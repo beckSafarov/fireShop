@@ -10,26 +10,51 @@ import {
   Button,
   ListGroupItem,
   Form,
+  Alert,
 } from 'react-bootstrap';
 import Rating from '../components/Rating';
-import { listProductDetails } from '../actions/productActions.js';
+import { listProductDetails } from '../actions/productActions';
+import { addToCart } from '../actions/cartActions';
 import Loader from '../components/Loader';
-import Message from '../components/Message';
 import CountOptions from '../components/CountOptions';
+import store from '../store.js';
+
+// console.log(store.getState().cart.cartItems.length);
+const initialCartLength = 0;
 
 const ProductScreen = ({ history, match }) => {
   const [qty, setQty] = useState(1);
+  const [visibility, setVisibility] = useState(false);
+  const [alertMessage, setMessage] = useState(`Item has been added`);
+  const [alertVariant, setVariant] = useState('success');
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.productDetails);
-
+  const { cartItems } = useSelector((state) => state.cart);
   const { loading, error, product } = productDetails;
 
   useEffect(() => {
     dispatch(listProductDetails(match.params.id));
   }, [dispatch, match]);
 
-  const addToCartHandler = () => {
-    history.push(`/cart/${match.params.id}?qty=${qty}`);
+  const addToCartHandler = async () => {
+    await dispatch(addToCart(product._id, qty));
+    const currentItems = JSON.parse(localStorage.getItem('cartItems'));
+    console.log(`Current: ${currentItems.length}, Old: ${cartItems.length}`);
+    console.log(cartItems.length === currentItems.length);
+
+    if (cartItems.length !== currentItems.length) {
+      setVisibility(true);
+      setTimeout(() => {
+        setVisibility(false);
+      }, 2000);
+    } else {
+      setMessage('This item already exists in your cart');
+      setVariant('warning');
+      setVisibility(true);
+      setTimeout(() => {
+        setVisibility(false);
+      }, 2000);
+    }
   };
 
   return (
@@ -37,10 +62,11 @@ const ProductScreen = ({ history, match }) => {
       <Link className='btn btn-light my-3 rounded' to='/'>
         <i className='fas fa-arrow-left fa-2x'></i>
       </Link>
+      {visibility && <Alert variant={alertVariant}>{alertMessage}</Alert>}
       {loading ? (
         <Loader />
       ) : error ? (
-        <Message variant='danger'>{error}</Message>
+        <Alert variant='danger'>{error}</Alert>
       ) : (
         <Row>
           <Col md={6}>
@@ -112,7 +138,7 @@ const ProductScreen = ({ history, match }) => {
                   type='button'
                   disabled={product.countInStock === 0}
                 >
-                  Add To Cart
+                  Add to cart
                 </Button>
               </ListGroup.Item>
             </ListGroup>
