@@ -15,7 +15,7 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
           cartItems: [...state.cartItems, item],
         };
       } else {
-        const newCartItems = state.cartItems.map((product) => {
+        const cartAfterIncrement = state.cartItems.map((product) => {
           if (product._id === item._id) {
             return { ...product, qty: product.qty + item.qty };
           }
@@ -24,9 +24,32 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
 
         return {
           ...state,
-          cartItems: newCartItems,
+          cartItems: cartAfterIncrement,
         };
       }
+    case constants.CARD_ITEM_QUANTITY_RESET:
+      //{type: ..., payload: {id, qty}}
+      const cartAfterReset = state.cartItems.map((product) => {
+        if (product._id === action.payload._id) {
+          return { ...product, qty: action.payload.qty };
+        }
+        return product;
+      });
+
+      return {
+        ...state,
+        cartItems: cartAfterReset,
+      };
+    case constants.CART_REMOVE_ITEM:
+      //{type: ..., payload: {id}}
+      const cartAfterRemoval = state.cartItems.map(
+        (product) => product._id !== action.payload._id
+      );
+
+      return {
+        ...state,
+        cartItems: cartAfterRemoval,
+      };
     default:
       return state;
   }
