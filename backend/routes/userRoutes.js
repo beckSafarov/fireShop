@@ -3,11 +3,12 @@ const router = express.Router();
 import {
   authUser,
   getAllUsers,
+  removeUser,
   signUser,
 } from '../controllers/userController.js';
+import { protect } from '../middleware/auth.js';
 
-router.route('/').get(getAllUsers);
+router.route('/').get(getAllUsers).post(signUser).delete(removeUser);
 router.route('/login').get(authUser);
-router.route('/signup').get(signUser);
 
 export default router;

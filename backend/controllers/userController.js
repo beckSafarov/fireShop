@@ -12,13 +12,17 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 //@desc  Sign in
-//@route POST /api/users/signup
+//@route POST /api/users
 //@desc  Public
 export const signUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
+
   if (!name || !email || !password) throw new Error('Insufficient details');
 
-  req.body.password = bcrypt.hashSync(password, 10);
+  if (await User.findOne({ email })) {
+    res.status(400);
+    throw new Error('User already exists');
+  }
 
   const newUser = await User.create(req.body);
   sendToken(newUser.id, res, newUser);
@@ -33,10 +37,34 @@ export const authUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email }).select('+password');
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || !(await bcrypt.compareSync(password, user.password))) {
     res.status(401);
     throw new Error(`Invalid credentials`);
   }
 
   sendToken(user.id, res);
+});
+
+//@desc  delete a user
+//@route DELETE /api/users
+//@desc  Private
+export const removeUser = asyncHandler(async (req, res) => {
+  console.log(req.body);
+  const { id } = req.body;
+  if (!id) {
+    res.status(401);
+    throw new Error(`User id not provided`);
+  }
+  const userExists = await User.findById(id);
+  if (!userExists) {
+    res.status(404);
+    throw new Error('No such user found');
+  }
+  const name = userExists.name;
+  await User.findByIdAndDelete(id);
+
+  res.status(200).json({
+    success: true,
+    message: `${name} has been deleted`,
+  });
 });
