@@ -66,8 +66,8 @@ const CartScreen = ({ match, location, history }) => {
       ) : (
         <Row>
           <Col md={8}>
-            {visibility && <Message variant='success'>{alertMessage}</Message>}
             <h1>Shopping Cart</h1>
+            {visibility && <Message variant='success'>{alertMessage}</Message>}
             {cartItems.length === 0 ? (
               <Message>
                 Your cart is empty <Link to='/'>Go back</Link>
@@ -92,7 +92,7 @@ const CartScreen = ({ match, location, history }) => {
               <Card>
                 <ListGroup variant='flush'>
                   <ListGroup.Item>
-                    <h4>Subtotal: {getSubtotal()} items</h4>
+                    <h4>Subtotal: {getSubtotal()} item(s)</h4>
                     <h4>Total price: ${getTotalPrice()} </h4>
                   </ListGroup.Item>
                   <ListGroup.Item>
