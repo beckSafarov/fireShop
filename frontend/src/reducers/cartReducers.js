@@ -42,7 +42,8 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
       };
     case constants.CART_REMOVE_ITEM:
       //{type: ..., payload: {id}}
-      const cartAfterRemoval = state.cartItems.map(
+
+      let cartAfterRemoval = state.cartItems.filter(
         (product) => product._id !== action.payload._id
       );
 
@@ -54,3 +55,4 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
       return state;
   }
 };
+//product._id !== action.payload._id ? product : continue;

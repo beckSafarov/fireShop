@@ -30,7 +30,7 @@ const CartItem = ({ item, prices, index, dispatch, removeFromCart }) => {
           <Button
             type='button'
             variant='light'
-            onClick={() => removeFromCart(item._id)}
+            onClick={() => removeFromCart(item._id, item.name)}
           >
             <i className='fas fa-trash'></i>
           </Button>
