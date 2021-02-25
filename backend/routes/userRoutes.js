@@ -9,6 +9,6 @@ import {
 import { protect } from '../middleware/auth.js';
 
 router.route('/').get(getAllUsers).post(signUser).delete(removeUser);
-router.route('/login').get(authUser);
+router.route('/login').post(authUser);
 
 export default router;

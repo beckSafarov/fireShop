@@ -42,6 +42,8 @@ export const authUser = asyncHandler(async (req, res) => {
     throw new Error(`Invalid credentials`);
   }
 
+  user.password = undefined;
+  user.isAdmin = undefined;
   sendToken(user.id, res, user);
 });
 

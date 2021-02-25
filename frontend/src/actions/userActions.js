@@ -13,7 +13,7 @@ export const login = (email, password) => async (dispatch) => {
       config
     );
 
-    dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data });
+    dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.data });
 
     localStorage.setItem('userInfo', JSON.stringify(data));
   } catch (err) {

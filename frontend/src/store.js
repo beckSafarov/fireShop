@@ -14,7 +14,7 @@ const reducer = combineReducers({
   userLogin: userReducers.userLoginReducer,
 });
 
-//getting shopping cart items from the LS
+//getting existing items from the LC
 let cartItems = JSON.parse(localStorage.getItem('cartItems'));
 let userInfo = JSON.parse(localStorage.getItem('userInfo'));
 

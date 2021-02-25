@@ -49,6 +49,7 @@ const CartScreen = ({ match, location, history }) => {
       cartItems.forEach((product, index) => {
         total += product.qty * prices[index];
       });
+      total = total.toFixed(2);
     }
     return total;
   };

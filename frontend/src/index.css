@@ -14,3 +14,17 @@ h1 {
 .rating span {
   margin: 0.1rem;
 }
+
+.form-field {
+  border-width: 1px;
+  border-radius: 10px;
+  border-color: gainsboro;
+}
+
+.dark-blue-btn {
+  background-color: #343a40;
+}
+
+.link {
+  color: #1a82ae;
+}
