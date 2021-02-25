@@ -42,7 +42,7 @@ export const authUser = asyncHandler(async (req, res) => {
     throw new Error(`Invalid credentials`);
   }
 
-  sendToken(user.id, res);
+  sendToken(user.id, res, user);
 });
 
 //@desc  delete a user
