@@ -15,7 +15,7 @@ export const login = (email, password) => async (dispatch) => {
 
     dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.data });
 
-    localStorage.setItem('userInfo', JSON.stringify(data));
+    localStorage.setItem('userInfo', JSON.stringify(data.data));
   } catch (err) {
     dispatch({
       type: constants.USER_LOGIN_FAILURE,
@@ -25,4 +25,9 @@ export const login = (email, password) => async (dispatch) => {
           : err.message,
     });
   }
+};
+
+export const logout = () => (dispatch) => {
+  localStorage.removeItem('userInfo');
+  dispatch({ type: constants.USER_LOGOUT });
 };
