@@ -5,14 +5,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import FormContainer from '../components/FormContainer';
-import { login } from '../actions/userActions';
+import { register } from '../actions/userActions';
 
-const LoginScreen = ({ location, history }) => {
+const RegisterScreen = ({ location, history }) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
   const dispatch = useDispatch();
-  const redirect = location.search && location.search.split('=')[1];
-  const { loading, error, userInfo } = useSelector((state) => state.userLogin);
+  const redirect = location.search ? location.search.split('=')[1] : '/';
+
+  //get user register states
+  const { loading, success, error } = useSelector(
+    (state) => state.userRegister
+  );
+
+  //get user login states
+  const { userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
     if (userInfo) {
@@ -22,7 +31,7 @@ const LoginScreen = ({ location, history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(login(email, password));
+    dispatch(register(name, email, password));
   };
 
   return (
@@ -32,6 +41,14 @@ const LoginScreen = ({ location, history }) => {
       {loading && <Loader />}
       <Form onSubmit={submitHandler}>
         <Form.Group controlId='email'>
+          <Form.Label>Full Name</Form.Label>
+          <Form.Control
+            type='text'
+            value={name}
+            className='form-field'
+            onChange={(e) => setName(e.target.value)}
+            required
+          ></Form.Control>
           <Form.Label>Email Address</Form.Label>
           <Form.Control
             type='email'
@@ -48,6 +65,14 @@ const LoginScreen = ({ location, history }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
           ></Form.Control>
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
+            type='password'
+            value={confirmPass}
+            className='form-field'
+            onChange={(e) => setConfirmPass(e.target.value)}
+            required
+          ></Form.Control>
         </Form.Group>
         <Button
           type='submit'
@@ -55,15 +80,13 @@ const LoginScreen = ({ location, history }) => {
           variant='info'
           rounded='true'
         >
-          Sign in
+          Register
         </Button>
         <Row className='py-3'>
           <Col className='text-center'>
-            New Customer?{' '}
-            <Link
-              to={redirect ? `/register?redirect=${redirect}` : '/register'}
-            >
-              <span className='link'>Register</span>
+            Already have account?{' '}
+            <Link to='/signin'>
+              <span className='link'>Login</span>
             </Link>
           </Col>
         </Row>
@@ -72,4 +95,4 @@ const LoginScreen = ({ location, history }) => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;

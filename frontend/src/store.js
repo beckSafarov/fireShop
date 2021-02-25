@@ -12,6 +12,7 @@ const reducer = combineReducers({
   productPrices: productReducers.productPriceReducer,
   cart: cartReducers.cartReducer,
   userLogin: userReducers.userLoginReducer,
+  userRegister: userReducers.userRegisterReducer,
 });
 
 //getting existing items from the LC
