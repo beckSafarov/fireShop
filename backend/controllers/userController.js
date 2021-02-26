@@ -12,20 +12,45 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 //@desc  Get one user
-//@route GET /api/users/:id
+//@route GET /api/users/user
 //@desc  Private
 export const getOneUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+  if (!req.body.id) {
+    res.status(404);
+    throw new Error('User Id not sent');
+  }
+  const user = await User.findById(req.body.id);
   res.status(200).json({ success: true, user });
 });
 
 //@desc  Get currently logged in user
-//@route GET /api/users/current
+//@route GET /api/users/profile
 //@desc  Private
-export const getCurrentUser = asyncHandler(async (req, res) => {
+export const getUserProfile = asyncHandler(async (req, res) => {
   if (!req.user) throw new Error('No currently logged in user found');
   const user = await User.findById(req.user._id);
   res.status(200).json({ user });
+});
+
+//@desc  update user details
+//@route PUT /api/users/profile
+//@desc  Private
+export const updateUser = asyncHandler(async (req, res) => {
+  if (req.body.password)
+    req.body.password = bcrypt.hashSync(req.body.password, 10);
+  const user = await User.findByIdAndUpdate(req.user._id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  res.status(200).json({ success: true, data: user });
+
+  // if (req.body.password)
+  //   req.body.password = bcrypt.hashSync(req.body.password, 10);
+  // const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+  //   new: true,
+  //   runValidators: true,
+  // });
+  // res.status(200).json({ success: true, data: user });
 });
 
 //@desc  Sign in
@@ -62,19 +87,6 @@ export const authUser = asyncHandler(async (req, res) => {
   user.password = undefined;
   user.isAdmin = undefined;
   sendToken(user.id, res, user);
-});
-
-//@desc  update user details
-//@route PUT /api/users/:id
-//@desc  Private
-export const updateUser = asyncHandler(async (req, res) => {
-  if (req.body.password)
-    req.body.password = bcrypt.hashSync(req.body.password, 10);
-  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  res.status(200).json({ success: true, data: user });
 });
 
 //@desc  delete a user

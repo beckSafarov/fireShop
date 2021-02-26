@@ -3,8 +3,8 @@ const router = express.Router();
 import {
   authUser,
   getAllUsers,
-  getCurrentUser,
   getOneUser,
+  getUserProfile,
   removeUser,
   signUser,
   updateUser,
@@ -12,8 +12,8 @@ import {
 import { protect } from '../middleware/auth.js';
 
 router.route('/').get(getAllUsers).post(signUser).delete(removeUser);
+router.get('/user', getOneUser);
 router.route('/login').post(authUser);
-router.get('/current', protect, getCurrentUser);
-router.route('/:id').get(getOneUser).put(updateUser);
+router.route('/profile').get(protect, getUserProfile).put(protect, updateUser);
 
 export default router;
