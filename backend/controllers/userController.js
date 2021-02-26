@@ -11,6 +11,23 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   res.status(200).json(users);
 });
 
+//@desc  Get one user
+//@route GET /api/users/:id
+//@desc  Private
+export const getOneUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  res.status(200).json({ success: true, user });
+});
+
+//@desc  Get currently logged in user
+//@route GET /api/users/current
+//@desc  Private
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  if (!req.user) throw new Error('No currently logged in user found');
+  const user = await User.findById(req.user._id);
+  res.status(200).json({ user });
+});
+
 //@desc  Sign in
 //@route POST /api/users
 //@desc  Public
@@ -45,6 +62,14 @@ export const authUser = asyncHandler(async (req, res) => {
   user.password = undefined;
   user.isAdmin = undefined;
   sendToken(user.id, res, user);
+});
+
+//@desc  update user details
+//@route PUT /api/users/:id
+//@desc  Private
+export const updateUser = asyncHandler(async (req, res) => {
+  const user = await User.findByIdAndUpdate(req.params.id, req.body);
+  res.status(200).json({ success: true, data: req.body });
 });
 
 //@desc  delete a user

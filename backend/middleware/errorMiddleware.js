@@ -9,7 +9,7 @@ const errorHandler = (err, req, res, next) => {
   let message = err.message;
   if (err.name === 'CastError') {
     statusCode = 404;
-    message = 'Invalid id for a product';
+    message = 'Invalid id';
   }
 
   res.status(statusCode);
