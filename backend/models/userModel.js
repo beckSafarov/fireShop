@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-
+mongoose.set('useFindAndModify', false);
 const userSchema = mongoose.Schema(
   {
     name: {

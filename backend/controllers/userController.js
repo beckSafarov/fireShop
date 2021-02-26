@@ -68,8 +68,13 @@ export const authUser = asyncHandler(async (req, res) => {
 //@route PUT /api/users/:id
 //@desc  Private
 export const updateUser = asyncHandler(async (req, res) => {
-  const user = await User.findByIdAndUpdate(req.params.id, req.body);
-  res.status(200).json({ success: true, data: req.body });
+  if (req.body.password)
+    req.body.password = bcrypt.hashSync(req.body.password, 10);
+  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  res.status(200).json({ success: true, data: user });
 });
 
 //@desc  delete a user
