@@ -57,3 +57,53 @@ export const register = (name, email, password) => async (dispatch) => {
     });
   }
 };
+
+export const getUserDetails = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: constants.USER_DETAILS_REQUEST });
+
+    const response = await axios.get(`/api/users/${id}`);
+
+    if (!response.success) {
+      dispatch({
+        type: constants.USER_DETAILS_FAILURE,
+        payload: response.message,
+      });
+    }
+
+    dispatch({
+      type: constants.USER_DETAILS_SUCCESS,
+      payload: response.data.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: constants.USER_DETAILS_FAILURE,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};
+
+export const updateUserProfile = (user) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: constants.USER_DETAILS_UPDATE_REQUEST });
+
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+    };
+
+    await axios.put('/api/users/profile', user, config);
+    console.log('coming to dispatch...');
+    dispatch({ type: constants.USER_DETAILS_UPDATE_SUCCESS });
+  } catch (err) {
+    dispatch({
+      type: constants.USER_DETAILS_UPDATE_FAILURE,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};

@@ -12,6 +12,7 @@ const RegisterScreen = ({ location, history }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
+  const [passError, setPassError] = useState('');
   const dispatch = useDispatch();
   const redirect = location.search ? location.search.split('=')[1] : '/';
 
@@ -31,13 +32,20 @@ const RegisterScreen = ({ location, history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(register(name, email, password));
+    if (confirmPass !== password) {
+      setPassError('Password confirmation does not match password');
+    } else if (password.length < 6) {
+      setPassError('Password should not be less than 6 characters long');
+    } else {
+      dispatch(register(name, email, password));
+    }
   };
 
   return (
     <FormContainer>
       <h1>Sign in</h1>
       {error && <Message variant='danger'>{error}</Message>}
+      {passError !== '' && <Message variant='danger'>{passError}</Message>}
       {loading && <Loader />}
       <Form onSubmit={submitHandler}>
         <Form.Group controlId='email'>
@@ -82,15 +90,15 @@ const RegisterScreen = ({ location, history }) => {
         >
           Register
         </Button>
-        <Row className='py-3'>
-          <Col className='text-center'>
-            Already have account?{' '}
-            <Link to='/signin'>
-              <span className='link'>Login</span>
-            </Link>
-          </Col>
-        </Row>
       </Form>
+      <Row className='py-3'>
+        <Col className='text-center'>
+          Already have account?{' '}
+          <Link to='/signin'>
+            <span className='link'>Login</span>
+          </Link>
+        </Col>
+      </Row>
     </FormContainer>
   );
 };

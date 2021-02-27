@@ -27,3 +27,29 @@ export const userRegisterReducer = (state = {}, action) => {
       return state;
   }
 };
+
+export const userDetailsReducer = (state = {}, action) => {
+  switch (action.type) {
+    case constants.USER_DETAILS_REQUEST:
+      return { loading: true };
+    case constants.USER_DETAILS_SUCCESS:
+      return { loading: false, userDetails: action.payload };
+    case constants.USER_DETAILS_FAILURE:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const updateUserDetailsReducer = (state = {}, action) => {
+  switch (action.type) {
+    case constants.USER_DETAILS_UPDATE_REQUEST:
+      return { loading: true };
+    case constants.USER_DETAILS_UPDATE_SUCCESS:
+      return { loading: false, success: true };
+    case constants.USER_DETAILS_UPDATE_FAILURE:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};

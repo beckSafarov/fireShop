@@ -13,6 +13,8 @@ const reducer = combineReducers({
   cart: cartReducers.cartReducer,
   userLogin: userReducers.userLoginReducer,
   userRegister: userReducers.userRegisterReducer,
+  userDetails: userReducers.userDetailsReducer,
+  userDetailsUpdate: userReducers.updateUserDetailsReducer,
 });
 
 //getting existing items from the LC

@@ -29,7 +29,7 @@ export const getOneUser = asyncHandler(async (req, res) => {
 export const getUserProfile = asyncHandler(async (req, res) => {
   if (!req.user) throw new Error('No currently logged in user found');
   const user = await User.findById(req.user._id);
-  res.status(200).json({ user });
+  res.status(200).json({ success: true, data: user });
 });
 
 //@desc  update user details
@@ -43,14 +43,6 @@ export const updateUser = asyncHandler(async (req, res) => {
     runValidators: true,
   });
   res.status(200).json({ success: true, data: user });
-
-  // if (req.body.password)
-  //   req.body.password = bcrypt.hashSync(req.body.password, 10);
-  // const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-  //   new: true,
-  //   runValidators: true,
-  // });
-  // res.status(200).json({ success: true, data: user });
 });
 
 //@desc  Sign in

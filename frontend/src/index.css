@@ -28,3 +28,8 @@ h1 {
 .link {
   color: #1a82ae;
 }
+
+.invisible-field {
+  background-color: transparent;
+  border-color: transparent;
+}
