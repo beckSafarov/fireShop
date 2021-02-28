@@ -31,7 +31,7 @@ const ProfileScreen = ({ location, history }) => {
       history.push('/');
     } else {
       if (!userDetails) {
-        dispatch(getUserDetails('profile'));
+        dispatch(getUserDetails());
       } else {
         setName(userDetails.name);
         setEmail(userDetails.email);

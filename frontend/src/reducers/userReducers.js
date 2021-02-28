@@ -8,8 +8,12 @@ export const userLoginReducer = (state = {}, action) => {
       return { loading: false, userInfo: action.payload };
     case constants.USER_LOGIN_FAILURE:
       return { loading: false, error: action.payload };
-    case constants.USER_LOGOUT:
-      return {};
+    case constants.USER_LOGOUT_REQUEST:
+      return { loading: true };
+    case constants.USER_LOGOUT_SUCCESS:
+      return { loading: false, success: true };
+    case constants.USER_LOGOUT_FAILURE:
+      return { loading: false, error: action.payload };
     default:
       return state;
   }
@@ -36,6 +40,8 @@ export const userDetailsReducer = (state = {}, action) => {
       return { loading: false, userDetails: action.payload };
     case constants.USER_DETAILS_FAILURE:
       return { loading: false, error: action.payload };
+    case constants.USER_DETAILS_CLEAR:
+      return {};
     default:
       return state;
   }

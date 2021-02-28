@@ -12,22 +12,9 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 //@desc  Get one user
-//@route GET /api/users/user
-//@desc  Private
-export const getOneUser = asyncHandler(async (req, res) => {
-  if (!req.body.id) {
-    res.status(404);
-    throw new Error('User Id not sent');
-  }
-  const user = await User.findById(req.body.id);
-  res.status(200).json({ success: true, user });
-});
-
-//@desc  Get currently logged in user
 //@route GET /api/users/profile
 //@desc  Private
-export const getUserProfile = asyncHandler(async (req, res) => {
-  if (!req.user) throw new Error('No currently logged in user found');
+export const getOneUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   res.status(200).json({ success: true, data: user });
 });
@@ -36,12 +23,15 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 //@route PUT /api/users/profile
 //@desc  Private
 export const updateUser = asyncHandler(async (req, res) => {
-  if (req.body.password)
+  if (req.body.password) {
     req.body.password = bcrypt.hashSync(req.body.password, 10);
+  }
+
   const user = await User.findByIdAndUpdate(req.user._id, req.body, {
     new: true,
     runValidators: true,
   });
+
   res.status(200).json({ success: true, data: user });
 });
 
@@ -102,5 +92,23 @@ export const removeUser = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: `${name} has been deleted`,
+  });
+});
+
+//@desc  currently logged in user
+//@route GET /api/users/me
+//@desc  Private
+export const me = asyncHandler(async (req, res, next) => {
+  res.status(200).json({ success: true, data: req.user });
+});
+
+//@desc  user logs out
+//@route PUT /api/users/logout
+//@desc  Private
+export const logout = asyncHandler(async (req, res, next) => {
+  res.clearCookie('token');
+  res.status(200).json({
+    success: true,
+    message: 'Your are successfully logged out',
   });
 });

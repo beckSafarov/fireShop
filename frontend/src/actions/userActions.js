@@ -27,9 +27,22 @@ export const login = (email, password) => async (dispatch) => {
   }
 };
 
-export const logout = () => (dispatch) => {
-  localStorage.removeItem('userInfo');
-  dispatch({ type: constants.USER_LOGOUT });
+export const logout = () => async (dispatch) => {
+  try {
+    dispatch({ type: constants.USER_LOGOUT_REQUEST });
+    await axios.put('/api/users/logout');
+    dispatch({ type: constants.USER_LOGOUT_SUCCESS });
+    localStorage.removeItem('userInfo');
+    dispatch({ type: constants.USER_DETAILS_CLEAR });
+  } catch (err) {
+    dispatch({
+      type: constants.USER_LOGOUT_FAILURE,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
 };
 
 export const register = (name, email, password) => async (dispatch) => {
@@ -58,18 +71,10 @@ export const register = (name, email, password) => async (dispatch) => {
   }
 };
 
-export const getUserDetails = (id) => async (dispatch, getState) => {
+export const getUserDetails = () => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.USER_DETAILS_REQUEST });
-
-    const response = await axios.get(`/api/users/${id}`);
-
-    if (!response.success) {
-      dispatch({
-        type: constants.USER_DETAILS_FAILURE,
-        payload: response.message,
-      });
-    }
+    const response = await axios.get(`/api/users/profile`);
 
     dispatch({
       type: constants.USER_DETAILS_SUCCESS,

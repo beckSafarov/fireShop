@@ -4,7 +4,8 @@ import {
   authUser,
   getAllUsers,
   getOneUser,
-  getUserProfile,
+  logout,
+  me,
   removeUser,
   signUser,
   updateUser,
@@ -12,8 +13,9 @@ import {
 import { protect } from '../middleware/auth.js';
 
 router.route('/').get(getAllUsers).post(signUser).delete(removeUser);
-router.get('/user', getOneUser);
 router.route('/login').post(authUser);
-router.route('/profile').get(protect, getUserProfile).put(protect, updateUser);
+router.route('/logout').put(logout);
+router.route('/me').get(protect, me);
+router.route('/profile').get(protect, getOneUser).put(protect, updateUser);
 
 export default router;
