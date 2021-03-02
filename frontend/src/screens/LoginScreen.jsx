@@ -11,12 +11,13 @@ const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  const redirect = location.search && location.search.split('=')[1];
+  const redirect = new URLSearchParams(useLocation().search).get('redirect');
+  const originUrl = new URLSearchParams(useLocation().search).get('from');
   const { loading, error, userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
     if (userInfo) {
-      history.push(redirect);
+      history.push(originUrl ? `${redirect}?redirect=${originUrl}` : redirect);
     }
   }, [history, userInfo, redirect]);
 

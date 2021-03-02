@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import ShippingScreen from './screens/ShippingScreen';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           <Route path='/signin/' component={LoginScreen} />
           <Route path='/register/' component={RegisterScreen} />
           <Route path='/profile' component={ProfileScreen}></Route>
+          <Route path='/shipping' component={ShippingScreen}></Route>
         </Container>
       </main>
       <Footer />

@@ -18,9 +18,17 @@ export const ReadOnlyForm = ({ name, email, onClick }) => {
           <Form.Control plaintext readOnly defaultValue={email} />
         </Col>
       </Form.Group>
-      <Button type='button' variant='info' onClick={(e) => onClick(e)} block>
-        Edit
-      </Button>
+      <div className='py-3'>
+        <Button
+          type='button'
+          className='rounded-btn'
+          variant='info'
+          onClick={(e) => onClick(e)}
+          block
+        >
+          Edit
+        </Button>
+      </div>
     </Form>
   );
 };
@@ -69,10 +77,11 @@ export const ProfileUpdateForm = ({ values, functions }) => {
         <Col mb={2}>
           <Button
             type='button'
-            className='btn-block'
+            className='rounded-btn'
             variant='dark'
             rounded='true'
             onClick={(e) => cancelChanges(e)}
+            block
           >
             Cancel
           </Button>
@@ -80,9 +89,10 @@ export const ProfileUpdateForm = ({ values, functions }) => {
         <Col mb={2}>
           <Button
             type='submit'
-            className='btn-block'
+            className='rounded-btn'
             variant='success'
             rounded='true'
+            block
           >
             Save
           </Button>

@@ -1,6 +1,9 @@
 import * as constants from '../constants';
 
-export const cartReducer = (state = { cartItems: [] }, action) => {
+export const cartReducer = (
+  state = { cartItems: [], shippingAddress: {} },
+  action
+) => {
   switch (action.type) {
     case constants.CART_ADD_ITEM:
       const item = action.payload;
@@ -51,6 +54,13 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
         ...state,
         cartItems: cartAfterRemoval,
       };
+    case constants.CART_SAVE_SHIPPING_ADDRESS:
+      //type: ..., payload: shippingAddress
+      return {
+        ...state,
+        shippingAddress: action.payload,
+      };
+
     default:
       return state;
   }

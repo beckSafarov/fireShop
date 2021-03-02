@@ -55,7 +55,7 @@ const CartScreen = ({ match, location, history }) => {
   };
 
   const checkoutHandler = () => {
-    console.log('you clicked checkout button');
+    history.push('/signin?from=cart&redirect=shipping');
   };
 
   return (
