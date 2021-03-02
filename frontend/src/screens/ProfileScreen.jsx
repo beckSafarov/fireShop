@@ -4,7 +4,9 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import { ReadOnlyForm, ProfileUpdateForm } from '../components/Forms';
 import { getUserDetails, updateUserProfile } from '../actions/userActions';
+import store from '../store';
 
 const ProfileScreen = ({ location, history }) => {
   const [name, setName] = useState('');
@@ -13,6 +15,7 @@ const ProfileScreen = ({ location, history }) => {
   const [confirmPass, setConfirmPass] = useState('');
   const [message, setMessage] = useState(null);
   const [msgVariant, setmsgVariant] = useState('danger');
+  const [editBtnClicked, setEditBtnClicked] = useState(false);
   const dispatch = useDispatch();
 
   //get logged in user info
@@ -48,7 +51,7 @@ const ProfileScreen = ({ location, history }) => {
     }, 3000);
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     let fieldsAreOk = true;
     if (password !== '') {
@@ -68,77 +71,80 @@ const ProfileScreen = ({ location, history }) => {
     }
 
     if (fieldsAreOk) {
-      dispatch(
+      await dispatch(
         updateUserProfile({
           name: name !== '' ? name : undefined,
           email: email !== '' ? email : undefined,
           password: password !== '' ? password : undefined,
         })
       );
+
+      if (store.getState().userDetailsUpdate.success) {
+        setMessageHandler('success', 'Updated successfully');
+        setEditBtnClicked(false);
+        setPassword('');
+        setConfirmPass('');
+      } else {
+        setMessageHandler('danger', store.getState().userDetailsUpdate.error);
+      }
     }
   };
 
-  //trigger success alert when updated
-  if (updateRes.success) {
-    setMessageHandler('success', 'Profile Updated');
-  }
+  const cancelChanges = (e) => {
+    e.preventDefault();
+    setName(userDetails.name);
+    setEmail(userDetails.email);
+    setPassword('');
+    setConfirmPass('');
+    setEditBtnClicked(false);
+  };
+
+  const editBtnHandler = (e) => {
+    e.preventDefault();
+    setEditBtnClicked(true);
+  };
+
+  //preparing props to pass to profile update form
+  const values = { name, email };
+  const functions = {
+    submitHandler,
+    setName,
+    setEmail,
+    setPassword,
+    setConfirmPass,
+    cancelChanges,
+  };
 
   return (
     <Row>
-      {(loading || updateRes.loading) && <Loader />}
-      <Col md={6}>
-        {(error || message) && (
-          <Message variant={msgVariant}>{error || message}</Message>
-        )}
-        {userDetails && (
-          <>
-            <h3>User Profile</h3>
-            <Form onSubmit={submitHandler}>
-              <Form.Group controlId='email'>
-                <Form.Label>Full Name</Form.Label>
-                <Form.Control
-                  type='text'
-                  value={name}
-                  className='form-field'
-                  onChange={(e) => setName(e.target.value)}
-                ></Form.Control>
-                <Form.Label>Email Address</Form.Label>
-                <Form.Control
-                  type='email'
-                  value={email}
-                  className='form-field'
-                  onChange={(e) => setEmail(e.target.value)}
-                ></Form.Control>
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type='password'
-                  value={password}
-                  className='form-field'
-                  onChange={(e) => setPassword(e.target.value)}
-                ></Form.Control>
-                <Form.Label>Confirm Password</Form.Label>
-                <Form.Control
-                  type='password'
-                  value={confirmPass}
-                  className='form-field'
-                  onChange={(e) => setConfirmPass(e.target.value)}
-                ></Form.Control>
-              </Form.Group>
-              <Button
-                type='submit'
-                className='btn-block'
-                variant='info'
-                rounded='true'
-              >
-                Update
-              </Button>
-            </Form>
-          </>
-        )}
-      </Col>
-      <Col md={6}>
-        <h2>Orders</h2>
-      </Col>
+      {loading || updateRes.loading ? (
+        <Loader />
+      ) : (
+        <>
+          <Col md={4}>
+            {userDetails && (
+              <>
+                <h3>User Profile</h3>
+                {(error || message) && (
+                  <Message variant={msgVariant}>{error || message}</Message>
+                )}
+                {!editBtnClicked ? (
+                  <ReadOnlyForm
+                    name={name}
+                    email={email}
+                    onClick={editBtnHandler}
+                  />
+                ) : (
+                  <ProfileUpdateForm values={values} functions={functions} />
+                )}
+              </>
+            )}
+          </Col>
+          <Col md={8}>
+            <h3>Order</h3>
+          </Col>
+        </>
+      )}
     </Row>
   );
 };

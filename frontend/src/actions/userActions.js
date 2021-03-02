@@ -100,7 +100,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
     };
 
     await axios.put('/api/users/profile', user, config);
-    console.log('coming to dispatch...');
+
     dispatch({ type: constants.USER_DETAILS_UPDATE_SUCCESS });
   } catch (err) {
     dispatch({
