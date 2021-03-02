@@ -7,6 +7,7 @@ import Loader from '../components/Loader';
 import { ReadOnlyForm, ProfileUpdateForm } from '../components/Forms';
 import { getUserDetails, updateUserProfile } from '../actions/userActions';
 import store from '../store';
+import * as constants from '../constants';
 
 const ProfileScreen = ({ location, history }) => {
   const [name, setName] = useState('');
@@ -18,29 +19,26 @@ const ProfileScreen = ({ location, history }) => {
   const [editBtnClicked, setEditBtnClicked] = useState(false);
   const dispatch = useDispatch();
 
-  //get logged in user info
-  const { userInfo } = useSelector((state) => state.userLogin);
-
   //get full user profile
   const { loading, userDetails, error } = useSelector(
     (state) => state.userDetails
   );
 
+  if (error === 'Not authorized to access this route') {
+    history.push('/');
+  }
+
   //get user update state
   const updateRes = useSelector((state) => state.userDetailsUpdate);
 
   useEffect(() => {
-    if (!userInfo) {
-      history.push('/');
+    if (!userDetails) {
+      dispatch(getUserDetails());
     } else {
-      if (!userDetails) {
-        dispatch(getUserDetails());
-      } else {
-        setName(userDetails.name);
-        setEmail(userDetails.email);
-      }
+      setName(userDetails.name);
+      setEmail(userDetails.email);
     }
-  }, [history, userInfo, userDetails, dispatch]);
+  }, [history, userDetails, dispatch]);
 
   //function to make alerts disappear after some time
   const setMessageHandler = (variant, msg) => {
@@ -51,26 +49,32 @@ const ProfileScreen = ({ location, history }) => {
     }, 3000);
   };
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    let fieldsAreOk = true;
+  const fieldsValidated = () => {
     if (password !== '') {
       if (confirmPass !== password) {
         setMessageHandler('danger', 'Passwords do not match');
-        fieldsAreOk = false;
+        return false;
       } else if (password.length < 6) {
         setMessageHandler(
           'danger',
           'Password should not be less than 6 characters long'
         );
-        fieldsAreOk = false;
+        return false;
       }
     } else if (confirmPass !== '') {
       setMessageHandler('danger', 'New password was not written');
-      fieldsAreOk = false;
+      return false;
     }
+    return true;
+  };
 
-    if (fieldsAreOk) {
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    //validating fields
+    fieldsValidated();
+
+    //initiating dispatch
+    if (fieldsValidated()) {
       await dispatch(
         updateUserProfile({
           name: name !== '' ? name : undefined,
@@ -82,8 +86,11 @@ const ProfileScreen = ({ location, history }) => {
       if (store.getState().userDetailsUpdate.success) {
         setMessageHandler('success', 'Updated successfully');
         setEditBtnClicked(false);
-        setPassword('');
-        setConfirmPass('');
+        localStorage.setItem('userInfo', JSON.stringify({ name, email }));
+        dispatch({
+          type: constants.USER_INFO_UPDATE,
+          payload: { name, email },
+        });
       } else {
         setMessageHandler('danger', store.getState().userDetailsUpdate.error);
       }
@@ -140,8 +147,9 @@ const ProfileScreen = ({ location, history }) => {
               </>
             )}
           </Col>
+
           <Col md={8}>
-            <h3>Order</h3>
+            <h3>Orders</h3>
           </Col>
         </>
       )}
