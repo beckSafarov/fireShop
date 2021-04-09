@@ -44,6 +44,15 @@ export const saveShippingAddress = (data) => (dispatch) => {
   localStorage.setItem('shippingAddress', JSON.stringify(data));
 };
 
+export const savePaymentMethod = (data) => (dispatch) => {
+  dispatch({
+    type: constants.CART_SAVE_PAYMENT_METHOD,
+    payload: data,
+  });
+
+  localStorage.setItem('paymentMethod', JSON.stringify(data));
+};
+
 //export const addToCart = (id, qty) => async (dispatch, getState) => {
 //   try {
 //     const { data } = await axios.get(`/api/products/${id}`);

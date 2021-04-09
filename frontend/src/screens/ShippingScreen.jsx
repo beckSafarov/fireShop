@@ -13,7 +13,6 @@ const ShippingScreen = ({ history, location, match }) => {
   const [country, setCountry] = useState(shippingAddress.country);
   const dispatch = useDispatch();
   const redirect = location.search ? location.search.split('=')[1] : '/';
-  console.log(redirect);
 
   const submitHandler = (e) => {
     e.preventDefault();
