@@ -24,8 +24,9 @@ const initialCartLength = 0;
 
 const ProductScreen = ({ history, match }) => {
   const [qty, setQty] = useState(1);
-  const [visibility, setVisibility] = useState(false);
+  const [visibility, setVisibility] = useState(false); //alert message visibility
   const [alertMessage, setMessage] = useState(
+    //message displayed in the alert message
     `Item(s) has been added to your cart`
   );
   const dispatch = useDispatch();

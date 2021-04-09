@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Form, CloseButtonProps, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import FormContainer from '../components/FormContainer';
+import CheckOutSteps from '../components/CheckOutSteps';
 import { saveShippingAddress } from '../actions/cartActions';
 
 const ShippingScreen = ({ history, location, match }) => {
@@ -11,6 +12,8 @@ const ShippingScreen = ({ history, location, match }) => {
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
   const [country, setCountry] = useState(shippingAddress.country);
   const dispatch = useDispatch();
+  const redirect = location.search ? location.search.split('=')[1] : '/';
+  console.log(redirect);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -19,6 +22,7 @@ const ShippingScreen = ({ history, location, match }) => {
   };
   return (
     <FormContainer>
+      <CheckOutSteps step1 step2 />
       <h1>Shipping</h1>
       <Form onSubmit={submitHandler} className='py-3'>
         <Form.Group controlId='address'>

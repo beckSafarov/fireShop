@@ -10,10 +10,12 @@ import store from '../store.js';
 const HomeScreen = () => {
   const dispatch = useDispatch();
 
+  //bring the list of products from the current redux state
   const productList = useSelector((state) => state.productList);
-  const { loading, error, products } = productList;
+  const { loading, error, products } = productList; // bring up all the possible states
 
   useEffect(() => {
+    //dispatch server request for new products state
     dispatch(listProducts());
   }, [dispatch]);
 

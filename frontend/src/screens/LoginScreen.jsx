@@ -11,7 +11,8 @@ const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  const redirect = new URLSearchParams(useLocation().search).get('redirect');
+  const redirect =
+    new URLSearchParams(useLocation().search).get('redirect') || '/';
   const originUrl = new URLSearchParams(useLocation().search).get('from');
   const { loading, error, userInfo } = useSelector((state) => state.userLogin);
 

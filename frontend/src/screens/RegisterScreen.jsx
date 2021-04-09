@@ -15,6 +15,7 @@ const RegisterScreen = ({ location, history }) => {
   const [passError, setPassError] = useState('');
   const dispatch = useDispatch();
   const redirect = location.search ? location.search.split('=')[1] : '/';
+  const from = new URLSearchParams(useLocation().search).get('from');
 
   //get user register states
   const { loading, success, error } = useSelector(
@@ -26,7 +27,7 @@ const RegisterScreen = ({ location, history }) => {
 
   useEffect(() => {
     if (userInfo) {
-      history.push(redirect);
+      history.push(`/${redirect}?from=${redirect}&redirect=${from}`);
     }
   }, [history, userInfo, redirect]);
 
