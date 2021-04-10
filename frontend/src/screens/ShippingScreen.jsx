@@ -7,6 +7,10 @@ import { saveShippingAddress } from '../actions/cartActions';
 
 const ShippingScreen = ({ history, location, match }) => {
   const { shippingAddress } = useSelector((state) => state.cart);
+  const { cartItems } = useSelector((state) => state.cart);
+  if (cartItems.length === 0) {
+    history.push('/');
+  }
   const [address, setAddress] = useState(shippingAddress.address);
   const [city, setCity] = useState(shippingAddress.city);
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
@@ -30,6 +34,7 @@ const ShippingScreen = ({ history, location, match }) => {
             type='text'
             className='form-field'
             onChange={(e) => setAddress(e.target.value)}
+            value={address || ''}
             required
           ></Form.Control>
         </Form.Group>
@@ -39,6 +44,7 @@ const ShippingScreen = ({ history, location, match }) => {
             type='text'
             className='form-field'
             onChange={(e) => setCity(e.target.value)}
+            value={city || ''}
             required
           ></Form.Control>
         </Form.Group>
@@ -48,6 +54,7 @@ const ShippingScreen = ({ history, location, match }) => {
             type='number'
             className='form-field'
             onChange={(e) => setPostalCode(e.target.value)}
+            value={postalCode || ''}
             required
           ></Form.Control>
         </Form.Group>
@@ -57,6 +64,7 @@ const ShippingScreen = ({ history, location, match }) => {
             type='text'
             className='form-field'
             onChange={(e) => setCountry(e.target.value)}
+            value={country || ''}
             required
           ></Form.Control>
         </Form.Group>

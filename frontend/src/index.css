@@ -42,3 +42,11 @@ h1 {
   background-color: transparent;
   border-color: transparent;
 }
+
+strong {
+  font-weight: 700px;
+}
+
+.white-text {
+  color: white;
+}
