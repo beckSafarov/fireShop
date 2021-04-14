@@ -4,6 +4,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import * as productReducers from './reducers/productReducers.js';
 import * as cartReducers from './reducers/cartReducers.js';
 import * as userReducers from './reducers/userReducers';
+import * as orderReducers from './reducers/orderReducers';
 
 //this is the root reducer that includes all reducers
 const reducer = combineReducers({
@@ -15,6 +16,7 @@ const reducer = combineReducers({
   userRegister: userReducers.userRegisterReducer,
   userDetails: userReducers.userDetailsReducer,
   userDetailsUpdate: userReducers.updateUserDetailsReducer,
+  orderReducers: orderReducers.orderCreateReducer,
 });
 
 //getting existing items from the LC

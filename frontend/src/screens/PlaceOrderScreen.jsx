@@ -6,6 +6,7 @@ import Message from '../components/Message';
 import CheckOutSteps from '../components/CheckOutSteps';
 import Loader from '../components/Loader';
 import { getProductPrices } from '../actions/productActions';
+import { createOrder } from '../actions/orderActions';
 
 const PlaceOrderScreen = ({ history }) => {
   const dispatch = useDispatch();
@@ -14,20 +15,13 @@ const PlaceOrderScreen = ({ history }) => {
   const { loading, prices, error } = useSelector(
     (state) => state.productPrices
   );
+
+  // if no cartitems, then send the user back to the home page
   if (cart.cartItems.length === 0 || !cart.shippingAddress.address) {
     history.push('/');
   }
 
-  useEffect(() => {
-    dispatch(getProductPrices(ids));
-  }, [dispatch]);
-
-  const placeOrderHandler = (e) => {
-    e.preventDefault();
-    console.log('you placed the order');
-  };
-
-  // Calculate Stuff
+  // -- CALCULATIONS --
   const addDecimals = (num) => {
     return (Math.round(num * 100) / 100).toFixed(2);
   };
@@ -57,14 +51,40 @@ const PlaceOrderScreen = ({ history }) => {
       Number(cart.taxPrice)
   );
 
+  // -- CREATING ORDER --
+  const orderCreated = useSelector((state) => state.orderReducers);
+
+  useEffect(() => {
+    // getting product prices
+    dispatch(getProductPrices(ids));
+
+    if (orderCreated.success) history.push(`/order/${orderCreated.order._id}`);
+  }, [dispatch, history, orderCreated.order._id]);
+
+  const placeOrderHandler = (e) => {
+    e.preventDefault();
+    cart.cartItems.forEach((product, index) => {
+      product.price = prices[index];
+    });
+
+    dispatch(
+      createOrder({
+        orderItems: cart.cartItems,
+        shippingAddress: cart.shippingAddress,
+        paymentMethod: cart.paymentMethod,
+        taxPrice: cart.taxPrice,
+        shippingPrice: cart.shippingPrice,
+        totalPrice: cart.totalPrice,
+      })
+    );
+  };
+
   return (
     <>
-      {loading ? (
+      {loading || orderCreated.loading ? (
         <Loader />
-      ) : error ? (
-        <Message variant='danger'>
-          Sorry something went wrong while fetching prices
-        </Message>
+      ) : error || orderCreated.error ? (
+        <Message variant='danger'>{error | orderCreated.error}</Message>
       ) : prices ? (
         <>
           <CheckOutSteps step1 step2 step3 step4 />
