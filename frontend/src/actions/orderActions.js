@@ -11,8 +11,6 @@ export const createOrder = (order) => async (dispatch, getState) => {
 
     const data = await axios.post('/api/orders/addorder', order, config);
 
-    console.log(data.data);
-
     dispatch({
       type: constants.ORDER_CREATE_SUCCESS,
       payload: data.data.createdOrder,
@@ -20,6 +18,27 @@ export const createOrder = (order) => async (dispatch, getState) => {
   } catch (err) {
     dispatch({
       type: constants.ORDER_CREATE_FAIL,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};
+
+export const getOrderDetails = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: constants.ORDER_DETAILS_REQUEST });
+
+    const data = await axios.get(`/api/orders/${id}`);
+
+    dispatch({
+      type: constants.ORDER_DETAILS_SUCCESS,
+      payload: data.data.order,
+    });
+  } catch (err) {
+    dispatch({
+      type: constants.ORDER_DETAILS_FAIL,
       payload:
         err.response && err.response.data.message
           ? err.response.data.message

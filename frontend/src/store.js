@@ -17,6 +17,7 @@ const reducer = combineReducers({
   userDetails: userReducers.userDetailsReducer,
   userDetailsUpdate: userReducers.updateUserDetailsReducer,
   orderReducers: orderReducers.orderCreateReducer,
+  orderDetails: orderReducers.orderDetailsReducer,
 });
 
 //getting existing items from the LC

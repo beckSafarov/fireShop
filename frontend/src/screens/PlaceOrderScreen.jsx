@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { PayPalButton } from 'react-paypal-button-v2';
 import { Link } from 'react-router-dom';
 import { Button, Row, Col, ListGroup, Card, Image } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,14 +9,20 @@ import CheckOutSteps from '../components/CheckOutSteps';
 import Loader from '../components/Loader';
 import { getProductPrices } from '../actions/productActions';
 import { createOrder } from '../actions/orderActions';
+// import { ORDER_PAY_RESET } from '../constants';
 
 const PlaceOrderScreen = ({ history }) => {
+  // bringing redux stores
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.userLogin);
   const ids = cart.cartItems.map((item) => item._id);
   const { loading, prices, error } = useSelector(
     (state) => state.productPrices
   );
+
+  // hooks states
+  const [sdkReady, setSdkReady] = useState(false);
 
   // if no cartitems, then send the user back to the home page
   if (cart.cartItems.length === 0 || !cart.shippingAddress.address) {
@@ -58,32 +66,66 @@ const PlaceOrderScreen = ({ history }) => {
     // getting product prices
     dispatch(getProductPrices(ids));
 
-    if (orderCreated.success) history.push(`/order/${orderCreated.order._id}`);
-  }, [dispatch, history, orderCreated.order._id]);
+    const addPaypalScript = async () => {
+      const { data: clientId } = await axios.get('/api/config/paypal');
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.async = true;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
+      script.onload = () => setSdkReady(true);
+      document.body.appendChild(script);
+    };
 
-  const placeOrderHandler = (e) => {
-    e.preventDefault();
+    if (!orderCreated.success) {
+      if (!window.paypal) {
+        addPaypalScript();
+      } else {
+        setSdkReady(true);
+      }
+    } else if (orderCreated.success) {
+      // dispatch({ type: ORDER_PAY_RESET });
+      console.log(orderCreated.order);
+      history.push(`/payment-success?id=${orderCreated.order._id}`);
+    } else if (orderCreated.error) {
+      history.push(`/payment-error?error=${orderCreated.error}`);
+    }
+  }, [dispatch, orderCreated, history]);
+
+  const successPaymentHandler = (paymentResult) => {
     cart.cartItems.forEach((product, index) => {
       product.price = prices[index];
     });
+
+    const paymentInfo = {
+      id: paymentResult.id,
+      Status: paymentResult.status,
+      update_time: paymentResult.update_time,
+      email_address: paymentResult.payer.email_address,
+    };
 
     dispatch(
       createOrder({
         orderItems: cart.cartItems,
         shippingAddress: cart.shippingAddress,
         paymentMethod: cart.paymentMethod,
+        paymentResult: paymentInfo,
         taxPrice: cart.taxPrice,
         shippingPrice: cart.shippingPrice,
         totalPrice: cart.totalPrice,
+        paidAt: paymentResult.create_time,
       })
     );
+  };
+
+  const paymentFailureHandler = (error) => {
+    history.push(`/payment-error?error=${error}`);
   };
 
   return (
     <>
       {loading || orderCreated.loading ? (
         <Loader />
-      ) : error || orderCreated.error ? (
+      ) : error ? (
         <Message variant='danger'>{error | orderCreated.error}</Message>
       ) : prices ? (
         <>
@@ -94,6 +136,15 @@ const PlaceOrderScreen = ({ history }) => {
                 <h2 className='mb-4 text-center'>Order Details</h2>
                 <ListGroup.Item>
                   <p>
+                    <strong>Name: </strong>
+                    {userInfo.name}
+                  </p>
+                  <p>
+                    <strong>Email: </strong>
+                    {userInfo.email}
+                  </p>
+
+                  <p>
                     <strong>Address: </strong>
                     {cart.shippingAddress.address}, {cart.shippingAddress.city},{' '}
                     {cart.shippingAddress.postalCode},{' '}
@@ -101,7 +152,7 @@ const PlaceOrderScreen = ({ history }) => {
                   </p>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <p className>
+                  <p>
                     <strong>Payment Method: </strong>
                     {cart.paymentMethod}
                   </p>
@@ -171,15 +222,19 @@ const PlaceOrderScreen = ({ history }) => {
                     </Row>
                   </ListGroup.Item>
                   <ListGroup.Item>
-                    <Button
-                      type='button'
-                      className='btn-block'
-                      variant='primary'
-                      disabled={cart.cartItems.length === 0}
-                      onClick={placeOrderHandler}
-                    >
-                      Place Order
-                    </Button>
+                    {!orderCreated.isPaid && (
+                      <ListGroup.Item>
+                        {orderCreated.loading || !sdkReady ? (
+                          <Loader />
+                        ) : (
+                          <PayPalButton
+                            amount={cart.totalPrice}
+                            onSuccess={successPaymentHandler}
+                            onError={paymentFailureHandler}
+                          />
+                        )}
+                      </ListGroup.Item>
+                    )}
                   </ListGroup.Item>
                 </ListGroup>
               </Card>

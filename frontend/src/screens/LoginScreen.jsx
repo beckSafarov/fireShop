@@ -51,12 +51,7 @@ const LoginScreen = ({ location, history }) => {
             required
           ></Form.Control>
         </Form.Group>
-        <Button
-          type='submit'
-          className='btn-block'
-          variant='info'
-          rounded='true'
-        >
+        <Button type='submit' className='btn-block' variant='info' rounded>
           Sign in
         </Button>
         <Row className='py-3'>

@@ -79,7 +79,7 @@ export const ProfileUpdateForm = ({ values, functions }) => {
             type='button'
             className='rounded-btn'
             variant='dark'
-            rounded='true'
+            rounded
             onClick={(e) => cancelChanges(e)}
             block
           >
@@ -91,7 +91,7 @@ export const ProfileUpdateForm = ({ values, functions }) => {
             type='submit'
             className='rounded-btn'
             variant='success'
-            rounded='true'
+            rounded
             block
           >
             Save
