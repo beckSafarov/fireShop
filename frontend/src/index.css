@@ -16,6 +16,14 @@ h1 {
   padding: 0.1rem;
 }
 
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
 .rating span {
   margin: 0.1rem;
 }
@@ -49,4 +57,15 @@ strong {
 
 .white-text {
   color: white;
+}
+
+.danger-text {
+  color: red;
+}
+
+.error-message-field {
+  margin: 10px 0 10px 0;
+  padding: 10px;
+  border: 2px solid red;
+  color: red;
 }

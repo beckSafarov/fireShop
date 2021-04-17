@@ -9,7 +9,6 @@ import CheckOutSteps from '../components/CheckOutSteps';
 import Loader from '../components/Loader';
 import { getProductPrices } from '../actions/productActions';
 import { createOrder } from '../actions/orderActions';
-// import { ORDER_PAY_RESET } from '../constants';
 
 const PlaceOrderScreen = ({ history }) => {
   // bringing redux stores
@@ -23,6 +22,8 @@ const PlaceOrderScreen = ({ history }) => {
 
   // hooks states
   const [sdkReady, setSdkReady] = useState(false);
+  const [paymentError, setPaymentError] = useState(false);
+  const [paymentErrorMessage, setPaymentErrorMessage] = useState('undefined');
 
   // if no cartitems, then send the user back to the home page
   if (cart.cartItems.length === 0 || !cart.shippingAddress.address) {
@@ -83,11 +84,7 @@ const PlaceOrderScreen = ({ history }) => {
         setSdkReady(true);
       }
     } else if (orderCreated.success) {
-      // dispatch({ type: ORDER_PAY_RESET });
-      console.log(orderCreated.order);
       history.push(`/payment-success?id=${orderCreated.order._id}`);
-    } else if (orderCreated.error) {
-      history.push(`/payment-error?error=${orderCreated.error}`);
     }
   }, [dispatch, orderCreated, history]);
 
@@ -117,16 +114,31 @@ const PlaceOrderScreen = ({ history }) => {
     );
   };
 
-  const paymentFailureHandler = (error) => {
-    history.push(`/payment-error?error=${error}`);
+  const paymentErrorHandler = (error = 'payment failed') => {
+    setPaymentError(true);
+    setPaymentErrorMessage(error);
   };
 
   return (
     <>
       {loading || orderCreated.loading ? (
         <Loader />
-      ) : error ? (
-        <Message variant='danger'>{error | orderCreated.error}</Message>
+      ) : error || orderCreated.error ? (
+        <Message variant='danger'>
+          {error || (
+            <>
+              <h2 className='danger-text'>Payment Failed!</h2>
+              <p>Error: {orderCreated.error || paymentErrorMessage}</p>
+              {orderCreated.error && (
+                <p className='mt-10'>
+                  This seems like a server error so please contact us at{' '}
+                  <a href='mailto:support@proshop.com'>support@proshop.com</a>{' '}
+                  with screenshot
+                </p>
+              )}
+            </>
+          )}
+        </Message>
       ) : prices ? (
         <>
           <CheckOutSteps step1 step2 step3 step4 />
@@ -230,7 +242,7 @@ const PlaceOrderScreen = ({ history }) => {
                           <PayPalButton
                             amount={cart.totalPrice}
                             onSuccess={successPaymentHandler}
-                            onError={paymentFailureHandler}
+                            onError={paymentErrorHandler}
                           />
                         )}
                       </ListGroup.Item>

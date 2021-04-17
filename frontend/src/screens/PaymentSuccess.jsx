@@ -89,6 +89,13 @@ const PaymentSuccess = () => {
               </p>
             </ListGroup.Item>
           </ListGroup>
+          <div className='mt-4'>
+            <p>
+              Your order should be delivered within 2 weeks. You can track the
+              progress in your <strong>Profile</strong>,{' '}
+              <strong>My Orders</strong> Section
+            </p>
+          </div>
         </Container>
       )}
     </>

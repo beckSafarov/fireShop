@@ -12,6 +12,7 @@ import ShippingScreen from './screens/ShippingScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import PaymentSuccess from './screens/PaymentSuccess';
+import PaymentFailure from './screens/PaymentFailure';
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route path='/payment' component={PaymentScreen}></Route>
           <Route path='/placeorder' component={PlaceOrderScreen}></Route>
           <Route path='/payment-success' component={PaymentSuccess}></Route>
+          <Route path='/payment-failure' component={PaymentFailure}></Route>
         </Container>
       </main>
       <Footer />
