@@ -29,3 +29,16 @@ export const orderDetailsReducer = (
       return state;
   }
 };
+
+export const myOrdersReducer = (state = { orders: [] }, action) => {
+  switch (action.type) {
+    case constants.MY_ORDERS_REQUEST:
+      return { loading: true };
+    case constants.MY_ORDERS_SUCCESS:
+      return { loading: false, success: true, orders: action.payload };
+    case constants.MY_ORDERS_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};

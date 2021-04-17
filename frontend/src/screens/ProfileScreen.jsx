@@ -1,15 +1,22 @@
+// -- LIBRARIES --
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Row, Col, Table, Button } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+
+// -- COMPONENTS --
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { ReadOnlyForm, ProfileUpdateForm } from '../components/Forms';
+
+// -- REDUX RELATED IMPORTS --
 import { getUserDetails, updateUserProfile } from '../actions/userActions';
+import { getMyOrders } from '../actions/orderActions';
 import store from '../store';
 import * as constants from '../constants';
 
 const ProfileScreen = ({ location, history }) => {
+  // hooks
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,9 +24,11 @@ const ProfileScreen = ({ location, history }) => {
   const [message, setMessage] = useState(null);
   const [msgVariant, setmsgVariant] = useState('danger');
   const [editBtnClicked, setEditBtnClicked] = useState(false);
+
+  // -- redux stores --
   const dispatch = useDispatch();
 
-  //get full user profile
+  // get user info
   const { loading, userDetails, error } = useSelector(
     (state) => state.userDetails
   );
@@ -31,9 +40,13 @@ const ProfileScreen = ({ location, history }) => {
   //get user update state
   const updateRes = useSelector((state) => state.userDetailsUpdate);
 
+  //get list of current user's orders: loading, success, orders, error
+  const myOrders = useSelector((state) => state.myOrders);
+
   useEffect(() => {
     if (!userDetails) {
       dispatch(getUserDetails());
+      dispatch(getMyOrders());
     } else {
       setName(userDetails.name);
       setEmail(userDetails.email);
@@ -49,6 +62,7 @@ const ProfileScreen = ({ location, history }) => {
     }, 3000);
   };
 
+  // function to validate entered fields
   const fieldsValidated = () => {
     if (password !== '') {
       if (confirmPass !== password) {
@@ -150,6 +164,56 @@ const ProfileScreen = ({ location, history }) => {
 
           <Col md={8}>
             <h3>Orders</h3>
+            {myOrders.loading ? (
+              <Loader />
+            ) : myOrders.error ? (
+              <Message variant='danger'>myOrders.error</Message>
+            ) : (
+              <Table striped bordered hover responsive className='table-sm'>
+                <thead>
+                  <tr>
+                    <th>NAME</th>
+                    <th>DATE</th>
+                    <th>PAID</th>
+                    <th>DELIVERED</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {myOrders.orders.map((order, index) => (
+                    <tr key={order._id}>
+                      <td>{order._id}</td>
+                      <td>
+                        {order.paidAt
+                          ? order.paidAt.substring(0, 10)
+                          : 'undefined'}
+                      </td>
+                      <td>{order.totalPrice}</td>
+                      <td>
+                        {order.isDelievered ? (
+                          order.deliveredAt ? (
+                            order.deliveredAt.substring(0, 10)
+                          ) : (
+                            'undefined'
+                          )
+                        ) : (
+                          <i
+                            className='fas fa-times'
+                            style={{ color: 'red' }}
+                          ></i>
+                        )}
+                      </td>
+                      <td>
+                        <LinkContainer to={`/order/${order._id}`}>
+                          <Button className='btn-sm' variant='light'>
+                            Details
+                          </Button>
+                        </LinkContainer>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
           </Col>
         </>
       )}

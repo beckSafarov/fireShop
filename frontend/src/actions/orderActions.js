@@ -46,3 +46,24 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
     });
   }
 };
+
+export const getMyOrders = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: constants.MY_ORDERS_REQUEST });
+
+    const data = await axios.get(`/api/orders/myorders`);
+
+    dispatch({
+      type: constants.MY_ORDERS_SUCCESS,
+      payload: data.data.orders,
+    });
+  } catch (err) {
+    dispatch({
+      type: constants.MY_ORDERS_FAIL,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};
