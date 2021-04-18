@@ -28,6 +28,7 @@ const userSchema = mongoose.Schema(
         _id: String,
         name: String,
         image: String,
+        price: String,
         qty: Number,
       },
     ],
@@ -53,6 +54,16 @@ userSchema.methods.addCartItem = function (item) {
 
 userSchema.methods.removeCartItem = function (passed) {
   this.cartItems = this.cartItems.filter((current) => current._id !== passed);
+};
+
+userSchema.methods.incrementCartItemQty = function (id, incValue) {
+  this.cartItems.forEach((current) => {
+    if (current._id === id) {
+      current.qty += incValue;
+    }
+  });
+
+  return this.cartItems;
 };
 
 userSchema.methods.updateCartItemQty = function (id, newQty) {

@@ -1,19 +1,38 @@
 import * as constants from '../constants.js';
 import axios from 'axios';
 
-export const addToCart = (product, qty) => (dispatch, getState) => {
-  dispatch({
-    type: constants.CART_ADD_ITEM,
-    payload: {
-      _id: product._id,
-      name: product.name,
-      image: product.image,
-      countInStock: product.countInStock,
-      qty,
-    },
-  });
+export const addToCart = (product, qty) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: constants.CART_REQUIRE_ADD_ITEM });
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+    };
+    product.qty = qty;
 
-  localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems));
+    const data = await axios.post(`/api/users/cartitems`, product, config);
+    // data.data.cartItems
+
+    dispatch({
+      type: constants.CART_ADD_ITEM,
+      payload: {
+        cartItems: data.data.cartItems,
+        message: data.data.message,
+      },
+    });
+
+    localStorage.setItem(
+      'cartItems',
+      JSON.stringify(getState().cart.cartItems)
+    );
+  } catch (err) {
+    dispatch({
+      type: constants.CART_ADD_ITEM_FAIL,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
 };
 
 export const qtyReset = (id, qty) => (dispatch, getState) => {

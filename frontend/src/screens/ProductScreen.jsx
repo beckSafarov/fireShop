@@ -1,6 +1,9 @@
+// -- CORE LIBRARIES --
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+
+// -- UI COMPONENTS --
 import {
   Row,
   Col,
@@ -13,44 +16,43 @@ import {
   Alert,
 } from 'react-bootstrap';
 import Rating from '../components/Rating';
-import { listProductDetails } from '../actions/productActions';
-import { addToCart } from '../actions/cartActions';
 import Loader from '../components/Loader';
 import CountOptions from '../components/CountOptions';
-import store from '../store.js';
 
-// console.log(store.getState().cart.cartItems.length);
-const initialCartLength = 0;
+// -- REDUX ACTIONS
+import { listProductDetails } from '../actions/productActions';
+import { addToCart } from '../actions/cartActions';
 
-const ProductScreen = ({ history, match }) => {
+const ProductScreen = ({ match }) => {
+  // -- hooks --
   const [qty, setQty] = useState(1);
   const [visibility, setVisibility] = useState(false); //alert message visibility
   const [alertMessage, setMessage] = useState(
-    //message displayed in the alert message
     `Item(s) has been added to your cart`
   );
+
+  // -- bringing redux stores --
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.productDetails);
-  const { cartItems } = useSelector((state) => state.cart);
+  const cart = useSelector((state) => state.cart);
   const { loading, error, product } = productDetails;
 
+  // -- get product details --
   useEffect(() => {
     dispatch(listProductDetails(match.params.id));
   }, [dispatch, match]);
 
+  // -- add items to cart --
   const addToCartHandler = async () => {
-    dispatch(addToCart(product, Number(qty)));
-    const currentItems = JSON.parse(localStorage.getItem('cartItems'));
+    await dispatch(addToCart(product, Number(qty)));
 
-    if (cartItems.length !== currentItems.length) {
-      setMessage(`${qty} ${product.name}(s) added to your cart`);
-    } else {
-      setMessage(`You have added ${qty} more ${product.name}(s) to your cart`);
+    if (cart.success === true) {
+      setMessage(cart.message);
+      setVisibility(true);
+      setTimeout(() => {
+        setVisibility(false);
+      }, 3000);
     }
-    setVisibility(true);
-    setTimeout(() => {
-      setVisibility(false);
-    }, 3000);
   };
 
   return (
@@ -59,10 +61,10 @@ const ProductScreen = ({ history, match }) => {
         <i className='fas fa-arrow-left fa-2x'></i>
       </Link>
       {visibility && <Alert variant='success'>{alertMessage}</Alert>}
-      {loading ? (
+      {loading || cart.loading ? (
         <Loader />
-      ) : error ? (
-        <Alert variant='danger'>{error}</Alert>
+      ) : error || cart.error ? (
+        <Alert variant='danger'>{error || cart.error}</Alert>
       ) : (
         <Row>
           <Col md={6}>

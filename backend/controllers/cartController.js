@@ -8,8 +8,8 @@ import { sendToken } from '../utils/sendToken.js';
 //@route POST /api/user/cartitems
 //@desc  Private, need authorization
 export const addCartItem = asyncHandler(async (req, res) => {
-  const { _id, name, image, qty } = req.body;
-  if (!_id || !name || !image || !qty) {
+  const { _id, name, image, price, qty } = req.body;
+  if (!_id || !name || !image || !price || !qty) {
     res.status(404);
     throw new Error(`Insufficient data`);
   }
@@ -21,10 +21,19 @@ export const addCartItem = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(req.user.id);
-  user.addCartItem(req.body);
-  user.save();
+  let message = `You added ${qty} ${name}(s) to your shopping cart`;
+  if (user.cartItems.find((current) => current._id === _id)) {
+    user.incrementCartItemQty(_id, qty);
+    user.save();
+    message = `You added ${qty} more ${name} to your shopping cart`;
+  } else {
+    user.addCartItem(req.body);
+    user.save();
+  }
+
   res.status(200).json({
     success: true,
+    message,
     cartItems: user.cartItems,
   });
 });
