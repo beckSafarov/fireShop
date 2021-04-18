@@ -23,6 +23,14 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    cartItems: [
+      {
+        _id: String,
+        name: String,
+        image: String,
+        qty: Number,
+      },
+    ],
   },
   {
     timeStamps: true,
@@ -38,6 +46,24 @@ userSchema.pre('save', function (next) {
   this.password = bcrypt.hashSync(this.password, 10);
   next();
 });
+
+userSchema.methods.addCartItem = function (item) {
+  this.cartItems.push(item);
+};
+
+userSchema.methods.removeCartItem = function (passed) {
+  this.cartItems = this.cartItems.filter((current) => current._id !== passed);
+};
+
+userSchema.methods.updateCartItemQty = function (id, newQty) {
+  this.cartItems.forEach((current) => {
+    if (current._id === id) {
+      current.qty = newQty;
+    }
+  });
+
+  return this.cartItems;
+};
 
 const User = mongoose.model('User', userSchema);
 export default User;

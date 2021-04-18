@@ -33,10 +33,6 @@ const ProfileScreen = ({ location, history }) => {
     (state) => state.userDetails
   );
 
-  if (error === 'Not authorized to access this route') {
-    history.push('/');
-  }
-
   //get user update state
   const updateRes = useSelector((state) => state.userDetailsUpdate);
 
@@ -47,6 +43,8 @@ const ProfileScreen = ({ location, history }) => {
     if (!userDetails) {
       dispatch(getUserDetails());
       dispatch(getMyOrders());
+    } else if (error === 'Not authorized to access this route') {
+      history.push('/');
     } else {
       setName(userDetails.name);
       setEmail(userDetails.email);
@@ -196,10 +194,12 @@ const ProfileScreen = ({ location, history }) => {
                             'undefined'
                           )
                         ) : (
-                          <i
-                            className='fas fa-times'
-                            style={{ color: 'red' }}
-                          ></i>
+                          <div className='text-center'>
+                            <i
+                              className='fas fa-times'
+                              style={{ color: 'red' }}
+                            ></i>
+                          </div>
                         )}
                       </td>
                       <td>
