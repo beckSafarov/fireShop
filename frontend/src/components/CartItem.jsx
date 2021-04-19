@@ -3,7 +3,7 @@ import CountOptions from './CountOptions';
 import { Link } from 'react-router-dom';
 import { qtyReset } from '../actions/cartActions';
 
-const CartItem = ({ item, prices, index, dispatch, removeFromCart }) => {
+const CartItem = ({ item, dispatch, removeFromCart }) => {
   return (
     <ListGroup.Item key={item._id}>
       <p> {item.name}</p>
@@ -14,7 +14,7 @@ const CartItem = ({ item, prices, index, dispatch, removeFromCart }) => {
         <Col md={3}>
           <Link to={`/product/${item._id}`}>{item.name}</Link>
         </Col>
-        <Col md={2}>${prices[index]}</Col>
+        <Col md={2}>${item.price}</Col>
         <Col md={2}>
           <Form.Control
             as='select'

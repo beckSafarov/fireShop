@@ -21,29 +21,62 @@ export const cartReducer = (
         loading: false,
         error: action.payload,
       };
-    case constants.CARD_ITEM_QUANTITY_RESET:
-      //{type: ..., payload: {id, qty}}
-      const cartAfterReset = state.cartItems.map((product) => {
-        if (product._id === action.payload._id) {
-          return { ...product, qty: action.payload.qty };
-        }
-        return product;
-      });
-
+    case constants.CART_REQUIRE_ALL_ITEMS:
       return {
         ...state,
-        cartItems: cartAfterReset,
+        loading: true,
       };
-    case constants.CART_REMOVE_ITEM:
-      //{type: ..., payload: {id}}
-
-      let cartAfterRemoval = state.cartItems.filter(
-        (product) => product._id !== action.payload._id
-      );
-
+    case constants.CART_REQUIRE_ALL_ITEMS_SUCCESS:
       return {
         ...state,
-        cartItems: cartAfterRemoval,
+        success: true,
+        loading: false,
+        cartItems: action.payload,
+      };
+    case constants.CART_REQUIRE_ALL_ITEMS_FAIL:
+      return {
+        ...state,
+        success: false,
+        loading: false,
+        error: action.payload,
+      };
+    case constants.CARD_ITEM_QUANTITY_RESET_REQUIRE:
+      return {
+        ...state,
+        loading: true,
+      };
+    case constants.CART_REQUIRE_ALL_ITEMS_SUCCESS:
+      return {
+        ...state,
+        success: true,
+        loading: false,
+        cartItems: action.payload,
+      };
+    case constants.CART_REQUIRE_ALL_ITEMS_FAIL:
+      return {
+        ...state,
+        success: false,
+        loading: false,
+        error: action.payload,
+      };
+    case constants.CART_REMOVE_ITEM_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case constants.CART_REMOVE_ITEM_SUCCESS:
+      return {
+        ...state,
+        success: true,
+        loading: false,
+        cartItems: action.payload,
+      };
+    case constants.CART_REMOVE_ITEM_FAILURE:
+      return {
+        ...state,
+        success: false,
+        loading: false,
+        error: action.payload,
       };
     case constants.CART_SAVE_SHIPPING_ADDRESS:
       //type: ..., payload: shippingAddress

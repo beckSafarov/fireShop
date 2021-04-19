@@ -60,7 +60,7 @@ const ProductScreen = ({ match }) => {
       <Link className='btn btn-light my-3 rounded' to='/'>
         <i className='fas fa-arrow-left fa-2x'></i>
       </Link>
-      {visibility && <Alert variant='success'>{alertMessage}</Alert>}
+      {visibility && <Alert variant='success'>{cart.message}</Alert>}
       {loading || cart.loading ? (
         <Loader />
       ) : error || cart.error ? (

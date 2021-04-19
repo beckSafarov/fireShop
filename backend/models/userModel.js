@@ -29,6 +29,7 @@ const userSchema = mongoose.Schema(
         name: String,
         image: String,
         price: String,
+        countInStock: Number,
         qty: Number,
       },
     ],
