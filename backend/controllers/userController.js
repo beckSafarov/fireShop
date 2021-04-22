@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import { sendToken } from '../utils/sendToken.js';
+import jwt from 'jsonwebtoken';
 
 //@desc  Get all current users
 //@route GET /api/users
@@ -99,7 +100,18 @@ export const removeUser = asyncHandler(async (req, res) => {
 //@route GET /api/users/me
 //@desc  Private
 export const me = asyncHandler(async (req, res, next) => {
-  res.status(200).json({ success: true, data: req.user });
+  if (req.cookies.token) {
+    try {
+      const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id);
+      res.status(200).json({ success: true, user });
+    } catch (err) {
+      err.success = false;
+      res.status(404).json(err);
+    }
+  } else {
+    res.status(200).json({ success: false, message: 'Not logged' });
+  }
 });
 
 //@desc  user logs out

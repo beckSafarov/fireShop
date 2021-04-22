@@ -14,8 +14,6 @@ export const login = (email, password) => async (dispatch) => {
     );
 
     dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.data });
-
-    localStorage.setItem('userInfo', JSON.stringify(data.data));
   } catch (err) {
     dispatch({
       type: constants.USER_LOGIN_FAILURE,
@@ -105,6 +103,24 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
   } catch (err) {
     dispatch({
       type: constants.USER_DETAILS_UPDATE_FAILURE,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};
+
+export const getMe = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: constants.USER_LOGIN_REQUEST });
+
+    const { data } = await axios.get('api/users/me');
+
+    dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.user });
+  } catch (err) {
+    dispatch({
+      type: constants.USER_LOGIN_FAILURE,
       payload:
         err.response && err.response.data.message
           ? err.response.data.message

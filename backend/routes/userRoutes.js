@@ -21,7 +21,7 @@ import { protect } from '../middleware/auth.js';
 router.route('/').get(getAllUsers).post(signUser).delete(removeUser);
 router.route('/login').post(authUser);
 router.route('/logout').put(logout);
-router.route('/me').get(protect, me);
+router.route('/me').get(me);
 router.route('/profile').get(protect, getOneUser).put(protect, updateUser);
 router
   .route('/cartItems')

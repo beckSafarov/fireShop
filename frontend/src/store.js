@@ -23,7 +23,6 @@ const reducer = combineReducers({
 
 //getting existing items from the LC
 let cartItems = JSON.parse(localStorage.getItem('cartItems'));
-let userInfo = JSON.parse(localStorage.getItem('userInfo'));
 let shippingAddress = JSON.parse(localStorage.getItem('shippingAddress'));
 let paymentMethod = JSON.parse(localStorage.getItem('paymentMethod'));
 
@@ -34,7 +33,7 @@ const initialState = {
     shippingAddress: shippingAddress || {},
     paymentMethod: paymentMethod || {},
   },
-  userLogin: { userInfo: userInfo || null },
+  userLogin: { userInfo: null },
 };
 
 //this is the list of middleware that are fired when an action is dispatched
