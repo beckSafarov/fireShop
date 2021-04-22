@@ -16,10 +16,15 @@ const CartScreen = ({ match, location, history }) => {
   //redux stores
   const allCartItems = useSelector((state) => state.cart); //loading, success, cartItems, error
   const { loading, success, cartItems, error } = allCartItems;
+  const { userInfo } = useSelector((state) => state.userLogin);
 
   //getting all cart items
   useEffect(() => {
-    dispatch(getAllCartItems());
+    if (!userInfo) {
+      history.push('/signin?redirect=cart');
+    } else {
+      dispatch(getAllCartItems());
+    }
   }, [dispatch]);
 
   const removeFromCart = async (id, name) => {
