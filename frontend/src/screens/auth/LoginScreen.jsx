@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import FormContainer from '../components/FormContainer';
-import { login } from '../actions/userActions';
+
+// internal components
+import Message from '../../components/Message';
+import Loader from '../../components/Loader';
+import FormContainer from '../../components/FormContainer';
+
+// redux actions
+import { login } from '../../actions/userActions';
 
 const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('');

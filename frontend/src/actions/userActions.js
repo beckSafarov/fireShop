@@ -115,7 +115,7 @@ export const getMe = () => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.USER_LOGIN_REQUEST });
 
-    const { data } = await axios.get('api/users/me');
+    const { data } = await axios.get('../api/users/me');
 
     dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.user });
   } catch (err) {

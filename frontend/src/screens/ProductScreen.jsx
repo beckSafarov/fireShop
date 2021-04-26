@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 // -- UI COMPONENTS --
 import {
@@ -23,7 +24,7 @@ import CountOptions from '../components/CountOptions';
 import { listProductDetails } from '../actions/productActions';
 import { addToCart } from '../actions/cartActions';
 
-const ProductScreen = ({ match }) => {
+const ProductScreen = ({ match, history }) => {
   // -- hooks --
   const [qty, setQty] = useState(1);
   const [visibility, setVisibility] = useState(false); //alert message visibility
@@ -36,15 +37,40 @@ const ProductScreen = ({ match }) => {
   const productDetails = useSelector((state) => state.productDetails);
   const cart = useSelector((state) => state.cart);
   const { loading, error, product } = productDetails;
+  const { userInfo } = useSelector((state) => state.userLogin);
+  const userLogged = userInfo ? true : false;
 
-  // -- get product details --
+  // url check
+  const addedToCart = new URLSearchParams(useLocation().search).has(
+    'addtocart'
+  );
+
+  // add to cart method
+  const addToCart = async () => {
+    await dispatch(addToCart(product, Number(qty)));
+
+    if (cart.success === true) {
+      setMessage(cart.message);
+      setVisibility(true);
+      setTimeout(() => {
+        setVisibility(false);
+      }, 3000);
+    }
+  };
+
   useEffect(() => {
-    dispatch(listProductDetails(match.params.id));
+    // -- get the current product details --
+    if (product._id !== match.params.id) {
+      dispatch(listProductDetails(match.params.id));
+    }
+    // if (userLogged & addedToCart) dispatch(addToCart(product, Number(qty)));
   }, [dispatch, match]);
 
-  // -- add items to cart --
+  // -- handle items added to cart --
   const addToCartHandler = async () => {
-    await dispatch(addToCart(product, Number(qty)));
+    userLogged
+      ? addToCart()
+      : history.push(`/signin?redirect=product/${product._id}`);
 
     if (cart.success === true) {
       setMessage(cart.message);

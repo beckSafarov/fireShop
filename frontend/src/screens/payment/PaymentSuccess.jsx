@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { getOrderDetails } from '../actions/orderActions';
+import { getOrderDetails } from '../../actions/orderActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, ListGroup, Card, Image, Container } from 'react-bootstrap';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
+import Loader from '../../components/Loader';
+import Message from '../../components/Message';
 
 const PaymentSuccess = () => {
   const dispatch = useDispatch();

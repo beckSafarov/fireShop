@@ -4,11 +4,15 @@ import { PayPalButton } from 'react-paypal-button-v2';
 import { Link } from 'react-router-dom';
 import { Button, Row, Col, ListGroup, Card, Image } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import CheckOutSteps from '../components/CheckOutSteps';
-import Loader from '../components/Loader';
-import { getProductPrices } from '../actions/productActions';
-import { createOrder } from '../actions/orderActions';
+
+// internal components
+import Message from '../../components/Message';
+import CheckOutSteps from '../../components/CheckOutSteps';
+import Loader from '../../components/Loader';
+
+// redux actions
+import { getProductPrices } from '../../actions/productActions';
+import { createOrder } from '../../actions/orderActions';
 
 const PlaceOrderScreen = ({ history }) => {
   // bringing redux stores

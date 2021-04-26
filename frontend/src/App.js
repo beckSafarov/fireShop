@@ -1,26 +1,30 @@
-// libraries
+// Methods
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMe } from './actions/userActions';
 
-// Screens and UI components
+// UI components
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { Container } from 'react-bootstrap';
+import Loader from './components/Loader';
+import Message from './components/Message';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+
+// Screens
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
 import CartScreen from './screens/CartScreen';
-import { Container } from 'react-bootstrap';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
+import LoginScreen from './screens/auth/LoginScreen';
+import RegisterScreen from './screens/auth/RegisterScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import ShippingScreen from './screens/ShippingScreen';
-import PaymentScreen from './screens/PaymentScreen';
-import PlaceOrderScreen from './screens/PlaceOrderScreen';
-import PaymentSuccess from './screens/PaymentSuccess';
-import PaymentFailure from './screens/PaymentFailure';
-import Loader from './components/Loader';
-import Message from './components/Message';
+import ShippingScreen from './screens/order/ShippingScreen';
+import PaymentScreen from './screens/payment/PaymentScreen';
+import PlaceOrderScreen from './screens/order/PlaceOrderScreen';
+import PaymentSuccess from './screens/payment/PaymentSuccess';
+import PaymentFailure from './screens/payment/PaymentFailure';
+
+//redux actions
+import { getMe } from './actions/userActions';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -39,7 +43,9 @@ const App = () => {
         {loading ? (
           <Loader />
         ) : error ? (
-          <Message variant='danger'>{error}</Message>
+          <Container>
+            <Message variant='danger'>{error}</Message>
+          </Container>
         ) : (
           <Container id='container'>
             <Route path='/' component={HomeScreen} exact />
