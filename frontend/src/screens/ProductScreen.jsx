@@ -40,39 +40,20 @@ const ProductScreen = ({ match, history }) => {
   const { userInfo } = useSelector((state) => state.userLogin);
   const userLogged = userInfo ? true : false;
 
-  // url check
-  const addedToCart = new URLSearchParams(useLocation().search).has(
-    'addtocart'
-  );
-
-  // add to cart method
-  const addToCart = async () => {
-    await dispatch(addToCart(product, Number(qty)));
-
-    if (cart.success === true) {
-      setMessage(cart.message);
-      setVisibility(true);
-      setTimeout(() => {
-        setVisibility(false);
-      }, 3000);
-    }
-  };
-
   useEffect(() => {
     // -- get the current product details --
     if (product._id !== match.params.id) {
       dispatch(listProductDetails(match.params.id));
     }
-    // if (userLogged & addedToCart) dispatch(addToCart(product, Number(qty)));
-  }, [dispatch, match]);
+  }, [dispatch, productDetails, match]);
 
   // -- handle items added to cart --
   const addToCartHandler = async () => {
     userLogged
-      ? addToCart()
+      ? await dispatch(addToCart(product, Number(qty)))
       : history.push(`/signin?redirect=product/${product._id}`);
 
-    if (cart.success === true) {
+    if (cart.success) {
       setMessage(cart.message);
       setVisibility(true);
       setTimeout(() => {

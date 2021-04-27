@@ -14,7 +14,7 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     //  if (!orderInfo) dispatch(getOrderDetails(id));
-    dispatch(getOrderDetails(id));
+    if (orderInfo.order.length === 0) dispatch(getOrderDetails(id));
   }, [dispatch]);
 
   return (

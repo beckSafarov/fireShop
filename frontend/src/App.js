@@ -2,6 +2,9 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+//redux actions
+import { getMe } from './actions/userActions';
+
 // UI components
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -16,15 +19,14 @@ import ProductScreen from './screens/ProductScreen';
 import CartScreen from './screens/CartScreen';
 import LoginScreen from './screens/auth/LoginScreen';
 import RegisterScreen from './screens/auth/RegisterScreen';
-import ProfileScreen from './screens/ProfileScreen';
+import ProfileScreen from './screens/user/ProfileScreen';
 import ShippingScreen from './screens/order/ShippingScreen';
 import PaymentScreen from './screens/payment/PaymentScreen';
 import PlaceOrderScreen from './screens/order/PlaceOrderScreen';
 import PaymentSuccess from './screens/payment/PaymentSuccess';
 import PaymentFailure from './screens/payment/PaymentFailure';
-
-//redux actions
-import { getMe } from './actions/userActions';
+import UserOrdersScreen from './screens/user/UserOrdersScreen';
+import OrderInfoScreen from './screens/user/OrderInfoScreen';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -42,21 +44,28 @@ const App = () => {
       <main className='py-3'>
         {loading ? (
           <Loader />
-        ) : error ? (
-          <Container>
-            <Message variant='danger'>{error}</Message>
-          </Container>
         ) : (
           <Container id='container'>
+            {/* main routes */}
             <Route path='/' component={HomeScreen} exact />
             <Route path='/product/:id' component={ProductScreen} />
             <Route path='/cart/:id?' component={CartScreen} />
-            <Route path='/signin/' component={LoginScreen} />
+
+            {/* auth routes */}
             <Route path='/register/' component={RegisterScreen} />
+            <Route path='/signin/' component={LoginScreen} />
+
+            {/* user related routes */}
             <Route path='/profile' component={ProfileScreen}></Route>
-            <Route path='/shipping' component={ShippingScreen}></Route>
-            <Route path='/payment' component={PaymentScreen}></Route>
+            <Route path='/myorders' component={UserOrdersScreen} exact></Route>
+            <Route path='/myorders/:id' component={OrderInfoScreen}></Route>
+
+            {/* place order related */}
             <Route path='/placeorder' component={PlaceOrderScreen}></Route>
+            <Route path='/shipping' component={ShippingScreen}></Route>
+
+            {/* payment routes */}
+            <Route path='/payment' component={PaymentScreen}></Route>
             <Route path='/payment-success' component={PaymentSuccess}></Route>
             <Route path='/payment-failure' component={PaymentFailure}></Route>
           </Container>

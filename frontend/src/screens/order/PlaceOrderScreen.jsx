@@ -69,7 +69,7 @@ const PlaceOrderScreen = ({ history }) => {
 
   useEffect(() => {
     // getting product prices
-    dispatch(getProductPrices(ids));
+    if (!prices || prices.length === 0) dispatch(getProductPrices(ids));
 
     const addPaypalScript = async () => {
       const { data: clientId } = await axios.get('/api/config/paypal');
@@ -143,7 +143,7 @@ const PlaceOrderScreen = ({ history }) => {
             </>
           )}
         </Message>
-      ) : prices ? (
+      ) : prices && userInfo ? (
         <>
           <CheckOutSteps step1 step2 step3 step4 />
           <Row>
