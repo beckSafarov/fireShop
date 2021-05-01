@@ -61,3 +61,16 @@ export const updateUserDetailsReducer = (state = {}, action) => {
       return state;
   }
 };
+
+export const ShaddressReducer = (state = {}, action) => {
+  switch (action.type) {
+    case constants.SHADDRESS_POST_REQUEST:
+      return { loading: true };
+    case constants.SHADDRESS_POST_SUCCESS:
+      return { loading: false, success: true, data: action.payload };
+    case constants.SHADDRESS_POST_FAILURE:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};

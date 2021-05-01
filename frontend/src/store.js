@@ -16,6 +16,7 @@ const reducer = combineReducers({
   userRegister: userReducers.userRegisterReducer,
   userDetails: userReducers.userDetailsReducer,
   userDetailsUpdate: userReducers.updateUserDetailsReducer,
+  shaddress: userReducers.ShaddressReducer,
   orderReducers: orderReducers.orderCreateReducer,
   orderDetails: orderReducers.orderDetailsReducer,
   myOrders: orderReducers.myOrdersReducer,

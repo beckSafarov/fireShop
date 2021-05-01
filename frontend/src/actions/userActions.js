@@ -5,7 +5,12 @@ export const login = (email, password) => async (dispatch) => {
   try {
     dispatch({ type: constants.USER_LOGIN_REQUEST });
 
-    const config = { headers: { 'Content-Type': 'application/json' } };
+    const cancelTokenSource = axios.CancelToken.source();
+
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+      cancelToken: cancelTokenSource.token,
+    };
 
     const { data } = await axios.post(
       '/api/users/login',
@@ -47,7 +52,12 @@ export const register = (name, email, password) => async (dispatch) => {
   try {
     dispatch({ type: constants.USER_REGISTER_REQUEST });
 
-    const config = { headers: { 'Content-Type': 'application/json' } };
+    const cancelTokenSource = axios.CancelToken.source();
+
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+      cancelToken: cancelTokenSource.token,
+    };
 
     const { data } = await axios.post(
       '/api/users',
@@ -93,8 +103,11 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.USER_DETAILS_UPDATE_REQUEST });
 
+    const cancelTokenSource = axios.CancelToken.source();
+
     const config = {
       headers: { 'Content-Type': 'application/json' },
+      cancelToken: cancelTokenSource.token,
     };
 
     await axios.put('/api/users/profile', user, config);
@@ -115,12 +128,48 @@ export const getMe = () => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.USER_LOGIN_REQUEST });
 
-    const { data } = await axios.get('../api/users/me');
+    const cancelTokenSource = axios.CancelToken.source();
+
+    const { data } = await axios.get('../api/users/me', {
+      cancelToken: cancelTokenSource.token,
+    });
 
     dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.user });
   } catch (err) {
     dispatch({
       type: constants.USER_LOGIN_FAILURE,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};
+
+export const createShaddress = (shaddress) => async (dispatch) => {
+  try {
+    dispatch({ type: constants.SHADDRESS_POST_REQUEST });
+
+    const cancelTokenSource = axios.CancelToken.source();
+
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+      cancelToken: cancelTokenSource.token,
+    };
+
+    const { data } = await axios.post(
+      '../api/users/shippingaddress',
+      shaddress,
+      config
+    );
+
+    dispatch({
+      type: constants.SHADDRESS_POST_SUCCESS,
+      payload: data.shippingAddress,
+    });
+  } catch (err) {
+    dispatch({
+      type: constants.SHADDRESS_POST_FAILURE,
       payload:
         err.response && err.response.data.message
           ? err.response.data.message

@@ -27,6 +27,8 @@ import PaymentSuccess from './screens/payment/PaymentSuccess';
 import PaymentFailure from './screens/payment/PaymentFailure';
 import UserOrdersScreen from './screens/user/UserOrdersScreen';
 import OrderInfoScreen from './screens/user/OrderInfoScreen';
+import ShaddressScreen from './screens/user/ShaddressScreen';
+import ShaddressScreen2 from './screens/user/ShaddressScreen2';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -57,6 +59,7 @@ const App = () => {
 
             {/* user related routes */}
             <Route path='/profile' component={ProfileScreen}></Route>
+            <Route path='/shaddress' component={ShaddressScreen}></Route>
             <Route path='/myorders' component={UserOrdersScreen} exact></Route>
             <Route path='/myorders/:id' component={OrderInfoScreen}></Route>
 

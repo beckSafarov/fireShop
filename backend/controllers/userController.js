@@ -124,3 +124,42 @@ export const logout = asyncHandler(async (req, res, next) => {
     message: 'Your are successfully logged out',
   });
 });
+
+//@desc  create a shipping address for the logged user
+//@route POST /api/users/shippingaddress
+//@desc  Private
+export const createShippingAddress = asyncHandler(async (req, res) => {
+  const { address, city, postalCode, country } = req.body;
+
+  if (!address || !city || !postalCode || !country) {
+    res.status(404);
+    throw new Error('Insufficient details!');
+  }
+
+  const user = req.user;
+  req.user.shippingAddress = req.body;
+  user.save();
+  res.status(200).json({
+    success: true,
+    shippingAddress: user.shippingAddress,
+  });
+});
+
+//@desc  update shipping address
+//@route PUT /api/users/shippingaddress
+//@desc  Private
+export const updateShippingAddress = asyncHandler(async (req, res) => {
+  const { address, city, postalCode, country } = req.body;
+
+  if (!address || !city || !postalCode || !country) {
+    res.status(404);
+    throw new Error('Insufficient details!');
+  }
+
+  req.user.shippingAddress = req.body;
+  req.user.save();
+
+  res
+    .status(200)
+    .json({ success: true, shippingAddress: req.user.shippingAddress });
+});

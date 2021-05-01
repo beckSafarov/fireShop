@@ -1,6 +1,9 @@
+:root {
+  --background: whitesmoke;
+}
+
 body {
-  background-color: whitesmoke;
-  /* background-color: white; */
+  background-color: var(--background);
 }
 
 main {
@@ -29,9 +32,9 @@ h1 {
 }
 
 .form-field {
-  border-width: 1px;
+  border: 1px solid #ccc;
   border-radius: 10px;
-  border-color: gainsboro;
+  outline: none;
 }
 
 .dark-blue-btn {
@@ -68,4 +71,14 @@ strong {
   padding: 10px;
   border: 2px solid red;
   color: red;
+}
+
+.bordered {
+  border: 1px solid #ccc;
+}
+
+.flex-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }

@@ -83,7 +83,7 @@ const UserOrdersScreen = ({ location, history }) => {
                       }
                     </td>
                     <td>
-                      <LinkContainer to={`/order/${order._id}`}>
+                      <LinkContainer to={`/myorders/${order._id}`}>
                         <Button className='btn-sm' variant='light'>
                           Details
                         </Button>

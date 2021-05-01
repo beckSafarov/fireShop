@@ -19,14 +19,8 @@ export const ReadOnlyForm = ({ name, email, onClick }) => {
         </Col>
       </Form.Group>
       <div className='py-3'>
-        <Button
-          type='button'
-          className='rounded-btn'
-          variant='info'
-          onClick={(e) => onClick(e)}
-          block
-        >
-          Edit
+        <Button type='button' variant='info' onClick={(e) => onClick(e)} block>
+          <i className='fas fa-pen'></i> Edit
         </Button>
       </div>
     </Form>
@@ -79,22 +73,142 @@ export const ProfileUpdateForm = ({ values, functions }) => {
             type='button'
             className='rounded-btn'
             variant='dark'
-            rounded
             onClick={(e) => cancelChanges(e)}
             block
           >
-            Cancel
+            <i className='fas fa-times'></i> Cancel
           </Button>
         </Col>
         <Col mb={2}>
+          <Button type='submit' className='rounded-btn' variant='success' block>
+            <i className='fas fa-save'></i> Save
+          </Button>
+        </Col>
+      </Row>
+    </Form>
+  );
+};
+
+export const ShaddressReadForm = ({ values, functions }) => {
+  const { address, city, postalCode, country } = values;
+  const { onClick } = functions;
+
+  return (
+    <Form>
+      <Form.Group as={Row} controlId='formPlainTextEmail'>
+        <Form.Label column sm='2'>
+          Address
+        </Form.Label>
+        <Col sm='10'>
+          <Form.Control
+            plaintext
+            readOnly
+            defaultValue={address === '' ? '-' : address}
+          />
+        </Col>
+        <Form.Label column sm='2'>
+          City
+        </Form.Label>
+        <Col sm='10'>
+          <Form.Control
+            plaintext
+            readOnly
+            defaultValue={city === '' ? '-' : city}
+          />
+        </Col>
+        <Form.Label column sm='2'>
+          Postal Code
+        </Form.Label>
+        <Col sm='10'>
+          <Form.Control
+            plaintext
+            readOnly
+            defaultValue={postalCode === '' ? '-' : postalCode}
+          />
+        </Col>
+        <Form.Label column sm='2'>
+          Country
+        </Form.Label>
+        <Col sm='10'>
+          <Form.Control
+            plaintext
+            readOnly
+            defaultValue={country === '' ? '-' : country}
+          />
+        </Col>
+      </Form.Group>
+      <div className='py-3'>
+        <Button type='button' variant='info' onClick={(e) => onClick(e)} block>
+          <i className='fas fa-pen'></i> Edit
+        </Button>
+      </div>
+    </Form>
+  );
+};
+
+export const ShaddressUpdateForm = ({ values, functions }) => {
+  const { address, city, postalCode, country } = values;
+  const { submitHandler, changesHandler, cancelChanges } = functions;
+
+  return (
+    <Form onSubmit={submitHandler}>
+      <Form.Group controlId='email'>
+        <Form.Label>Address</Form.Label>
+        <Form.Control
+          type='text'
+          name='address'
+          value={address}
+          className='form-field'
+          // onChange={(e) => setAddress(e.target.value)}
+          onChange={(e) => changesHandler(e)}
+          required
+        ></Form.Control>
+        <Form.Label>City</Form.Label>
+        <Form.Control
+          type='text'
+          name='city'
+          value={city}
+          className='form-field'
+          // onChange={(e) => setCity(e.target.value)}
+          onChange={(e) => changesHandler(e)}
+          required
+        ></Form.Control>
+        <Form.Label>Postal Code</Form.Label>
+        <Form.Control
+          type='number'
+          name='postalCode'
+          value={postalCode}
+          className='form-field'
+          // onChange={(e) => setPostalCode(e.target.value)}
+          onChange={(e) => changesHandler(e)}
+          required
+        ></Form.Control>
+        <Form.Label>Country</Form.Label>
+        <Form.Control
+          type='text'
+          name='country'
+          value={country}
+          className='form-field'
+          // onChange={(e) => setCountry(e.target.value)}
+          onChange={(e) => changesHandler(e)}
+          required
+        ></Form.Control>
+      </Form.Group>
+      <Row>
+        <Col mb={2}>
           <Button
-            type='submit'
+            type='button'
             className='rounded-btn'
-            variant='success'
-            rounded
+            variant='dark'
+            onClick={cancelChanges}
             block
           >
-            Save
+            <i className='fas fa-times'></i> Cancel
+          </Button>
+        </Col>
+        <Col mb={2}>
+          <Button type='submit' className='rounded-btn' variant='success' block>
+            <i className='fas fa-save'></i> Save
           </Button>
         </Col>
       </Row>

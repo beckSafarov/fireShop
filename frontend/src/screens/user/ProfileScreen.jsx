@@ -1,17 +1,18 @@
 // -- LIBRARIES --
 import { useState, useEffect } from 'react';
-import { Row, Col, Table, Button } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import { Row, Col, ListGroup } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 // -- COMPONENTS --
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
+import { LinkContainer } from 'react-router-bootstrap';
 import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms';
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile } from '../../actions/userActions';
-import { USER_INFO_UPDATE, USER_LOGIN_SUCCESS } from '../../constants';
+import { USER_INFO_UPDATE } from '../../constants';
+import AccountSideMenu from '../../components/AccountSideMenu';
 
 const ProfileScreen = ({ location, history }) => {
   // hooks
@@ -41,9 +42,7 @@ const ProfileScreen = ({ location, history }) => {
     if (userLogged) {
       setName(userLogin.userInfo.name);
       setEmail(userLogin.userInfo.email);
-    }
-
-    if (userNotLogged) history.push('/');
+    } else if (userNotLogged) history.push('/');
 
     if (updateRes.success) {
       setMessageHandler(
@@ -59,7 +58,9 @@ const ProfileScreen = ({ location, history }) => {
           isAdmin: userLogin.userInfo.isAdmin,
           _id: userLogin.userInfo._id,
           name: name !== '' ? name : userLogin.userInfo.name,
+          cartItems: userLogin.userInfo.cartItems,
           email: email !== '' ? email : userLogin.userInfo.email,
+          shaddress: userLogin.userInfo.shaddress,
         },
       });
     } else if (updateRes.error) {
@@ -141,7 +142,10 @@ const ProfileScreen = ({ location, history }) => {
         <Loader />
       ) : (
         <>
-          <Col md={4}>
+          <Col md={2} sm={2}>
+            <AccountSideMenu active={1} />
+          </Col>
+          <Col md={10} sm={10}>
             {userLogged && (
               <>
                 <h3>User Profile</h3>
