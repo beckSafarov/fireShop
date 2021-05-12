@@ -28,7 +28,6 @@ import PaymentFailure from './screens/payment/PaymentFailure';
 import UserOrdersScreen from './screens/user/UserOrdersScreen';
 import OrderInfoScreen from './screens/user/OrderInfoScreen';
 import ShaddressScreen from './screens/user/ShaddressScreen';
-import ShaddressScreen2 from './screens/user/ShaddressScreen2';
 
 const App = () => {
   const dispatch = useDispatch();

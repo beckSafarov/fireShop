@@ -1,22 +1,28 @@
+// -- LIBRARIES & METHODS
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Product from '../components/Product';
+import axios from 'axios';
+
+// -- UI COMPONENTS
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { Row, Col } from 'react-bootstrap';
+import Product from '../components/Product';
+
+// -- REDUX RELATED IMPORTS
 import { listProducts } from '../actions/productActions.js';
-import store from '../store.js';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
 
-  //bring the list of products from the current redux state
   const productList = useSelector((state) => state.productList);
-  const { loading, error, products } = productList; // bring up all the possible states
+  const { loading, error, products } = productList;
 
   useEffect(() => {
-    //dispatch server request for new products state
     dispatch(listProducts());
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
   }, [dispatch]);
 
   return (

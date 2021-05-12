@@ -79,26 +79,6 @@ export const register = (name, email, password) => async (dispatch) => {
   }
 };
 
-export const getUserDetails = () => async (dispatch, getState) => {
-  try {
-    dispatch({ type: constants.USER_DETAILS_REQUEST });
-    const response = await axios.get(`/api/users/profile`);
-
-    dispatch({
-      type: constants.USER_DETAILS_SUCCESS,
-      payload: response.data.data,
-    });
-  } catch (err) {
-    dispatch({
-      type: constants.USER_DETAILS_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
-  }
-};
-
 export const updateUserProfile = (user) => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.USER_DETAILS_UPDATE_REQUEST });

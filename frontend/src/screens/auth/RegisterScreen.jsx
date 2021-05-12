@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 // internal components
 import Message from '../../components/Message';
@@ -18,6 +19,7 @@ const RegisterScreen = ({ location, history }) => {
   const [confirmPass, setConfirmPass] = useState('');
   const [passError, setPassError] = useState('');
   const dispatch = useDispatch();
+
   const redirect = location.search ? location.search.split('=')[1] : '/';
   const from = new URLSearchParams(useLocation().search).get('from');
 
@@ -27,13 +29,22 @@ const RegisterScreen = ({ location, history }) => {
   );
 
   //get user login states
-  const { userInfo } = useSelector((state) => state.userLogin);
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+  const userLogged = userInfo ? true : false;
 
   useEffect(() => {
-    if (userInfo) {
-      history.push(`/${redirect}?from=${redirect}&redirect=${from}`);
+    if (userLogged) {
+      history.push(
+        redirect && from
+          ? `/${redirect}?from=${redirect}&redirect=${from}`
+          : '/'
+      );
     }
-  }, [history, userInfo, redirect]);
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
+  }, [history, userLogin, redirect]);
 
   const submitHandler = (e) => {
     e.preventDefault();

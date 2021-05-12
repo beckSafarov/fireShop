@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 // internal components
 import Message from '../../components/Message';
@@ -18,13 +19,19 @@ const LoginScreen = ({ location, history }) => {
   const redirect =
     new URLSearchParams(useLocation().search).get('redirect') || '/';
   const originUrl = new URLSearchParams(useLocation().search).get('from');
-  const { loading, error, userInfo } = useSelector((state) => state.userLogin);
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { loading, error, userInfo } = userLogin;
+  const userLogged = userInfo ? true : false;
 
   useEffect(() => {
-    if (userInfo) {
+    if (userLogged) {
       history.push(originUrl ? `${redirect}?redirect=${originUrl}` : redirect);
     }
-  }, [history, userInfo, redirect]);
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
+  }, [history, userLogin]);
 
   const submitHandler = (e) => {
     e.preventDefault();

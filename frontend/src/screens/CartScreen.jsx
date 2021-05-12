@@ -1,10 +1,16 @@
+// -- METHODS & LIBRARIES
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+
+// -- UI COMPONENTS
 import { Link } from 'react-router-dom';
 import { Row, Col, ListGroup, Button, Card } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import CartItem from '../components/CartItem';
+
+// -- REDUX RELATED IMPORTS --
 import { getAllCartItems, removeItem } from '../actions/cartActions';
 
 const CartScreen = ({ match, location, history }) => {
@@ -16,16 +22,21 @@ const CartScreen = ({ match, location, history }) => {
   //redux stores
   const allCartItems = useSelector((state) => state.cart); //loading, success, cartItems, error
   const { loading, success, cartItems, error } = allCartItems;
-  const { userInfo } = useSelector((state) => state.userLogin);
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+  const userLogged = userInfo ? true : false;
+  const userNotLogged =
+    userLogin.loading === false && userInfo === undefined ? true : false;
 
   //getting all cart items
   useEffect(() => {
-    if (!userInfo) {
+    if (userNotLogged) {
       history.push('/signin?redirect=cart');
-    } else {
-      dispatch(getAllCartItems());
-    }
-  }, [dispatch]);
+    } else if (userLogged) dispatch(getAllCartItems());
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
+  }, [dispatch, userLogin]);
 
   const removeFromCart = async (id, name) => {
     await dispatch(removeItem(id));

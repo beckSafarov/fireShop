@@ -1,6 +1,7 @@
 // Methods
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 // UI components
 import Message from '../../components/Message';
@@ -29,7 +30,10 @@ const UserOrdersScreen = ({ location, history }) => {
     if (userLogged && myOrders.orders.length === 0) dispatch(getMyOrders());
 
     if (userNotLogged) history.push('/');
-  }, [dispatch, history]);
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
+  }, [dispatch, userLogin, history]);
 
   return (
     <>

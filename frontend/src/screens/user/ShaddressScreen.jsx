@@ -1,6 +1,6 @@
 // -- LIBRARIES --
 import { useState, useEffect } from 'react';
-import { Row, Col, ListGroup } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
@@ -8,12 +8,10 @@ import axios from 'axios';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms';
-import { LinkContainer } from 'react-router-bootstrap';
 import AccountSideMenu from '../../components/AccountSideMenu';
 
 // -- REDUX RELATED IMPORTS --
-import { createShaddress, getMe } from '../../actions/userActions';
-import { USER_INFO_UPDATE } from '../../constants';
+import { createShaddress } from '../../actions/userActions';
 import store from '../../store';
 
 const ShaddressScreen = ({ history }) => {
@@ -142,7 +140,7 @@ const ShaddressScreen = ({ history }) => {
                 <AccountSideMenu active={2} />
               </Col>
               <Col md={10} sm={10}>
-                <h3 className='mb-4'>Shipping Address</h3>
+                <h3 className='mb-4'>Address</h3>
                 {message !== null && (
                   <Message variant={msgVariant}>{message}</Message>
                 )}

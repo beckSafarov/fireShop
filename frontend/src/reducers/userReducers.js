@@ -15,7 +15,10 @@ export const userLoginReducer = (state = {}, action) => {
     case constants.USER_LOGOUT_FAILURE:
       return { loading: false, error: action.payload };
     case constants.USER_INFO_UPDATE:
-      return { loading: false, userInfo: action.payload };
+      return {
+        loading: false,
+        userInfo: { ...state.userInfo, ...action.payload },
+      };
     default:
       return state;
   }
@@ -29,21 +32,6 @@ export const userRegisterReducer = (state = {}, action) => {
       return { loading: false, success: true };
     case constants.USER_REGISTER_FAILURE:
       return { loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
-
-export const userDetailsReducer = (state = {}, action) => {
-  switch (action.type) {
-    case constants.USER_DETAILS_REQUEST:
-      return { loading: true };
-    case constants.USER_DETAILS_SUCCESS:
-      return { loading: false, userDetails: action.payload };
-    case constants.USER_DETAILS_FAILURE:
-      return { loading: false, error: action.payload };
-    case constants.USER_DETAILS_CLEAR:
-      return {};
     default:
       return state;
   }

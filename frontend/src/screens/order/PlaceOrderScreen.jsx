@@ -82,14 +82,13 @@ const PlaceOrderScreen = ({ history }) => {
     };
 
     if (!orderCreated.success) {
-      if (!window.paypal) {
-        addPaypalScript();
-      } else {
-        setSdkReady(true);
-      }
+      !window.paypal ? addPaypalScript() : setSdkReady(true);
     } else if (orderCreated.success) {
       history.push(`/payment-success?id=${orderCreated.order._id}`);
     }
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
   }, [dispatch, orderCreated, history]);
 
   const successPaymentHandler = (paymentResult) => {

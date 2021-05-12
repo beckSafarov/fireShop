@@ -14,7 +14,6 @@ const reducer = combineReducers({
   cart: cartReducers.cartReducer,
   userLogin: userReducers.userLoginReducer,
   userRegister: userReducers.userRegisterReducer,
-  userDetails: userReducers.userDetailsReducer,
   userDetailsUpdate: userReducers.updateUserDetailsReducer,
   shaddress: userReducers.ShaddressReducer,
   orderReducers: orderReducers.orderCreateReducer,
@@ -23,14 +22,13 @@ const reducer = combineReducers({
 });
 
 //getting existing items from the LC
-let cartItems = JSON.parse(localStorage.getItem('cartItems'));
 let shippingAddress = JSON.parse(localStorage.getItem('shippingAddress'));
 let paymentMethod = JSON.parse(localStorage.getItem('paymentMethod'));
 
 //this is the preloader that gets loaded in the build time
 const initialState = {
   cart: {
-    cartItems: cartItems || [],
+    cartItems: [],
     shippingAddress: shippingAddress || {},
     paymentMethod: paymentMethod || {},
   },

@@ -12,7 +12,7 @@ const AccountSideMenu = ({ active }) => {
       </LinkContainer>
       <LinkContainer to='/shaddress'>
         <ListGroup.Item active={active === 2} action={active !== 2}>
-          Shipping Address
+          Address
         </ListGroup.Item>
       </LinkContainer>
       <LinkContainer to='/myreviews'>

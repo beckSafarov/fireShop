@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, ListGroup, Card, Image, Container } from 'react-bootstrap';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
+import axios from 'axios';
 
 const PaymentSuccess = () => {
   const dispatch = useDispatch();
@@ -15,7 +16,10 @@ const PaymentSuccess = () => {
   useEffect(() => {
     //  if (!orderInfo) dispatch(getOrderDetails(id));
     if (orderInfo.order.length === 0) dispatch(getOrderDetails(id));
-  }, [dispatch]);
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
+  }, [dispatch, orderInfo]);
 
   return (
     <>

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 // -- UI COMPONENTS --
 import {
@@ -10,9 +10,7 @@ import {
   Col,
   Image,
   ListGroup,
-  Card,
   Button,
-  ListGroupItem,
   Form,
   Alert,
 } from 'react-bootstrap';
@@ -27,7 +25,7 @@ import { addToCart } from '../actions/cartActions';
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
   const [qty, setQty] = useState(1);
-  const [visibility, setVisibility] = useState(false); //alert message visibility
+  const [visibility, setVisibility] = useState(false);
   const [alertMessage, setMessage] = useState(
     `Item(s) has been added to your cart`
   );
@@ -41,10 +39,12 @@ const ProductScreen = ({ match, history }) => {
   const userLogged = userInfo ? true : false;
 
   useEffect(() => {
-    // -- get the current product details --
     if (product._id !== match.params.id) {
       dispatch(listProductDetails(match.params.id));
     }
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
   }, [dispatch, productDetails, match]);
 
   // -- handle items added to cart --

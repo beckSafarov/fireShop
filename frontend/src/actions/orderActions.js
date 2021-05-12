@@ -1,12 +1,15 @@
 import * as constants from '../constants.js';
 import axios from 'axios';
 
-export const createOrder = (order) => async (dispatch, getState) => {
+export const createOrder = (order) => async (dispatch) => {
   try {
     dispatch({ type: constants.ORDER_CREATE_REQUEST });
 
+    const cancelTokenSource = axios.CancelToken.source();
+
     const config = {
       headers: { 'Content-Type': 'application/json' },
+      cancelToken: cancelTokenSource.token,
     };
 
     const data = await axios.post('/api/orders/addorder', order, config);
@@ -26,11 +29,15 @@ export const createOrder = (order) => async (dispatch, getState) => {
   }
 };
 
-export const getOrderDetails = (id) => async (dispatch, getState) => {
+export const getOrderDetails = (id) => async (dispatch) => {
   try {
     dispatch({ type: constants.ORDER_DETAILS_REQUEST });
 
-    const data = await axios.get(`/api/orders/${id}`);
+    const cancelTokenSource = axios.CancelToken.source();
+
+    const data = await axios.get(`/api/orders/${id}`, {
+      cancelToken: cancelTokenSource.token,
+    });
 
     dispatch({
       type: constants.ORDER_DETAILS_SUCCESS,
@@ -47,11 +54,14 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
   }
 };
 
-export const getMyOrders = () => async (dispatch, getState) => {
+export const getMyOrders = () => async (dispatch) => {
   try {
     dispatch({ type: constants.MY_ORDERS_REQUEST });
+    const cancelTokenSource = axios.CancelToken.source();
 
-    const data = await axios.get(`/api/orders/myorders`);
+    const data = await axios.get(`/api/orders/myorders`, {
+      cancelToken: cancelTokenSource.token,
+    });
 
     dispatch({
       type: constants.MY_ORDERS_SUCCESS,

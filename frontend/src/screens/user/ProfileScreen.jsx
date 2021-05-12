@@ -1,7 +1,8 @@
 // -- LIBRARIES --
 import { useState, useEffect } from 'react';
-import { Row, Col, ListGroup } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 // -- COMPONENTS --
 import Message from '../../components/Message';
@@ -13,8 +14,9 @@ import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms';
 import { updateUserProfile } from '../../actions/userActions';
 import { USER_INFO_UPDATE } from '../../constants';
 import AccountSideMenu from '../../components/AccountSideMenu';
+import store from '../../store';
 
-const ProfileScreen = ({ location, history }) => {
+const ProfileScreen = ({ history }) => {
   // hooks
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -29,44 +31,33 @@ const ProfileScreen = ({ location, history }) => {
 
   // get user info
   const userLogin = useSelector((state) => state.userLogin);
-  const userLogged = userLogin.userInfo ? true : false;
+  const { userInfo } = userLogin;
+  const userLogged = userInfo ? true : false;
   const userNotLogged =
-    userLogin.loading === false && userLogin.userInfo === undefined
-      ? true
-      : false;
+    userLogin.loading === false && userInfo === undefined ? true : false;
 
   //get user update state
   const updateRes = useSelector((state) => state.userDetailsUpdate);
 
   useEffect(() => {
     if (userLogged) {
-      setName(userLogin.userInfo.name);
-      setEmail(userLogin.userInfo.email);
+      resetValues();
     } else if (userNotLogged) history.push('/');
 
-    if (updateRes.success) {
-      setMessageHandler(
-        'success',
-        'Updated successfully. Refresh to see the changes'
-      );
-      setEditBtnClicked(false);
-      setName(name !== '' ? name : userLogin.userInfo.name);
-      setEmail(email !== '' ? email : userLogin.userInfo.email);
-      dispatch({
-        type: USER_INFO_UPDATE,
-        payload: {
-          isAdmin: userLogin.userInfo.isAdmin,
-          _id: userLogin.userInfo._id,
-          name: name !== '' ? name : userLogin.userInfo.name,
-          cartItems: userLogin.userInfo.cartItems,
-          email: email !== '' ? email : userLogin.userInfo.email,
-          shaddress: userLogin.userInfo.shaddress,
-        },
-      });
-    } else if (updateRes.error) {
-      setMessageHandler('danger', updateRes.error);
-    }
-  }, [history, userLogged, userLogin, updateRes, dispatch]);
+    if (updateRes.success) resetValues(name, email);
+
+    store.subscribe(() => {
+      if (store.getState().userDetailsUpdate.success) {
+        setMessageHandler(
+          'success',
+          'Updated successfully. Refresh to see the changes'
+        );
+      }
+    });
+
+    const cancelTokenSource = axios.CancelToken.source();
+    return () => cancelTokenSource.cancel();
+  }, [history, userLogin, updateRes]);
 
   //function to make alerts disappear after some time
   const setMessageHandler = (variant, msg) => {
@@ -74,7 +65,17 @@ const ProfileScreen = ({ location, history }) => {
     setmsgVariant(variant);
     setTimeout(function () {
       setMessage(null);
-    }, 3000);
+    }, 2000);
+  };
+
+  const resetValues = (
+    passedName = userInfo.name,
+    passedEmail = userInfo.email
+  ) => {
+    setName(passedName);
+    setEmail(passedEmail);
+    setPassword('');
+    setConfirmPass('');
   };
 
   // function to validate entered fields
@@ -109,21 +110,15 @@ const ProfileScreen = ({ location, history }) => {
         })
       );
     }
-  };
-
-  const cancelChanges = (e) => {
-    e.preventDefault();
-    setName(userLogin.userInfo.name);
-    setEmail(userLogin.userInfo.email);
-    setPassword('');
-    setConfirmPass('');
     setEditBtnClicked(false);
   };
 
-  const editBtnHandler = (e) => {
-    e.preventDefault();
-    setEditBtnClicked(true);
+  const cancelChanges = () => {
+    resetValues();
+    setEditBtnClicked(false);
   };
+
+  const editBtnHandler = () => setEditBtnClicked(true);
 
   //preparing props to pass to profile update form
   const values = { name, email };
@@ -149,9 +144,7 @@ const ProfileScreen = ({ location, history }) => {
             {userLogged && (
               <>
                 <h3>User Profile</h3>
-                {message !== null && (
-                  <Message variant={msgVariant}>{message}</Message>
-                )}
+                {message && <Message variant={msgVariant}>{message}</Message>}
                 {!editBtnClicked ? (
                   <ReadOnlyForm
                     name={name}
