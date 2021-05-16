@@ -89,47 +89,47 @@ export const ProfileUpdateForm = ({ values, functions }) => {
   );
 };
 
-export const ShaddressReadForm = ({ values, functions }) => {
+export const ShaddressReadForm = ({ values, functions, profile = true }) => {
   const { address, city, postalCode, country } = values;
-  const { onClick } = functions;
+  const { onClick, onProceed } = functions;
 
   return (
     <Form>
       <Form.Group as={Row} controlId='formPlainTextEmail'>
-        <Form.Label column sm='2'>
+        <Form.Label column sm='4'>
           Address
         </Form.Label>
-        <Col sm='10'>
+        <Col sm='8'>
           <Form.Control
             plaintext
             readOnly
             defaultValue={address === '' ? '-' : address}
           />
         </Col>
-        <Form.Label column sm='2'>
+        <Form.Label column sm='4'>
           City
         </Form.Label>
-        <Col sm='10'>
+        <Col sm='8'>
           <Form.Control
             plaintext
             readOnly
             defaultValue={city === '' ? '-' : city}
           />
         </Col>
-        <Form.Label column sm='2'>
+        <Form.Label column sm='4'>
           Postal Code
         </Form.Label>
-        <Col sm='10'>
+        <Col sm='8'>
           <Form.Control
             plaintext
             readOnly
             defaultValue={postalCode === '' ? '-' : postalCode}
           />
         </Col>
-        <Form.Label column sm='2'>
+        <Form.Label column sm='4'>
           Country
         </Form.Label>
-        <Col sm='10'>
+        <Col sm='8'>
           <Form.Control
             plaintext
             readOnly
@@ -137,16 +137,51 @@ export const ShaddressReadForm = ({ values, functions }) => {
           />
         </Col>
       </Form.Group>
-      <div className='py-3'>
-        <Button type='button' variant='info' onClick={(e) => onClick(e)} block>
-          <i className='fas fa-pen'></i> Edit
-        </Button>
-      </div>
+      {profile ? (
+        <div className='py-3'>
+          <Button
+            type='button'
+            variant='info'
+            onClick={(e) => onClick(e)}
+            block
+          >
+            <i className='fas fa-pen'></i> Edit
+          </Button>
+        </div>
+      ) : (
+        <Row className='py-3'>
+          <Col mb={2}>
+            <Button
+              type='button'
+              variant='info'
+              onClick={(e) => onClick(e)}
+              block
+            >
+              <i className='fas fa-pen'></i> Edit
+            </Button>
+          </Col>
+          <Col mb={2}>
+            <Button
+              type='button'
+              variant='success'
+              onClick={(e) => onProceed()}
+              block
+            >
+              <i className='fas fa-check-circle'></i> Confirm
+            </Button>
+          </Col>
+        </Row>
+      )}
     </Form>
   );
 };
 
-export const ShaddressUpdateForm = ({ values, functions }) => {
+export const ShaddressUpdateForm = ({
+  values,
+  functions,
+  profile = true,
+  addressExists = true,
+}) => {
   const { address, city, postalCode, country } = values;
   const { submitHandler, changesHandler, cancelChanges } = functions;
 
@@ -194,24 +229,37 @@ export const ShaddressUpdateForm = ({ values, functions }) => {
           required
         ></Form.Control>
       </Form.Group>
-      <Row>
-        <Col mb={2}>
-          <Button
-            type='button'
-            className='rounded-btn'
-            variant='dark'
-            onClick={cancelChanges}
-            block
-          >
-            <i className='fas fa-times'></i> Cancel
+      {addressExists ? (
+        <Row>
+          <Col mb={2}>
+            <Button
+              type='button'
+              className='rounded-btn'
+              variant='dark'
+              onClick={cancelChanges}
+              block
+            >
+              <i className='fas fa-times'></i> Cancel
+            </Button>
+          </Col>
+          <Col mb={2}>
+            <Button
+              type='submit'
+              className='rounded-btn'
+              variant='success'
+              block
+            >
+              <i className='fas fa-save'></i> Save
+            </Button>
+          </Col>
+        </Row>
+      ) : (
+        <div className='py-4'>
+          <Button className='rounded-btn' type='submit' variant='success' block>
+            Continue
           </Button>
-        </Col>
-        <Col mb={2}>
-          <Button type='submit' className='rounded-btn' variant='success' block>
-            <i className='fas fa-save'></i> Save
-          </Button>
-        </Col>
-      </Row>
+        </div>
+      )}
     </Form>
   );
 };

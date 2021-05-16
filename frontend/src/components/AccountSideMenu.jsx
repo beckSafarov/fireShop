@@ -10,7 +10,7 @@ const AccountSideMenu = ({ active }) => {
           Profile
         </ListGroup.Item>
       </LinkContainer>
-      <LinkContainer to='/shaddress'>
+      <LinkContainer to='/address'>
         <ListGroup.Item active={active === 2} action={active !== 2}>
           Address
         </ListGroup.Item>

@@ -113,14 +113,6 @@ export const removeItem = (id) => async (dispatch) => {
   }
 };
 
-export const saveShippingAddress = (data) => (dispatch) => {
-  dispatch({ type: constants.CART_SAVE_SHIPPING_ADDRESS, payload: data });
-
-  const cancelTokenSource = axios.CancelToken.source();
-
-  localStorage.setItem('shippingAddress', JSON.stringify(data));
-};
-
 export const savePaymentMethod = (data) => (dispatch) => {
   dispatch({
     type: constants.CART_SAVE_PAYMENT_METHOD,

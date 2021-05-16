@@ -58,7 +58,7 @@ const App = () => {
 
             {/* user related routes */}
             <Route path='/profile' component={ProfileScreen}></Route>
-            <Route path='/shaddress' component={ShaddressScreen}></Route>
+            <Route path='/address' component={ShaddressScreen}></Route>
             <Route path='/myorders' component={UserOrdersScreen} exact></Route>
             <Route path='/myorders/:id' component={OrderInfoScreen}></Route>
 

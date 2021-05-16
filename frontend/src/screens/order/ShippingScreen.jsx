@@ -1,80 +1,137 @@
-import { useState } from 'react';
-import { Form, CloseButtonProps, Button } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import FormContainer from '../../components/FormContainer';
 import CheckOutSteps from '../../components/CheckOutSteps';
-import { saveShippingAddress } from '../../actions/cartActions';
+import { createShaddress } from '../../actions/userActions';
+import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms';
+import Loader from '../../components/Loader';
+import Message from '../../components/Message';
+import store from '../../store';
 
 const ShippingScreen = ({ history, location, match }) => {
-  const { shippingAddress } = useSelector((state) => state.cart);
-  const { cartItems } = useSelector((state) => state.cart);
-  if (cartItems.length === 0) {
-    history.push('/');
-  }
-  const [address, setAddress] = useState(shippingAddress.address);
-  const [city, setCity] = useState(shippingAddress.city);
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
-  const [country, setCountry] = useState(shippingAddress.country);
-  const dispatch = useDispatch();
-  const redirect = location.search ? location.search.split('=')[1] : '/';
+  // hooks
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('');
+  const [addressExists, setAddressExists] = useState(false);
+  const [editBtnClicked, setEditBtnClicked] = useState(false);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    dispatch(saveShippingAddress({ address, city, postalCode, country }));
+  // bringing redux stores
+  const cart = useSelector((state) => state.cart);
+  const { cartItems } = cart;
+  const shaddress = useSelector((state) => state.shaddress);
+  const userLogin = useSelector((state) => state.userLogin);
+  const userInfo = userLogin.userInfo;
+  const userLogged = userInfo ? true : false;
+  const userNotLogged =
+    userLogin.loading === false && userInfo === undefined ? true : false;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (userNotLogged || (cart.success && cartItems.length === 0))
+      history.push('/');
+
+    if (userLogged && userInfo.shippingAddress) resetValues();
+
+    store.subscribe(() => {
+      if (store.getState().shaddress.success) {
+        window.location.reload();
+      }
+    });
+  }, [cartItems, userLogin, history, editBtnClicked]);
+
+  const confirmHandler = () => {
     history.push('/payment');
   };
+
+  const createAddressHandler = () => {
+    dispatch(
+      createShaddress({
+        address,
+        city,
+        postalCode,
+        country,
+      })
+    );
+  };
+
+  const resetValues = () => {
+    setAddress(userInfo.shippingAddress.address);
+    setCity(userInfo.shippingAddress.city);
+    setPostalCode(userInfo.shippingAddress.postalCode);
+    setCountry(userInfo.shippingAddress.country);
+    setAddressExists(true);
+  };
+
+  const changesHandler = (event) => {
+    event.persist();
+    switch (event.target.name) {
+      case 'address':
+        setAddress(event.target.value);
+        break;
+      case 'city':
+        setCity(event.target.value);
+        break;
+      case 'postalCode':
+        setPostalCode(event.target.value);
+        break;
+      case 'country':
+        setCountry(event.target.value);
+        break;
+    }
+  };
+
+  const editBtnHandler = () => setEditBtnClicked(!editBtnClicked);
+
+  const cancelChanges = () => {
+    resetValues();
+    setEditBtnClicked(!editBtnClicked);
+  };
+
+  const values = {
+    address,
+    city,
+    postalCode,
+    country,
+  };
+
+  const functionsForReadForm = {
+    onClick: editBtnHandler,
+    onProceed: confirmHandler,
+  };
+
+  const functionsForUpdateForm = {
+    submitHandler: createAddressHandler,
+    changesHandler,
+    cancelChanges,
+  };
+
   return (
     <FormContainer>
       <CheckOutSteps step1 step2 />
-      <h1>Shipping</h1>
-      <Form onSubmit={submitHandler} className='py-3'>
-        <Form.Group controlId='address'>
-          <Form.Label>Address</Form.Label>
-          <Form.Control
-            type='text'
-            className='form-field'
-            onChange={(e) => setAddress(e.target.value)}
-            value={address || ''}
-            required
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group controlId='city'>
-          <Form.Label>City</Form.Label>
-          <Form.Control
-            type='text'
-            className='form-field'
-            onChange={(e) => setCity(e.target.value)}
-            value={city || ''}
-            required
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group controlId='postal code'>
-          <Form.Label>Postal Code</Form.Label>
-          <Form.Control
-            type='number'
-            className='form-field'
-            onChange={(e) => setPostalCode(e.target.value)}
-            value={postalCode || ''}
-            required
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group controlId='country'>
-          <Form.Label>Country</Form.Label>
-          <Form.Control
-            type='text'
-            className='form-field'
-            onChange={(e) => setCountry(e.target.value)}
-            value={country || ''}
-            required
-          ></Form.Control>
-        </Form.Group>
-
-        <div className='py-4'>
-          <Button className='rounded-btn' type='submit' variant='success' block>
-            Continue
-          </Button>
-        </div>
-      </Form>
+      <h1>Shipping Address</h1>
+      {userLogin.loading || shaddress.loading ? (
+        <Loader />
+      ) : shaddress.error ? (
+        <Message variant='danger'>{shaddress.error}</Message>
+      ) : !editBtnClicked && userInfo && addressExists ? (
+        <ShaddressReadForm
+          values={values}
+          functions={functionsForReadForm}
+          profile={false}
+        />
+      ) : editBtnClicked === true || !addressExists ? (
+        <ShaddressUpdateForm
+          values={values}
+          functions={functionsForUpdateForm}
+          profile={false}
+          addressExists={addressExists}
+        />
+      ) : (
+        <Message variant='danger'>Something went wrong</Message>
+      )}
     </FormContainer>
   );
 };
