@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Auth from '../../helpers/auth.js';
 
 // internal components
 import Message from '../../components/Message';
@@ -12,26 +13,28 @@ import FormContainer from '../../components/FormContainer';
 // redux actions
 import { login } from '../../actions/userActions';
 
-const LoginScreen = ({ location, history }) => {
+const LoginScreen = ({ history }) => {
+  // redux stuff
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.userLogin);
+
+  // hooks
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch();
+
+  // variables
+  const auth = Auth();
+  const cancelTokenSource = axios.CancelToken.source();
   const redirect =
     new URLSearchParams(useLocation().search).get('redirect') || '/';
   const originUrl = new URLSearchParams(useLocation().search).get('from');
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const { loading, error, userInfo } = userLogin;
-  const userLogged = userInfo ? true : false;
-
   useEffect(() => {
-    if (userLogged) {
+    if (auth.logged)
       history.push(originUrl ? `${redirect}?redirect=${originUrl}` : redirect);
-    }
 
-    const cancelTokenSource = axios.CancelToken.source();
     return () => cancelTokenSource.cancel();
-  }, [history, userLogin]);
+  }, [history, auth.logged]);
 
   const submitHandler = (e) => {
     e.preventDefault();

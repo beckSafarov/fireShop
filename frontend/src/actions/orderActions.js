@@ -19,13 +19,17 @@ export const createOrder = (order) => async (dispatch) => {
       payload: data.data.createdOrder,
     });
   } catch (err) {
-    dispatch({
-      type: constants.ORDER_CREATE_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -44,13 +48,17 @@ export const getOrderDetails = (id) => async (dispatch) => {
       payload: data.data.order,
     });
   } catch (err) {
-    dispatch({
-      type: constants.ORDER_DETAILS_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -68,12 +76,16 @@ export const getMyOrders = () => async (dispatch) => {
       payload: data.data.orders,
     });
   } catch (err) {
-    dispatch({
-      type: constants.MY_ORDERS_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };

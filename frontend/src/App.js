@@ -28,6 +28,7 @@ import PaymentFailure from './screens/payment/PaymentFailure';
 import UserOrdersScreen from './screens/user/UserOrdersScreen';
 import OrderInfoScreen from './screens/user/OrderInfoScreen';
 import ShaddressScreen from './screens/user/ShaddressScreen';
+import testScreen from './screens/testScreen';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -70,6 +71,9 @@ const App = () => {
             <Route path='/payment' component={PaymentScreen}></Route>
             <Route path='/payment-success' component={PaymentSuccess}></Route>
             <Route path='/payment-failure' component={PaymentFailure}></Route>
+
+            {/*test route */}
+            <Route path='/test' component={testScreen}></Route>
           </Container>
         )}
       </main>

@@ -23,13 +23,17 @@ export const addToCart = (product, qty) => async (dispatch, getState) => {
       },
     });
   } catch (err) {
-    dispatch({
-      type: constants.CART_ADD_ITEM_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -48,13 +52,17 @@ export const getAllCartItems = () => async (dispatch) => {
       payload: data.data.cartItems,
     });
   } catch (err) {
-    dispatch({
-      type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -78,13 +86,17 @@ export const qtyReset = (id, qty) => async (dispatch, getState) => {
       payload: serverResponse.data.cartItems,
     });
   } catch (err) {
-    dispatch({
-      type: constants.CARD_ITEM_QUANTITY_RESET_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -103,13 +115,21 @@ export const removeItem = (id) => async (dispatch) => {
       payload: serverResponse.data.cartItems,
     });
   } catch (err) {
-    dispatch({
-      type: constants.CART_REMOVE_ITEM_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      if (axios.isCancel(err)) {
+        console.log('axios request cancelled');
+      } else {
+        dispatch({
+          type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+          payload:
+            err.response && err.response.data.message
+              ? err.response.data.message
+              : err.message,
+        });
+      }
+    }
   }
 };
 

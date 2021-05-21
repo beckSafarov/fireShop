@@ -20,13 +20,17 @@ export const login = (email, password) => async (dispatch) => {
 
     dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.data });
   } catch (err) {
-    dispatch({
-      type: constants.USER_LOGIN_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -38,13 +42,17 @@ export const logout = () => async (dispatch) => {
     localStorage.removeItem('userInfo');
     dispatch({ type: constants.USER_DETAILS_CLEAR });
   } catch (err) {
-    dispatch({
-      type: constants.USER_LOGOUT_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -69,13 +77,17 @@ export const register = (name, email, password) => async (dispatch) => {
     dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.data });
     localStorage.setItem('userInfo', JSON.stringify(data.data));
   } catch (err) {
-    dispatch({
-      type: constants.USER_REGISTER_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -94,13 +106,17 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 
     dispatch({ type: constants.USER_DETAILS_UPDATE_SUCCESS });
   } catch (err) {
-    dispatch({
-      type: constants.USER_DETAILS_UPDATE_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -116,13 +132,17 @@ export const getMe = () => async (dispatch, getState) => {
 
     dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.user });
   } catch (err) {
-    dispatch({
-      type: constants.USER_LOGIN_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -148,12 +168,16 @@ export const createShaddress = (shaddress) => async (dispatch) => {
       payload: data.shippingAddress,
     });
   } catch (err) {
-    dispatch({
-      type: constants.SHADDRESS_POST_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };

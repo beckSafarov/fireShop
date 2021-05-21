@@ -12,13 +12,17 @@ export const listProducts = () => async (dispatch) => {
 
     dispatch({ type: constants.PRODUCT_LIST_SUCCESS, payload: data });
   } catch (err) {
-    dispatch({
-      type: constants.PRODUCT_LIST_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -34,13 +38,17 @@ export const listProductDetails = (id) => async (dispatch) => {
 
     dispatch({ type: constants.PRODUCT_DETAILS_SUCCESS, payload: data.data });
   } catch (err) {
-    dispatch({
-      type: constants.PRODUCT_DETAILS_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
 
@@ -62,12 +70,16 @@ export const getProductPrices = (ids) => async (dispatch) => {
       payload: response.data.prices,
     });
   } catch (err) {
-    dispatch({
-      type: constants.PRODUCT_PRICE_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    });
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
   }
 };
