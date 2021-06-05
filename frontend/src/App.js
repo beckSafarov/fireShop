@@ -21,6 +21,7 @@ import LoginScreen from './screens/auth/LoginScreen';
 import RegisterScreen from './screens/auth/RegisterScreen';
 import ProfileScreen from './screens/user/ProfileScreen';
 import ShippingScreen from './screens/order/ShippingScreen';
+
 import PaymentScreen from './screens/payment/PaymentScreen';
 import PlaceOrderScreen from './screens/order/PlaceOrderScreen';
 import PaymentSuccess from './screens/payment/PaymentSuccess';
@@ -32,9 +33,7 @@ import testScreen from './screens/testScreen';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { loading, success, userInfo, error } = useSelector(
-    (state) => state.userLogin
-  );
+  const { loading, userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
     if (!userInfo) dispatch(getMe());

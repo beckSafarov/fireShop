@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Auth from '../helpers/auth';
+import Calculations from '../helpers/calculations';
 
 // -- UI COMPONENTS
 import { Link } from 'react-router-dom';
@@ -14,32 +16,31 @@ import CartItem from '../components/CartItem';
 import { getAllCartItems, removeItem } from '../actions/cartActions';
 
 const CartScreen = ({ match, location, history }) => {
-  const productId = match.params.id;
-  const dispatch = useDispatch();
   const [visibility, setVisibility] = useState(false);
   const [alertMessage, setMessage] = useState('');
 
-  //redux stores
-  const allCartItems = useSelector((state) => state.cart); //loading, success, cartItems, error
-  const { loading, success, cartItems, error } = allCartItems;
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
-  const userLogged = userInfo ? true : false;
-  const userNotLogged =
-    userLogin.loading === false && userInfo === undefined ? true : false;
+  //redux related
+  const dispatch = useDispatch();
+  const allCartItems = useSelector((state) => state.cart);
+  const { loading: cartItemsLoading, success, error } = allCartItems;
+
+  // variables
+  const auth = Auth();
+  const cartItems = auth.userInfo ? auth.userInfo.cartItems : [];
+  const calcs = Calculations(cartItems);
+  let loading = cartItemsLoading || auth.loading;
 
   //getting all cart items
   useEffect(() => {
-    if (userNotLogged) {
+    if (auth.logged === false) {
       history.push('/signin?redirect=cart');
-    } else if (userLogged) dispatch(getAllCartItems());
+    } else if (auth.logged) dispatch(getAllCartItems());
 
-    const cancelTokenSource = axios.CancelToken.source();
-    return () => cancelTokenSource.cancel();
-  }, [dispatch, userLogin]);
+    return () => axios.CancelToken.source().cancel();
+  }, [auth.logged, dispatch]);
 
   const removeFromCart = async (id, name) => {
-    await dispatch(removeItem(id));
+    dispatch(removeItem(id));
     if (success) {
       setMessage(`${name} has been removed from your cart`);
       setVisibility(true);
@@ -47,18 +48,6 @@ const CartScreen = ({ match, location, history }) => {
         setVisibility(false);
       }, 2000);
     }
-  };
-
-  // overall number of products in the cart
-  const getSubtotal = () => {
-    return cartItems.reduce((total, current) => (total += current.qty), 0);
-  };
-
-  const getTotalPrice = () => {
-    return cartItems.reduce(
-      (total, product) => (total += product.qty * product.price),
-      0
-    );
   };
 
   const checkoutHandler = () => {
@@ -94,12 +83,12 @@ const CartScreen = ({ match, location, history }) => {
             )}
           </Col>
           <Col md={4}>
-            {getSubtotal() !== 0 && (
+            {calcs.subtotal !== 0 && (
               <Card>
                 <ListGroup variant='flush'>
                   <ListGroup.Item>
-                    <h4>Subtotal: {getSubtotal()} item(s)</h4>
-                    <h4>Total price: ${getTotalPrice()} </h4>
+                    <h4>Subtotal: {calcs.subtotal} item(s)</h4>
+                    <h4>Total price: ${calcs.totalPrice} </h4>
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Button

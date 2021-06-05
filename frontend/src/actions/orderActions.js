@@ -23,7 +23,7 @@ export const createOrder = (order) => async (dispatch) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.ORDER_CREATE_FAIL,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -52,7 +52,7 @@ export const getOrderDetails = (id) => async (dispatch) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.ORDER_DETAILS_FAIL,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -80,7 +80,7 @@ export const getMyOrders = () => async (dispatch) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.MY_ORDERS_FAIL,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message

@@ -16,7 +16,9 @@ import { login } from '../../actions/userActions';
 const LoginScreen = ({ history }) => {
   // redux stuff
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.userLogin);
+  const { loading: loginLoading, error } = useSelector(
+    (state) => state.userLogin
+  );
 
   // hooks
   const [email, setEmail] = useState('');
@@ -28,6 +30,7 @@ const LoginScreen = ({ history }) => {
   const redirect =
     new URLSearchParams(useLocation().search).get('redirect') || '/';
   const originUrl = new URLSearchParams(useLocation().search).get('from');
+  let loading = loginLoading || auth.loading;
 
   useEffect(() => {
     if (auth.logged)

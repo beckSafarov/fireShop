@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Auth from '../../helpers/auth';
 
 // -- COMPONENTS --
 import Message from '../../components/Message';
@@ -12,7 +13,6 @@ import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms';
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile } from '../../actions/userActions';
-import { USER_INFO_UPDATE } from '../../constants';
 import AccountSideMenu from '../../components/AccountSideMenu';
 import store from '../../store';
 
@@ -28,44 +28,44 @@ const ProfileScreen = ({ history }) => {
 
   // -- redux stores --
   const dispatch = useDispatch();
-
-  // get user info
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
-  const userLogged = userInfo ? true : false;
-  const userNotLogged =
-    userLogin.loading === false && userInfo === undefined ? true : false;
-
-  //get user update state
   const updateRes = useSelector((state) => state.userDetailsUpdate);
 
+  // variables
+  const auth = Auth();
+  const userInfo = auth.userInfo;
+  const cancelTokenSource = axios.CancelToken.source();
+  let loading = auth.loading || updateRes.loading;
+
   useEffect(() => {
-    if (userLogged) {
+    if (auth.logged) {
       resetValues();
-    } else if (userNotLogged) history.push('/');
+    } else if (auth.logged === false) history.push('/');
 
-    if (updateRes.success) resetValues(name, email);
-
-    store.subscribe(() => {
-      if (store.getState().userDetailsUpdate.success) {
-        setMessageHandler(
-          'success',
-          'Updated successfully. Refresh to see the changes'
-        );
+    const unsubscribe = store.subscribe(() => {
+      let update = store.getState().userDetailsUpdate;
+      if (update.success) {
+        setMessageHandler('success', 'Updated successfully');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else if (update.error) {
+        setMessageHandler('danger', update.error, 3);
       }
     });
 
-    const cancelTokenSource = axios.CancelToken.source();
-    return () => cancelTokenSource.cancel();
-  }, [history, userLogin, updateRes]);
+    return () => {
+      cancelTokenSource.cancel();
+      unsubscribe();
+    };
+  }, [history, auth.logged, updateRes.success]);
 
   //function to make alerts disappear after some time
-  const setMessageHandler = (variant, msg) => {
+  const setMessageHandler = (variant = 'danger', msg, seconds = 2) => {
     setMessage(msg);
     setmsgVariant(variant);
     setTimeout(function () {
       setMessage(null);
-    }, 2000);
+    }, seconds * 1000);
   };
 
   const resetValues = (
@@ -133,7 +133,7 @@ const ProfileScreen = ({ history }) => {
 
   return (
     <Row>
-      {userLogin.loading || updateRes.loading ? (
+      {loading ? (
         <Loader />
       ) : (
         <>
@@ -141,7 +141,7 @@ const ProfileScreen = ({ history }) => {
             <AccountSideMenu active={1} />
           </Col>
           <Col md={10} sm={10}>
-            {userLogged && (
+            {auth.logged && (
               <>
                 <h3>User Profile</h3>
                 {message && <Message variant={msgVariant}>{message}</Message>}

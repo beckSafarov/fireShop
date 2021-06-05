@@ -4,39 +4,23 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 // UI components
-import {
-  Button,
-  Row,
-  Col,
-  ListGroup,
-  Card,
-  Image,
-  Container,
-} from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
+import Calculations from '../../helpers/calculations';
 
 //Redux actions
 import { getOrderDetails } from '../../actions/orderActions';
 
 const OrderInfoScreen = ({ match, history }) => {
   const dispatch = useDispatch();
-
-  // -- redux stores --
   const orderInfo = useSelector((state) => state.orderDetails);
   const { order } = orderInfo;
+  const calcs = Calculations(order.orderItems || []);
 
   useEffect(() => {
     dispatch(getOrderDetails(match.params.id));
   }, [dispatch, match]);
-
-  const pricesTotal = () => {
-    let total = 0;
-    order.orderItems.forEach((product, index) => {
-      total += product.price * product.qty;
-    });
-    return total;
-  };
 
   return (
     <Container>
@@ -101,7 +85,7 @@ const OrderInfoScreen = ({ match, history }) => {
                 <ListGroup.Item key={3}>
                   <Row>
                     <Col> Cumulative Products' Price </Col>
-                    <Col>+ {pricesTotal()}</Col>
+                    <Col>+ {calcs.productsPrice}</Col>
                   </Row>
                   <Row>
                     <Col> Shipping </Col>

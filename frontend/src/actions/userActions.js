@@ -24,7 +24,7 @@ export const login = (email, password) => async (dispatch) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.USER_LOGIN_FAILURE,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -46,7 +46,7 @@ export const logout = () => async (dispatch) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.USER_LOGOUT_FAILURE,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -81,7 +81,7 @@ export const register = (name, email, password) => async (dispatch) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.USER_REGISTER_FAILURE,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -91,7 +91,7 @@ export const register = (name, email, password) => async (dispatch) => {
   }
 };
 
-export const updateUserProfile = (user) => async (dispatch, getState) => {
+export const updateUserProfile = (user) => async (dispatch) => {
   try {
     dispatch({ type: constants.USER_DETAILS_UPDATE_REQUEST });
 
@@ -110,7 +110,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.USER_DETAILS_UPDATE_FAILURE,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -136,7 +136,7 @@ export const getMe = () => async (dispatch, getState) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.USER_LOGIN_FAILURE,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -172,7 +172,7 @@ export const createShaddress = (shaddress) => async (dispatch) => {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.SHADDRESS_POST_FAILURE,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message

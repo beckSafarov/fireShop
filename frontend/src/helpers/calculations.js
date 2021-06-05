@@ -1,11 +1,16 @@
-export const placeOrderCalculations = (cartItems = []) => {
+const Calculations = (cartItems = []) => {
   if (cartItems.length === 0)
     return {
+      subtotal: 0,
       productsPrice: 0,
       shippingPrice: 0,
       taxPrice: 0,
       totalPrice: 0,
     };
+
+  // number of items, i.e. subtotal
+  const subtotal = () =>
+    cartItems.reduce((total, current) => (total += current.qty), 0);
 
   // add decimals function
   const addDecimals = (num) => {
@@ -30,9 +35,12 @@ export const placeOrderCalculations = (cartItems = []) => {
   );
 
   return {
+    subtotal: subtotal(),
     productsPrice,
     shippingPrice,
     taxPrice,
     totalPrice,
   };
 };
+
+export default Calculations;

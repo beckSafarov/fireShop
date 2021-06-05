@@ -45,6 +45,26 @@ export const cartReducer = (
         ...state,
         loading: true,
       };
+    case constants.CARD_ITEM_QUANTITY_RESET_SUCCESS:
+      // state.cartItems.forEach((item, index)=>{
+      //   if(item._id === action.payload._id){
+
+      //   }
+      // })
+      console.log(action.payload);
+      return {
+        ...state,
+        success: true,
+        loading: false,
+        cartItems: [...state.cartItems, action.payload],
+      };
+    case constants.CARD_ITEM_QUANTITY_RESET_FAIL:
+      return {
+        ...state,
+        success: false,
+        loading: false,
+        error: action.payload,
+      };
     case constants.CART_REQUIRE_ALL_ITEMS_SUCCESS:
       return {
         ...state,

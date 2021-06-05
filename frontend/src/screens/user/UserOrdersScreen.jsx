@@ -1,44 +1,40 @@
 // Methods
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Auth from '../../helpers/auth';
 
 // UI components
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import { Row, Col, Table, Container, Button } from 'react-bootstrap';
+import { Table, Container, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 // -- REDUX RELATED IMPORTS --
 import { getMyOrders } from '../../actions/orderActions';
-import store from '../../store';
 
 const UserOrdersScreen = ({ location, history }) => {
   // -- redux stores --
   const dispatch = useDispatch();
-
   const myOrders = useSelector((state) => state.myOrders);
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const userLogged = userLogin.userInfo ? true : false;
-  const userNotLogged =
-    userLogin.loading === false && userLogin.userInfo === undefined
-      ? true
-      : false;
+  // variables
+  const auth = Auth();
+  const cancelTokenSource = axios.CancelToken.source();
+  let loading = myOrders.loading || auth.loading;
 
   useEffect(() => {
-    if (userLogged && myOrders.orders.length === 0) dispatch(getMyOrders());
+    if (auth.logged) dispatch(getMyOrders());
 
-    if (userNotLogged) history.push('/');
+    if (auth.logged === false) history.push('/');
 
-    const cancelTokenSource = axios.CancelToken.source();
     return () => cancelTokenSource.cancel();
-  }, [dispatch, userLogin, history]);
+  }, [dispatch, auth.logged, history]);
 
   return (
     <>
       <Container>
-        {myOrders.loading ? (
+        {loading ? (
           <Loader />
         ) : myOrders.error ? (
           <Message variant='danger'>{myOrders.error}</Message>

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Auth from '../helpers/auth';
 
 // -- UI COMPONENTS --
 import {
@@ -21,6 +22,7 @@ import CountOptions from '../components/CountOptions';
 // -- REDUX ACTIONS
 import { listProductDetails } from '../actions/productActions';
 import { addToCart } from '../actions/cartActions';
+import store from '../store';
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
@@ -29,37 +31,65 @@ const ProductScreen = ({ match, history }) => {
   const [alertMessage, setMessage] = useState(
     `Item(s) has been added to your cart`
   );
+  const [productAdded, setProductAdded] = useState(false);
+  const [flashMsg, setFlashMsg] = useState({
+    display: false,
+    msg: null,
+    variant: 'danger',
+  });
 
   // -- bringing redux stores --
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.productDetails);
   const cart = useSelector((state) => state.cart);
-  const { loading, error, product } = productDetails;
-  const { userInfo } = useSelector((state) => state.userLogin);
-  const userLogged = userInfo ? true : false;
+  const {
+    loading: productDetailsLoading,
+    error: productDetailsError,
+    product,
+  } = productDetails;
+
+  // variables
+  const auth = Auth();
+  const cancelTokenSource = axios.CancelToken.source();
+  let loading = productDetailsLoading || auth.loading || cart.loading;
+  let error = productDetailsError || cart.error;
 
   useEffect(() => {
     if (product._id !== match.params.id) {
       dispatch(listProductDetails(match.params.id));
     }
 
-    const cancelTokenSource = axios.CancelToken.source();
-    return () => cancelTokenSource.cancel();
-  }, [dispatch, productDetails, match]);
+    const unsubscribe = store.subscribe(() => {
+      let cart = store.getState().cart;
+      if (productAdded) {
+        if (cart.success) {
+          flashMessage(cart.message, 'success');
+        } else if (cart.error) {
+          flashMessage(cart.error);
+        }
+        setProductAdded(false);
+      }
+    });
+
+    return () => {
+      cancelTokenSource.cancel();
+      unsubscribe();
+    };
+  }, [dispatch, product._id, match, productAdded, error]);
 
   // -- handle items added to cart --
   const addToCartHandler = async () => {
-    userLogged
-      ? await dispatch(addToCart(product, Number(qty)))
+    auth.logged
+      ? dispatch(addToCart(product, Number(qty)))
       : history.push(`/signin?redirect=product/${product._id}`);
+    setProductAdded(true);
+  };
 
-    if (cart.success) {
-      setMessage(cart.message);
-      setVisibility(true);
-      setTimeout(() => {
-        setVisibility(false);
-      }, 3000);
-    }
+  const flashMessage = (msg, variant = 'danger', seconds = 3) => {
+    setFlashMsg({ display: true, msg, variant });
+    setTimeout(() => {
+      setFlashMsg({ display: false });
+    }, seconds * 1000);
   };
 
   return (
@@ -67,11 +97,13 @@ const ProductScreen = ({ match, history }) => {
       <Link className='btn btn-light my-3 rounded' to='/'>
         <i className='fas fa-arrow-left fa-2x'></i>
       </Link>
-      {visibility && <Alert variant='success'>{cart.message}</Alert>}
-      {loading || cart.loading ? (
+      {flashMsg.display && (
+        <Alert variant={flashMsg.variant}>{flashMsg.msg}</Alert>
+      )}
+      {loading ? (
         <Loader />
-      ) : error || cart.error ? (
-        <Alert variant='danger'>{error || cart.error}</Alert>
+      ) : error ? (
+        <Alert variant='danger'>{error}</Alert>
       ) : (
         <Row>
           <Col md={6}>

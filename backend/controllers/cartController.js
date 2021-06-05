@@ -3,6 +3,7 @@ import User from '../models/userModel.js';
 import Product from '../models/productModel.js';
 import bcrypt from 'bcryptjs';
 import { sendToken } from '../utils/sendToken.js';
+import { checkForValues } from '../helpers/helpers.js';
 
 //@desc  add a cart item
 //@route POST /api/users/cartitems
@@ -29,7 +30,7 @@ export const addCartItem = asyncHandler(async (req, res) => {
   let message = `You added ${qty} ${name}(s) to your shopping cart`;
   if (user.cartItems.find((current) => current._id === _id)) {
     req.body.countInStock = product.countInStock;
-    user.incrementCartItemQty(_id, qty);
+    user.incOrDecCartItemQty(_id, qty);
     product.countInStock -= qty;
     await user.save();
     await product.save();
@@ -53,13 +54,12 @@ export const addCartItem = asyncHandler(async (req, res) => {
 //@route PUT /api/users/cartitems
 //@desc  Private, need authorization
 export const updateCartItemQty = asyncHandler(async (req, res) => {
-  const { _id, qty } = req.body;
-  if (!_id || !qty) {
+  const { _id, qty: newQty } = req.body;
+  if (!_id || !newQty) {
     res.status(404);
     throw new Error(`Insufficient data`);
   }
-
-  const userList = await User.find({ 'cartItems._id': _id });
+  const userList = await User.find({ _id: req.user.id, 'cartItems._id': _id });
   const user = userList.pop();
   if (!user) {
     res.status(404);
@@ -68,11 +68,27 @@ export const updateCartItemQty = asyncHandler(async (req, res) => {
     );
   }
 
-  const updatedCartItems = await user.updateCartItemQty(_id, qty);
+  // change the cart items countInStock from the db
+  const { qty: oldQty } = user.cartItems.find((product) => product._id === _id);
+  const item = await Product.findById(_id);
+
+  if (item.countInStock >= newQty) {
+    item.countInStock -= newQty - oldQty;
+    await item.save();
+  } else {
+    res.status(400);
+    throw new Error(
+      `Not enough products in stock. In stock: ${item.countInStock}, you require: ${newQty}`
+    );
+  }
+
+  // update user's cart item's quantity
+  const newCartItems = await user.updateCartItemQty(_id, newQty);
   await user.save();
+
   res.status(200).json({
     success: true,
-    cartItems: updatedCartItems,
+    cartItems: newCartItems,
   });
 });
 

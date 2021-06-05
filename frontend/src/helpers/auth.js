@@ -14,19 +14,13 @@ const Auth = () => {
     if (userNotLogged) setLogged(false);
 
     if (userLogged) setLogged(true);
-  }, [userLogin]);
+  }, [userNotLogged, userLogged]);
 
-  if (logged !== null) {
-    return {
-      loading: false,
-      logged: logged,
-      userInfo: userInfo,
-    };
-  } else {
-    return {
-      loading: true,
-    };
-  }
+  return {
+    loading: logged !== null ? false : true,
+    logged,
+    userInfo,
+  };
 };
 
 export default Auth;

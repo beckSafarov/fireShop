@@ -22,12 +22,20 @@ export const addToCart = (product, qty) => async (dispatch, getState) => {
         message: data.data.message,
       },
     });
+
+    const newCartItems = getState().cart.cartItems;
+    dispatch({
+      type: constants.USER_INFO_UPDATE,
+      payload: {
+        cartItems: newCartItems,
+      },
+    });
   } catch (err) {
     if (axios.isCancel(err)) {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.CART_ADD_ITEM_FAIL,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -82,15 +90,23 @@ export const qtyReset = (id, qty) => async (dispatch, getState) => {
     const serverResponse = await axios.put(`api/users/cartItems`, body, config);
 
     dispatch({
-      type: constants.CART_REQUIRE_ALL_ITEMS_SUCCESS,
+      type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
       payload: serverResponse.data.cartItems,
     });
+
+    // const newCartItems = getState().cart.cartItems;
+    // dispatch({
+    //   type: constants.USER_INFO_UPDATE,
+    //   payload: {
+    //     cartItems: newCartItems,
+    //   },
+    // });
   } catch (err) {
     if (axios.isCancel(err)) {
       console.log('axios request cancelled');
     } else {
       dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
+        type: constants.CARD_ITEM_QUANTITY_RESET_FAIL,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message
@@ -100,7 +116,7 @@ export const qtyReset = (id, qty) => async (dispatch, getState) => {
   }
 };
 
-export const removeItem = (id) => async (dispatch) => {
+export const removeItem = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.CART_REMOVE_ITEM_REQUEST });
 
@@ -113,6 +129,14 @@ export const removeItem = (id) => async (dispatch) => {
     dispatch({
       type: constants.CART_REQUIRE_ALL_ITEMS_SUCCESS,
       payload: serverResponse.data.cartItems,
+    });
+
+    const newCartItems = getState().cart.cartItems;
+    dispatch({
+      type: constants.USER_INFO_UPDATE,
+      payload: {
+        cartItems: newCartItems,
+      },
     });
   } catch (err) {
     if (axios.isCancel(err)) {

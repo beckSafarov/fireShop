@@ -63,10 +63,10 @@ userSchema.methods.removeCartItem = function (passed) {
   this.cartItems = this.cartItems.filter((current) => current._id !== passed);
 };
 
-userSchema.methods.incrementCartItemQty = function (id, incValue) {
+userSchema.methods.incOrDecCartItemQty = function (id, incValue, add = true) {
   this.cartItems.forEach((current) => {
     if (current._id === id) {
-      current.qty += incValue;
+      add ? (current.qty += incValue) : (current.qty -= incValue);
     }
   });
 

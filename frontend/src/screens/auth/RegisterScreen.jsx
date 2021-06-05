@@ -1,40 +1,42 @@
+// libraries & methods
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Auth from '../../helpers/auth';
 
-// internal components
+// UI components
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import FormContainer from '../../components/FormContainer';
+import { Form, Button, Row, Col } from 'react-bootstrap';
 
 // redux actions
 import { register } from '../../actions/userActions';
 
 const RegisterScreen = ({ location, history }) => {
+  // hooks
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
-  const [passError, setPassError] = useState('');
+  const [passError, setPassError] = useState(null);
+  // redux related stuff
   const dispatch = useDispatch();
-
-  const redirect = location.search ? location.search.split('=')[1] : '/';
-  const from = new URLSearchParams(useLocation().search).get('from');
-
-  //get user register states
-  const { loading, success, error } = useSelector(
+  const { loading: regLoading, error: regError } = useSelector(
     (state) => state.userRegister
   );
 
-  //get user login states
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
-  const userLogged = userInfo ? true : false;
+  // variables
+  const auth = Auth();
+  const cancelTokenSource = axios.CancelToken.source();
+  const redirect = location.search ? location.search.split('=')[1] : '/';
+  const from = new URLSearchParams(useLocation().search).get('from');
+  let error = regError || passError;
+  let loading = regLoading || auth.loading;
 
   useEffect(() => {
-    if (userLogged) {
+    if (auth.logged) {
       history.push(
         redirect && from
           ? `/${redirect}?from=${redirect}&redirect=${from}`
@@ -42,9 +44,8 @@ const RegisterScreen = ({ location, history }) => {
       );
     }
 
-    const cancelTokenSource = axios.CancelToken.source();
     return () => cancelTokenSource.cancel();
-  }, [history, userLogin, redirect]);
+  }, [history, auth]);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -61,7 +62,6 @@ const RegisterScreen = ({ location, history }) => {
     <FormContainer>
       <h1>Sign in</h1>
       {error && <Message variant='danger'>{error}</Message>}
-      {passError !== '' && <Message variant='danger'>{passError}</Message>}
       {loading && <Loader />}
       <Form onSubmit={submitHandler}>
         <Form.Group controlId='email'>

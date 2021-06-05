@@ -1,8 +1,9 @@
-// -- LIBRARIES --
+// -- LIBRARIES/METHODS --
 import { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Auth from '../../helpers/auth';
 
 // -- COMPONENTS --
 import Message from '../../components/Message';
@@ -11,15 +12,15 @@ import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms';
 import AccountSideMenu from '../../components/AccountSideMenu';
 
 // -- REDUX RELATED IMPORTS --
-import { createShaddress } from '../../actions/userActions';
+import { updateUserProfile } from '../../actions/userActions';
 import store from '../../store';
 
 const ShaddressScreen = ({ history }) => {
   //hooks
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-  const [country, setCountry] = useState('');
+  const [address, setAddress] = useState(null);
+  const [city, setCity] = useState(null);
+  const [postalCode, setPostalCode] = useState(null);
+  const [country, setCountry] = useState(null);
   const [message, setMessage] = useState(null);
   const [msgVariant, setmsgVariant] = useState('danger');
   const [editBtnClicked, setEditBtnClicked] = useState(false);
@@ -27,28 +28,33 @@ const ShaddressScreen = ({ history }) => {
 
   // Redux stores
   const dispatch = useDispatch();
-  const shaddress = useSelector((state) => state.shaddress);
-  const userLogin = useSelector((state) => state.userLogin);
-  const userInfo = userLogin.userInfo;
-  const userLogged = userInfo ? true : false;
-  const userNotLogged =
-    userLogin.loading === false && userInfo === undefined ? true : false;
+
+  // variables
+  const auth = Auth();
+  const userInfo = auth.userInfo;
+  const addressUpdate = useSelector((state) => state.userDetailsUpdate);
+  const cancelTokenSource = axios.CancelToken.source();
+  let loading = addressUpdate.loading || !valuesAssigned;
 
   useEffect(() => {
-    if (userLogged) {
+    if (auth.logged) {
       resetValues();
-    } else if (userNotLogged) history.push('/');
+    } else if (auth.logged === false) history.push('/');
 
-    if (shaddress.success) resetValues();
-
-    store.subscribe(() => {
-      if (store.getState().shaddress.success) {
+    const unsubscribe = store.subscribe(() => {
+      let update = store.getState().userDetailsUpdate;
+      if (update.success) {
         setMessageHandler('Updated successfully', 'success');
+      } else if (update.error) {
+        setMessageHandler(update.error, 'danger');
       }
     });
-    const cancelTokenSource = axios.CancelToken.source();
-    return () => cancelTokenSource.cancel();
-  }, [userLogin, shaddress, store]);
+
+    return () => {
+      cancelTokenSource.cancel();
+      unsubscribe();
+    };
+  }, [auth.logged, addressUpdate.success]);
 
   const setMessageHandler = (msg, variant) => {
     setMessage(msg);
@@ -59,17 +65,11 @@ const ShaddressScreen = ({ history }) => {
   };
 
   const resetValues = () => {
-    if (userInfo.shippingAddress && !shaddress.success) {
-      // console.log('assigning the REAL values');
+    if (userInfo.shippingAddress) {
       setAddress(userInfo.shippingAddress.address);
       setCity(userInfo.shippingAddress.city);
       setPostalCode(userInfo.shippingAddress.postalCode);
       setCountry(userInfo.shippingAddress.country);
-    } else if (shaddress.success) {
-      setAddress(shaddress.data.address);
-      setCity(shaddress.data.city);
-      setPostalCode(shaddress.data.postalCode);
-      setCountry(shaddress.data.country);
     } else {
       setAddress('');
       setCity('');
@@ -85,7 +85,11 @@ const ShaddressScreen = ({ history }) => {
   };
 
   const updateShaddressHandler = async () => {
-    await dispatch(createShaddress({ address, city, postalCode, country }));
+    dispatch(
+      updateUserProfile({
+        shippingAddress: { address, city, postalCode, country },
+      })
+    );
     setEditBtnClicked(false);
   };
 
@@ -128,12 +132,10 @@ const ShaddressScreen = ({ history }) => {
 
   return (
     <Row>
-      {userInfo && (
+      {auth.logged && (
         <>
-          {shaddress.loading || !valuesAssigned ? (
+          {loading ? (
             <Loader />
-          ) : shaddress.error ? (
-            <Message variant='danger'>{shaddress.error}</Message>
           ) : (
             <>
               <Col md={2} sm={2}>

@@ -1,12 +1,19 @@
+// libraries & methods
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import FormContainer from '../../components/FormContainer';
-import CheckOutSteps from '../../components/CheckOutSteps';
-import { createShaddress } from '../../actions/userActions';
-import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms';
+import Auth from '../../helpers/auth';
+import CartChecker from '../../helpers/cartChecker';
+
+// ui components
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
+import CheckOutSteps from '../../components/CheckOutSteps';
+import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms';
+import FormContainer from '../../components/FormContainer';
+
+// redux related
 import store from '../../store';
+import { createShaddress } from '../../actions/userActions';
 
 const ShippingScreen = ({ history, location, match }) => {
   // hooks
@@ -17,30 +24,31 @@ const ShippingScreen = ({ history, location, match }) => {
   const [addressExists, setAddressExists] = useState(false);
   const [editBtnClicked, setEditBtnClicked] = useState(false);
 
-  // bringing redux stores
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
-  const shaddress = useSelector((state) => state.shaddress);
-  const userLogin = useSelector((state) => state.userLogin);
-  const userInfo = userLogin.userInfo;
-  const userLogged = userInfo ? true : false;
-  const userNotLogged =
-    userLogin.loading === false && userInfo === undefined ? true : false;
-
+  // redux related
   const dispatch = useDispatch();
+  const shaddress = useSelector((state) => state.shaddress);
+
+  // variables
+  const auth = Auth();
+  const cartCheck = CartChecker();
+  const userInfo = auth.userInfo;
+  let loading = shaddress.loading || auth.loading || cartCheck.loading;
 
   useEffect(() => {
-    if (userNotLogged || (cart.success && cartItems.length === 0))
+    if (auth.logged === false || cartCheck.haveItems === false)
       history.push('/');
 
-    if (userLogged && userInfo.shippingAddress) resetValues();
+    if (auth.logged && userInfo.shippingAddress && address === '')
+      resetValues();
 
-    store.subscribe(() => {
+    const unsubscribe = store.subscribe(() => {
       if (store.getState().shaddress.success) {
         window.location.reload();
       }
     });
-  }, [cartItems, userLogin, history, editBtnClicked]);
+
+    return () => unsubscribe();
+  }, [auth, cartCheck.haveItems, history]);
 
   const confirmHandler = () => {
     history.push('/payment');
@@ -70,15 +78,19 @@ const ShippingScreen = ({ history, location, match }) => {
     switch (event.target.name) {
       case 'address':
         setAddress(event.target.value);
+        console.log(address);
         break;
       case 'city':
         setCity(event.target.value);
+        console.log(city);
         break;
       case 'postalCode':
         setPostalCode(event.target.value);
+        console.log(postalCode);
         break;
       case 'country':
         setCountry(event.target.value);
+        console.log(country);
         break;
     }
   };
@@ -112,7 +124,7 @@ const ShippingScreen = ({ history, location, match }) => {
     <FormContainer>
       <CheckOutSteps step1 step2 />
       <h1>Shipping Address</h1>
-      {userLogin.loading || shaddress.loading ? (
+      {loading ? (
         <Loader />
       ) : shaddress.error ? (
         <Message variant='danger'>{shaddress.error}</Message>

@@ -19,32 +19,3 @@ export const getProductById = asyncHandler(async (req, res) => {
 
   res.status(200).json({ success: true, data: product });
 });
-
-//@desc  Get prices of multiple products by id
-//@route POST /api/products/prices
-//@desc  Public
-export const getProductPrices = asyncHandler(async (req, res) => {
-  if (!req.body.productIDs || req.body.productIDs.length === 0) {
-    res.status(404);
-    throw new Error('Invalid product ids sent');
-  }
-  const productIDs = req.body.productIDs;
-  let product;
-  let prices = [];
-
-  productIDs.forEach(async (id, index) => {
-    product = await Product.findById(id);
-    if (!product) {
-      product = 'not found';
-    }
-
-    prices.push(product.price);
-
-    if (index + 1 === productIDs.length) {
-      res.status(200).json({
-        success: true,
-        prices,
-      });
-    }
-  }); //end of the loop
-});

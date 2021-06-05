@@ -5,7 +5,7 @@ import { PayPalButton } from 'react-paypal-button-v2';
 import { Link } from 'react-router-dom';
 import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { placeOrderCalculations } from '../../helpers/calculations.js';
+import Calculations from '../../helpers/calculations.js';
 import Auth from '../../helpers/auth';
 
 // internal components
@@ -24,9 +24,10 @@ const PlaceOrderScreen = ({ history }) => {
   const cart = useSelector((state) => state.cart);
   const orderCreated = useSelector((state) => state.orderReducers);
 
-  // other variables
+  // variables
   const auth = Auth();
   const userInfo = auth.userInfo;
+  const calcs = Calculations(cart.cartItems);
   let loading = auth.loading || cart.loading || orderCreated.loading;
   const cancelTokenSource = axios.CancelToken.source();
 
@@ -34,17 +35,12 @@ const PlaceOrderScreen = ({ history }) => {
   const [sdkReady, setSdkReady] = useState(false);
   const [paymentError, setPaymentError] = useState(false);
   const [paymentErrorMessage, setPaymentErrorMessage] = useState('undefined');
-  const [calcs, setCalcs] = useState({});
 
   useEffect(() => {
     if (auth.logged === false) history.push('/');
 
     // bring all the cart items
     if (auth.logged && cart.cartItems.length === 0) dispatch(getAllCartItems());
-
-    // get the calculations related to the cart items
-    if (!cart.loading && cart.cartItems)
-      setCalcs(placeOrderCalculations(cart.cartItems));
 
     const addPaypalScript = async () => {
       try {
@@ -69,15 +65,7 @@ const PlaceOrderScreen = ({ history }) => {
     }
 
     return () => cancelTokenSource.cancel();
-  }, [
-    dispatch,
-    orderCreated.success,
-    history,
-    auth.loading,
-    auth.logged,
-    cart.loading,
-    cart.cartItems,
-  ]);
+  }, [dispatch, orderCreated.success, history, auth.logged, cart.cartItems]);
 
   const successPaymentHandler = (paymentResult) => {
     const paymentInfo = {

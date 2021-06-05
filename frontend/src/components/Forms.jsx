@@ -192,9 +192,8 @@ export const ShaddressUpdateForm = ({
         <Form.Control
           type='text'
           name='address'
-          value={address}
+          defaultValue={address}
           className='form-field'
-          // onChange={(e) => setAddress(e.target.value)}
           onChange={(e) => changesHandler(e)}
           required
         ></Form.Control>
@@ -202,9 +201,8 @@ export const ShaddressUpdateForm = ({
         <Form.Control
           type='text'
           name='city'
-          value={city}
+          defaultValue={city}
           className='form-field'
-          // onChange={(e) => setCity(e.target.value)}
           onChange={(e) => changesHandler(e)}
           required
         ></Form.Control>
@@ -212,9 +210,8 @@ export const ShaddressUpdateForm = ({
         <Form.Control
           type='number'
           name='postalCode'
-          value={postalCode}
+          defaultValue={postalCode}
           className='form-field'
-          // onChange={(e) => setPostalCode(e.target.value)}
           onChange={(e) => changesHandler(e)}
           required
         ></Form.Control>
@@ -222,9 +219,8 @@ export const ShaddressUpdateForm = ({
         <Form.Control
           type='text'
           name='country'
-          value={country}
+          defaultValue={country}
           className='form-field'
-          // onChange={(e) => setCountry(e.target.value)}
           onChange={(e) => changesHandler(e)}
           required
         ></Form.Control>
