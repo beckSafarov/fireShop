@@ -3,27 +3,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import Auth from '../helpers/auth';
+import Auth from '../components/Auth';
 
-const TestScreen = ({ history }) => {
-  const [message, setMessage] = useState('Loading...');
-  const auth = Auth(history);
-
-  const throwMessage = (msg) => {
-    setMessage(msg);
-  };
-
+const TestScreen = ({ location, history }) => {
   useEffect(() => {
-    if (!auth.loading && auth.logged) {
-      throwMessage('User is logged');
-    } else if (!auth.loading && !auth.logged) {
-      throwMessage('User is not logged');
-    }
-  }, [auth]);
+    location.pathname = '/signin';
+  }, []);
+
+  // console.log(location);
+
   return (
-    <div>
-      <p>{message}</p>
-    </div>
+    // <Auth location={location}>
+    //   <h1>Welcome to auth component</h1>
+    //   <p>Message from testscreen</p>
+    // </Auth>
+    <>
+      <p>Welcome to test</p>
+    </>
   );
 };
 

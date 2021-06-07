@@ -3,7 +3,7 @@ import CountOptions from './CountOptions';
 import { Link } from 'react-router-dom';
 import { qtyReset } from '../actions/cartActions';
 
-const CartItem = ({ item, dispatch, removeFromCart }) => {
+const CartItem = ({ item, newQty, qtyResetHandler, removeFromCart }) => {
   return (
     <ListGroup.Item key={item._id}>
       <p> {item.name}</p>
@@ -18,10 +18,8 @@ const CartItem = ({ item, dispatch, removeFromCart }) => {
         <Col md={2}>
           <Form.Control
             as='select'
-            value={item.qty}
-            onChange={(e) =>
-              dispatch(qtyReset(item._id, Number(e.target.value)))
-            }
+            value={newQty ? newQty.qty : item.qty}
+            onChange={(e) => qtyResetHandler(item._id, e.target.value)}
           >
             <CountOptions countInStock={item.countInStock} />
           </Form.Control>
