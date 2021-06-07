@@ -1,34 +1,29 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ROOT } from '../config';
 import Loader from './Loader';
 
-const Auth = ({ children, location }) => {
-  const [logged, setLogged] = useState(null);
+const Auth = ({ children, history }) => {
+  const [permit, setPermit] = useState(false);
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const userInfo = userLogin.userInfo;
-  const userLogged = userInfo ? true : false;
-  const userNotLogged =
-    userLogin.loading === false && userInfo === undefined ? true : false;
+  const { loading, userInfo: logged } = useSelector((state) => state.userLogin);
+  const notLogged = loading === false && logged === undefined;
+  const redirect = history.location.pathname.replace('/', '');
 
   useEffect(() => {
-    if (userNotLogged) location.pathname = `${ROOT}/signin`;
+    if (notLogged) {
+      history.push(`/signin?redirect=${redirect}`);
+    } else if (logged) setPermit(true);
+  }, [notLogged, logged]);
 
-    if (userLogged) setLogged(true);
-  }, [userNotLogged, userLogged]);
+  return <>{loading ? <Loader /> : permit ? <>{children}</> : <p></p>}</>;
+};
 
-  return (
-    <>
-      {logged === null ? (
-        <Loader />
-      ) : logged ? (
-        <>{children}</>
-      ) : (
-        <p>You should never see this</p>
-      )}
-    </>
-  );
+Auth.defaultProps = {
+  children: <h1>Auth page</h1>,
+  history: {
+    location: { pathname: '/' },
+    push: (loc = '/') => (window.location.href = loc),
+  },
 };
 
 export default Auth;

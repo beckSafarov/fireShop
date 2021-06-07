@@ -1,24 +1,27 @@
 import React from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { Row, Col, ListGroup, Card, Image, Container } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import Auth from '../../components/Auth';
 
-const PaymentFailure = () => {
+const PaymentFailure = ({ history }) => {
   const error = new URLSearchParams(useLocation().search).get('error');
 
   return (
-    <Container>
-      <h2 class='danger-text'>Payment Failed!</h2>
-      <div className='mt-20'>
-        <p>Sorry! Your payment failed with the following error: </p>
-        <div className='error-message-field'>
-          <p>{error}</p>
+    <Auth history={history}>
+      <Container>
+        <h2>Payment Failed!</h2>
+        <div className='mt-20'>
+          <p>Sorry! Your payment failed with the following error: </p>
+          <div className='error-message-field'>
+            <p>{error}</p>
+          </div>
+          <p>
+            Please contact us with the screenshot at{' '}
+            <a href='mailto:support@proshop.com'>support@proshop.com</a>
+          </p>
         </div>
-        <p>
-          Please contact us with the screenshot at{' '}
-          <a href='mailto:support@proshop.com'>support@proshop.com</a>
-        </p>
-      </div>
-    </Container>
+      </Container>
+    </Auth>
   );
 };
 

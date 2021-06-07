@@ -1,5 +1,6 @@
 :root {
   --background: whitesmoke;
+  --red: tomato;
 }
 
 body {
@@ -69,7 +70,7 @@ strong {
 .error-message-field {
   margin: 10px 0 10px 0;
   padding: 10px;
-  border: 2px solid red;
+  border: 2px solid var(--red);
   color: red;
 }
 

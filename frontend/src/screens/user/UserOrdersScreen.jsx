@@ -2,43 +2,36 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import Auth from '../../helpers/auth';
-
+import Auth from '../../components/Auth';
 // UI components
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import { Table, Container, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-
-// -- REDUX RELATED IMPORTS --
+// Redux related imports
 import { getMyOrders } from '../../actions/orderActions';
 
-const UserOrdersScreen = ({ location, history }) => {
+const UserOrdersScreen = ({ history }) => {
   // -- redux stores --
   const dispatch = useDispatch();
-  const myOrders = useSelector((state) => state.myOrders);
+  const { loading, orders, error } = useSelector((state) => state.myOrders);
 
   // variables
-  const auth = Auth();
-  const cancelTokenSource = axios.CancelToken.source();
-  let loading = myOrders.loading || auth.loading;
+  const { userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
-    if (auth.logged) dispatch(getMyOrders());
-
-    if (auth.logged === false) history.push('/');
-
-    return () => cancelTokenSource.cancel();
-  }, [dispatch, auth.logged, history]);
+    if (userInfo) dispatch(getMyOrders());
+    return () => axios.CancelToken.source().cancel();
+  }, [dispatch, userInfo]);
 
   return (
-    <>
+    <Auth history={history}>
       <Container>
         {loading ? (
           <Loader />
-        ) : myOrders.error ? (
-          <Message variant='danger'>{myOrders.error}</Message>
-        ) : myOrders.orders.length === 0 ? (
+        ) : error ? (
+          <Message variant='danger'>{error}</Message>
+        ) : orders.length === 0 ? (
           <h3>You have no orders yet</h3>
         ) : (
           <>
@@ -53,7 +46,7 @@ const UserOrdersScreen = ({ location, history }) => {
                 </tr>
               </thead>
               <tbody>
-                {myOrders.orders.map((order, index) => (
+                {orders.map((order, index) => (
                   <tr key={order._id}>
                     <td>{order._id}</td>
                     <td>
@@ -96,7 +89,7 @@ const UserOrdersScreen = ({ location, history }) => {
           </>
         )}
       </Container>
-    </>
+    </Auth>
   );
 };
 

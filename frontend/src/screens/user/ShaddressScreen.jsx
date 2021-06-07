@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import Auth from '../../helpers/auth';
+import Auth from '../../components/Auth';
 
 // -- COMPONENTS --
 import Message from '../../components/Message';
@@ -30,33 +30,29 @@ const ShaddressScreen = ({ history }) => {
   const dispatch = useDispatch();
 
   // variables
-  const auth = Auth();
-  const userInfo = auth.userInfo;
+  const { userInfo } = useSelector((state) => state.userLogin);
   const addressUpdate = useSelector((state) => state.userDetailsUpdate);
-  const cancelTokenSource = axios.CancelToken.source();
   let loading = addressUpdate.loading || !valuesAssigned;
 
   useEffect(() => {
-    if (auth.logged) {
-      resetValues();
-    } else if (auth.logged === false) history.push('/');
+    if (userInfo) resetValues();
 
     const unsubscribe = store.subscribe(() => {
       let update = store.getState().userDetailsUpdate;
       if (update.success) {
-        setMessageHandler('Updated successfully', 'success');
+        setMsgHandler('Updated successfully', 'success');
       } else if (update.error) {
-        setMessageHandler(update.error, 'danger');
+        setMsgHandler(update.error, 'danger');
       }
     });
 
     return () => {
-      cancelTokenSource.cancel();
+      axios.CancelToken.source().cancel();
       unsubscribe();
     };
-  }, [auth.logged, addressUpdate.success]);
+  }, [addressUpdate.success]);
 
-  const setMessageHandler = (msg, variant) => {
+  const setMsgHandler = (msg, variant) => {
     setMessage(msg);
     setmsgVariant(variant);
     setTimeout(function () {
@@ -131,38 +127,40 @@ const ShaddressScreen = ({ history }) => {
   };
 
   return (
-    <Row>
-      {auth.logged && (
-        <>
-          {loading ? (
-            <Loader />
-          ) : (
-            <>
-              <Col md={2} sm={2}>
-                <AccountSideMenu active={2} />
-              </Col>
-              <Col md={10} sm={10}>
-                <h3 className='mb-4'>Address</h3>
-                {message !== null && (
-                  <Message variant={msgVariant}>{message}</Message>
-                )}
-                {!editBtnClicked ? (
-                  <ShaddressReadForm
-                    values={values}
-                    functions={{ onClick: editBtnHandler }}
-                  />
-                ) : (
-                  <ShaddressUpdateForm
-                    values={values}
-                    functions={funcsToEditForm}
-                  />
-                )}
-              </Col>
-            </>
-          )}
-        </>
-      )}
-    </Row>
+    <Auth history={history}>
+      <Row>
+        {userInfo && (
+          <>
+            {loading ? (
+              <Loader />
+            ) : (
+              <>
+                <Col md={2} sm={2}>
+                  <AccountSideMenu active={2} />
+                </Col>
+                <Col md={10} sm={10}>
+                  <h3 className='mb-4'>Address</h3>
+                  {message !== null && (
+                    <Message variant={msgVariant}>{message}</Message>
+                  )}
+                  {!editBtnClicked ? (
+                    <ShaddressReadForm
+                      values={values}
+                      functions={{ onClick: editBtnHandler }}
+                    />
+                  ) : (
+                    <ShaddressUpdateForm
+                      values={values}
+                      functions={funcsToEditForm}
+                    />
+                  )}
+                </Col>
+              </>
+            )}
+          </>
+        )}
+      </Row>
+    </Auth>
   );
 };
 

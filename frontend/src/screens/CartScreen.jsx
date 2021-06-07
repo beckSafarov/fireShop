@@ -1,18 +1,16 @@
-// -- METHODS & LIBRARIES
+// -- methods & libraries
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import Auth from '../helpers/auth';
+import Auth from '../components/Auth';
 import Calculations from '../helpers/calculations';
-
-// -- UI COMPONENTS
+// ui components
 import { Link } from 'react-router-dom';
 import { Row, Col, ListGroup, Button, Card } from 'react-bootstrap';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import CartItem from '../components/CartItem';
-
-// -- REDUX RELATED IMPORTS --
+// redux related imports
 import { getAllCartItems, qtyReset, removeItem } from '../actions/cartActions';
 import store from '../store';
 
@@ -30,15 +28,13 @@ const CartScreen = ({ history }) => {
   const { loading: cartItemsLoading } = allCartItems;
 
   // variables
-  const auth = Auth();
-  const cartItems = auth.userInfo ? auth.userInfo.cartItems : [];
+  const { userInfo } = useSelector((state) => state.userLogin);
+  const cartItems = userInfo ? userInfo.cartItems : [];
   const calcs = Calculations(cartItems);
-  let loading = cartItemsLoading || auth.loading;
+  let loading = cartItemsLoading;
 
   useEffect(() => {
-    if (auth.logged === false) {
-      history.push('/signin?redirect=cart');
-    } else if (auth.logged) dispatch(getAllCartItems());
+    if (userInfo) dispatch(getAllCartItems());
 
     const unsubscribe = store.subscribe(() => {
       let update = store.getState().cart;
@@ -54,11 +50,12 @@ const CartScreen = ({ history }) => {
       axios.CancelToken.source().cancel();
       unsubscribe();
     };
-  }, [auth.logged, dispatch]);
+  }, [userInfo, dispatch]);
 
   const removeFromCart = (id, name) => {
-    if (window.confirm(`Are you sure to delete ${name} from your cart?`))
-      dispatch(removeItem(id));
+    const msg = `Are you sure to delete ${name} from your cart?`;
+
+    if (window.confirm(msg)) dispatch(removeItem(id));
   };
 
   const updatedQtyHandler = (id, qty) => {
@@ -92,7 +89,7 @@ const CartScreen = ({ history }) => {
   };
 
   const checkoutHandler = () => {
-    history.push('/signin?from=cart&redirect=shipping');
+    history.push(`/signin?from=cart&redirect=shipping`);
   };
 
   const setMsgHandler = (variant = 'info', seconds = 2) => {
@@ -103,7 +100,7 @@ const CartScreen = ({ history }) => {
   };
 
   return (
-    <>
+    <Auth history={history}>
       {loading ? (
         <Loader />
       ) : cartItems ? (
@@ -119,7 +116,7 @@ const CartScreen = ({ history }) => {
               </Message>
             ) : (
               <ListGroup variant='flush'>
-                {cartItems.map((item, index) => (
+                {cartItems.map((item) => (
                   <CartItem
                     key={item._id}
                     item={item}
@@ -157,7 +154,7 @@ const CartScreen = ({ history }) => {
       ) : (
         <p>you should never see this</p>
       )}
-    </>
+    </Auth>
   );
 };
 

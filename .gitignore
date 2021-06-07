@@ -6,9 +6,6 @@ node_modules/
 /.pnp
 .pnp.js
 
-#testing page
-frontend/src/screens/testScreen.jsx
-
 # testing
 /coverage
 

@@ -72,7 +72,9 @@ const App = () => {
             <Route path='/payment-failure' component={PaymentFailure}></Route>
 
             {/*test route */}
-            <Route path='/test' component={testScreen}></Route>
+            {process.env.NODE_ENV === 'development' && (
+              <Route path='/test' component={testScreen}></Route>
+            )}
           </Container>
         )}
       </main>

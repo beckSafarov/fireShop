@@ -6,31 +6,30 @@ import { Row, Col, ListGroup, Card, Image, Container } from 'react-bootstrap';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
 import axios from 'axios';
+import Auth from '../../components/Auth';
+import Exceptional from '../../components/Exceptional';
 
-const PaymentSuccess = () => {
+const PaymentSuccess = ({ history, location }) => {
   const dispatch = useDispatch();
-  const id = new URLSearchParams(useLocation().search).get('id');
-  const orderInfo = useSelector((state) => state.orderDetails);
-  const { loading, success, order, error } = orderInfo;
+  const id = location.search.split('=')[1];
+  const { loading, order, error } = useSelector((state) => state.orderDetails);
 
   useEffect(() => {
-    //  if (!orderInfo) dispatch(getOrderDetails(id));
-    if (orderInfo.order.length === 0) dispatch(getOrderDetails(id));
-
-    const cancelTokenSource = axios.CancelToken.source();
-    return () => cancelTokenSource.cancel();
-  }, [dispatch, orderInfo]);
+    dispatch(getOrderDetails(id));
+    return () => axios.CancelToken.source().cancel();
+  }, [order.length, dispatch]);
 
   return (
-    <>
+    <Auth history={history}>
       {loading ? (
         <Loader />
       ) : error ? (
-        <Message>{error}</Message>
-      ) : (
+        <Message variant='danger'>{error}</Message>
+      ) : order ? (
         <Container>
           <ListGroup variant='flush'>
-            <h2 className='mb-4 text-center'>Payment Successful!</h2>
+            {console.log(order)}
+            <h2 className='mb-4 text-center'>Payment Was Successful!</h2>
             <ListGroup.Item>
               <p>
                 <strong>Order ID: </strong>
@@ -101,9 +100,12 @@ const PaymentSuccess = () => {
             </p>
           </div>
         </Container>
+      ) : (
+        <Exceptional />
       )}
-    </>
+    </Auth>
   );
 };
 
 export default PaymentSuccess;
+// const id = new URLSearchParams(useLocation().search).get('id');

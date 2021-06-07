@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Calculations from '../../helpers/calculations.js';
-import Auth from '../../helpers/auth';
+import Auth from '../../components/Auth';
 
 // internal components
 import Message from '../../components/Message';
@@ -25,11 +25,10 @@ const PlaceOrderScreen = ({ history }) => {
   const orderCreated = useSelector((state) => state.orderReducers);
 
   // variables
-  const auth = Auth();
-  const userInfo = auth.userInfo;
+  const { userInfo } = useSelector((state) => state.userLogin);
   const calcs = Calculations(cart.cartItems);
-  let loading = auth.loading || cart.loading || orderCreated.loading;
-  const cancelTokenSource = axios.CancelToken.source();
+  const loading = cart.loading || orderCreated.loading;
+  const error = cart.error || orderCreated.error;
 
   // hooks states
   const [sdkReady, setSdkReady] = useState(false);
@@ -37,15 +36,12 @@ const PlaceOrderScreen = ({ history }) => {
   const [paymentErrorMessage, setPaymentErrorMessage] = useState('undefined');
 
   useEffect(() => {
-    if (auth.logged === false) history.push('/');
-
-    // bring all the cart items
-    if (auth.logged && cart.cartItems.length === 0) dispatch(getAllCartItems());
+    if (userInfo && cart.cartItems.length === 0) dispatch(getAllCartItems());
 
     const addPaypalScript = async () => {
       try {
         const { data: clientId } = await axios.get('/api/config/paypal', {
-          cancelToken: cancelTokenSource.token,
+          cancelToken: axios.CancelToken.source().token,
         });
         const script = document.createElement('script');
         script.type = 'text/javascript';
@@ -64,8 +60,8 @@ const PlaceOrderScreen = ({ history }) => {
       history.push(`/payment-success?id=${orderCreated.order._id}`);
     }
 
-    return () => cancelTokenSource.cancel();
-  }, [dispatch, orderCreated.success, history, auth.logged, cart.cartItems]);
+    return () => axios.CancelToken.source().cancel();
+  }, [dispatch, orderCreated.success, userInfo, cart.cartItems]);
 
   const successPaymentHandler = (paymentResult) => {
     const paymentInfo = {
@@ -98,10 +94,10 @@ const PlaceOrderScreen = ({ history }) => {
   const labels = ['Items price', 'Shipping', 'Tax', 'Total'];
 
   return (
-    <>
+    <Auth history={history}>
       {loading ? (
         <Loader />
-      ) : cart.error || orderCreated.error ? (
+      ) : error ? (
         <Message variant='danger'>
           {cart.error || (
             <>
@@ -117,7 +113,7 @@ const PlaceOrderScreen = ({ history }) => {
             </>
           )}
         </Message>
-      ) : auth.logged === true ? (
+      ) : userInfo ? (
         <>
           <CheckOutSteps step1 step2 step3 step4 />
           <Row>
@@ -221,7 +217,7 @@ const PlaceOrderScreen = ({ history }) => {
       ) : (
         <p>You should never see this!</p>
       )}
-    </>
+    </Auth>
   );
 };
 

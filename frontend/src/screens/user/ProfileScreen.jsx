@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import Auth from '../../helpers/auth';
+import Auth from '../../components/Auth';
 
 // -- COMPONENTS --
 import Message from '../../components/Message';
@@ -31,15 +31,11 @@ const ProfileScreen = ({ history }) => {
   const updateRes = useSelector((state) => state.userDetailsUpdate);
 
   // variables
-  const auth = Auth();
-  const userInfo = auth.userInfo;
-  const cancelTokenSource = axios.CancelToken.source();
-  let loading = auth.loading || updateRes.loading;
+  const { userInfo } = useSelector((state) => state.userLogin);
+  let loading = updateRes.loading;
 
   useEffect(() => {
-    if (auth.logged) {
-      resetValues();
-    } else if (auth.logged === false) history.push('/');
+    if (userInfo) resetValues();
 
     const unsubscribe = store.subscribe(() => {
       let update = store.getState().userDetailsUpdate;
@@ -54,12 +50,11 @@ const ProfileScreen = ({ history }) => {
     });
 
     return () => {
-      cancelTokenSource.cancel();
+      axios.CancelToken.source().cancel();
       unsubscribe();
     };
-  }, [history, auth.logged, updateRes.success]);
+  }, [updateRes.success, userInfo]);
 
-  //function to make alerts disappear after some time
   const setMessageHandler = (variant = 'danger', msg, seconds = 2) => {
     setMessage(msg);
     setmsgVariant(variant);
@@ -78,8 +73,8 @@ const ProfileScreen = ({ history }) => {
     setConfirmPass('');
   };
 
-  // function to validate entered fields
   const fieldsValidated = () => {
+    let msg;
     if (password !== '') {
       if (confirmPass !== password) {
         setMessageHandler('danger', 'Passwords do not match');
@@ -98,11 +93,11 @@ const ProfileScreen = ({ history }) => {
     return true;
   };
 
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
     //initiating update details
     if (fieldsValidated()) {
-      await dispatch(
+      dispatch(
         updateUserProfile({
           name: name !== '' ? name : undefined,
           email: email !== '' ? email : undefined,
@@ -132,34 +127,36 @@ const ProfileScreen = ({ history }) => {
   };
 
   return (
-    <Row>
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          <Col md={2} sm={2}>
-            <AccountSideMenu active={1} />
-          </Col>
-          <Col md={10} sm={10}>
-            {auth.logged && (
-              <>
-                <h3>User Profile</h3>
-                {message && <Message variant={msgVariant}>{message}</Message>}
-                {!editBtnClicked ? (
-                  <ReadOnlyForm
-                    name={name}
-                    email={email}
-                    onClick={editBtnHandler}
-                  />
-                ) : (
-                  <ProfileUpdateForm values={values} functions={functions} />
-                )}
-              </>
-            )}
-          </Col>
-        </>
-      )}
-    </Row>
+    <Auth history={history}>
+      <Row>
+        {loading ? (
+          <Loader />
+        ) : (
+          <>
+            <Col md={2} sm={2}>
+              <AccountSideMenu active={1} />
+            </Col>
+            <Col md={10} sm={10}>
+              {userInfo && (
+                <>
+                  <h3>User Profile</h3>
+                  {message && <Message variant={msgVariant}>{message}</Message>}
+                  {!editBtnClicked ? (
+                    <ReadOnlyForm
+                      name={name}
+                      email={email}
+                      onClick={editBtnHandler}
+                    />
+                  ) : (
+                    <ProfileUpdateForm values={values} functions={functions} />
+                  )}
+                </>
+              )}
+            </Col>
+          </>
+        )}
+      </Row>
+    </Auth>
   );
 };
 

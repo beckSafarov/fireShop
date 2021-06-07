@@ -1,9 +1,7 @@
 // libraries & methods
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Auth from '../../helpers/auth';
-import CartChecker from '../../helpers/cartChecker';
-
+import axios from 'axios';
 // ui components
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
@@ -14,6 +12,7 @@ import FormContainer from '../../components/FormContainer';
 // redux related
 import store from '../../store';
 import { createShaddress } from '../../actions/userActions';
+import Auth from '../../components/Auth';
 
 const ShippingScreen = ({ history, location, match }) => {
   // hooks
@@ -29,17 +28,14 @@ const ShippingScreen = ({ history, location, match }) => {
   const shaddress = useSelector((state) => state.shaddress);
 
   // variables
-  const auth = Auth();
-  const cartCheck = CartChecker();
-  const userInfo = auth.userInfo;
-  let loading = shaddress.loading || auth.loading || cartCheck.loading;
+  const { userInfo } = useSelector((state) => state.userLogin);
+  let loading = shaddress.loading;
 
   useEffect(() => {
-    if (auth.logged === false || cartCheck.haveItems === false)
-      history.push('/');
-
-    if (auth.logged && userInfo.shippingAddress && address === '')
-      resetValues();
+    if (userInfo) {
+      if (userInfo.cartItems.length === 0) history.push('/');
+      if (userInfo.shippingAddress && address === '') resetValues();
+    }
 
     const unsubscribe = store.subscribe(() => {
       if (store.getState().shaddress.success) {
@@ -47,12 +43,13 @@ const ShippingScreen = ({ history, location, match }) => {
       }
     });
 
-    return () => unsubscribe();
-  }, [auth, cartCheck.haveItems, history]);
+    return () => {
+      axios.CancelToken.source().cancel();
+      unsubscribe();
+    };
+  }, [userInfo, history, address]);
 
-  const confirmHandler = () => {
-    history.push('/payment');
-  };
+  const confirmHandler = () => history.push('/payment');
 
   const createAddressHandler = () => {
     dispatch(
@@ -78,19 +75,15 @@ const ShippingScreen = ({ history, location, match }) => {
     switch (event.target.name) {
       case 'address':
         setAddress(event.target.value);
-        console.log(address);
         break;
       case 'city':
         setCity(event.target.value);
-        console.log(city);
         break;
       case 'postalCode':
         setPostalCode(event.target.value);
-        console.log(postalCode);
         break;
       case 'country':
         setCountry(event.target.value);
-        console.log(country);
         break;
     }
   };
@@ -121,30 +114,32 @@ const ShippingScreen = ({ history, location, match }) => {
   };
 
   return (
-    <FormContainer>
-      <CheckOutSteps step1 step2 />
-      <h1>Shipping Address</h1>
-      {loading ? (
-        <Loader />
-      ) : shaddress.error ? (
-        <Message variant='danger'>{shaddress.error}</Message>
-      ) : !editBtnClicked && userInfo && addressExists ? (
-        <ShaddressReadForm
-          values={values}
-          functions={functionsForReadForm}
-          profile={false}
-        />
-      ) : editBtnClicked === true || !addressExists ? (
-        <ShaddressUpdateForm
-          values={values}
-          functions={functionsForUpdateForm}
-          profile={false}
-          addressExists={addressExists}
-        />
-      ) : (
-        <Message variant='danger'>Something went wrong</Message>
-      )}
-    </FormContainer>
+    <Auth history={history}>
+      <FormContainer>
+        <CheckOutSteps step1 step2 />
+        <h1>Shipping Address</h1>
+        {loading ? (
+          <Loader />
+        ) : shaddress.error ? (
+          <Message variant='danger'>{shaddress.error}</Message>
+        ) : !editBtnClicked && userInfo && addressExists ? (
+          <ShaddressReadForm
+            values={values}
+            functions={functionsForReadForm}
+            profile={false}
+          />
+        ) : editBtnClicked === true || !addressExists ? (
+          <ShaddressUpdateForm
+            values={values}
+            functions={functionsForUpdateForm}
+            profile={false}
+            addressExists={addressExists}
+          />
+        ) : (
+          <Message variant='danger'>Something went wrong</Message>
+        )}
+      </FormContainer>
+    </Auth>
   );
 };
 
