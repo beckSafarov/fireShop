@@ -25,6 +25,10 @@ const ProfileScreen = ({ history }) => {
   const [message, setMessage] = useState(null);
   const [msgVariant, setmsgVariant] = useState('danger');
   const [editBtnClicked, setEditBtnClicked] = useState(false);
+  const [updated, setUpdated] = useState({
+    name: null,
+    email: null,
+  });
 
   // -- redux stores --
   const dispatch = useDispatch();
@@ -40,6 +44,7 @@ const ProfileScreen = ({ history }) => {
     const unsubscribe = store.subscribe(() => {
       let update = store.getState().userDetailsUpdate;
       if (update.success) {
+        setEditBtnClicked(false);
         setMessageHandler('success', 'Updated successfully');
         setTimeout(() => {
           window.location.reload();
@@ -74,7 +79,6 @@ const ProfileScreen = ({ history }) => {
   };
 
   const fieldsValidated = () => {
-    let msg;
     if (password !== '') {
       if (confirmPass !== password) {
         setMessageHandler('danger', 'Passwords do not match');
@@ -104,8 +108,11 @@ const ProfileScreen = ({ history }) => {
           password: password !== '' ? password : undefined,
         })
       );
+      setUpdated({
+        name: name !== '' && name,
+        email: email !== '' && email,
+      });
     }
-    setEditBtnClicked(false);
   };
 
   const cancelChanges = () => {
@@ -143,8 +150,8 @@ const ProfileScreen = ({ history }) => {
                   {message && <Message variant={msgVariant}>{message}</Message>}
                   {!editBtnClicked ? (
                     <ReadOnlyForm
-                      name={name}
-                      email={email}
+                      name={updated.name || name}
+                      email={updated.email || email}
                       onClick={editBtnHandler}
                     />
                   ) : (

@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { getOrderDetails } from '../../actions/orderActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, ListGroup, Card, Image, Container } from 'react-bootstrap';
+import Auth from '../../components/Auth';
+
+import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
 import axios from 'axios';
-import Auth from '../../components/Auth';
 import Exceptional from '../../components/Exceptional';
 
 const PaymentSuccess = ({ history, location }) => {
@@ -17,7 +18,7 @@ const PaymentSuccess = ({ history, location }) => {
   useEffect(() => {
     dispatch(getOrderDetails(id));
     return () => axios.CancelToken.source().cancel();
-  }, [order.length, dispatch]);
+  }, [dispatch]);
 
   return (
     <Auth history={history}>
