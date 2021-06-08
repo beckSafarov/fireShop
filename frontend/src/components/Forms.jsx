@@ -39,15 +39,19 @@ export const ProfileUpdateForm = ({ values, functions }) => {
   } = functions;
   return (
     <Form onSubmit={submitHandler}>
-      <Form.Group controlId='email'>
-        <Form.Label>Full Name</Form.Label>
+      <Form.Group controlId='text'>
+        <Form.Label>
+          Full Name<span className='danger-text'>*</span>
+        </Form.Label>
         <Form.Control
           type='text'
           value={name}
           className='form-field'
           onChange={(e) => setName(e.target.value)}
         ></Form.Control>
-        <Form.Label>Email Address</Form.Label>
+        <Form.Label>
+          Email<span className='danger-text'>*</span>
+        </Form.Label>
         <Form.Control
           type='email'
           value={email}

@@ -4,21 +4,20 @@ import Loader from './Loader';
 
 const Auth = ({ children, history, reverse }) => {
   const [permit, setPermit] = useState(false);
-
   const { loading, userInfo: logged } = useSelector((state) => state.userLogin);
-  const notLogged = loading === false && logged === undefined;
-  const redirect = history.location.pathname.replace('/', '');
-  const queryRedirect = history.location.search.split('=')[1];
+  const { location: loc } = history;
+
+  const originPage = loc.pathname.replace('/', '');
+  let queryRedirect = new URLSearchParams(loc.search).get('redirect');
+  if (queryRedirect === '/') queryRedirect = '';
 
   useEffect(() => {
     if (!reverse) {
-      notLogged && history.push(`/signin?redirect=${redirect}`);
-      logged && setPermit(true);
+      logged ? setPermit(true) : history.push(`/signin?redirect=${originPage}`);
     } else {
-      logged && history.push(queryRedirect ? `/${queryRedirect}` : `/`);
-      notLogged && setPermit(true);
+      !logged ? setPermit(true) : history.push(`/${queryRedirect}`);
     }
-  }, [notLogged, logged, reverse]);
+  }, [logged, reverse]);
 
   return <>{loading ? <Loader /> : permit ? <>{children}</> : <p></p>}</>;
 };

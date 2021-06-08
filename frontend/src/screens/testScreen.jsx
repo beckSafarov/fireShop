@@ -4,10 +4,16 @@ import { Link } from 'react-router-dom';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import Auth from '../components/Auth';
+import { useLocation } from 'react-router-dom';
 
 const TestScreen = ({ location, history, match }) => {
+  const loc = useLocation();
   useEffect(() => {
     // consoleLocs();
+    // console.log('location.search');
+    // console.log(location.search);
+    // console.log('location.pathname');
+    // console.log(location.pathname);
   }, []);
 
   const consoleLocs = () => {

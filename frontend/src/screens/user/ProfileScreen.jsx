@@ -15,6 +15,7 @@ import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms';
 import { updateUserProfile } from '../../actions/userActions';
 import AccountSideMenu from '../../components/AccountSideMenu';
 import store from '../../store';
+import FieldsValidated from '../../helpers/FieldsValidated';
 
 const ProfileScreen = ({ history }) => {
   // hooks
@@ -78,29 +79,14 @@ const ProfileScreen = ({ history }) => {
     setConfirmPass('');
   };
 
-  const fieldsValidated = () => {
-    if (password !== '') {
-      if (confirmPass !== password) {
-        setMessageHandler('danger', 'Passwords do not match');
-        return false;
-      } else if (password.length < 6) {
-        setMessageHandler(
-          'danger',
-          'Password should not be less than 6 characters long'
-        );
-        return false;
-      }
-    } else if (confirmPass !== '') {
-      setMessageHandler('danger', 'New password was not written');
-      return false;
-    }
-    return true;
-  };
-
   const submitHandler = (e) => {
     e.preventDefault();
-    //initiating update details
-    if (fieldsValidated()) {
+    const validation =
+      password === ''
+        ? FieldsValidated(name, email)
+        : FieldsValidated(name, email, password, confirmPass);
+
+    if (validation.success) {
       dispatch(
         updateUserProfile({
           name: name !== '' ? name : undefined,
@@ -112,6 +98,8 @@ const ProfileScreen = ({ history }) => {
         name: name !== '' && name,
         email: email !== '' && email,
       });
+    } else {
+      setMessageHandler('danger', validation.message);
     }
   };
 

@@ -12,6 +12,7 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 
 // redux actions
 import { register } from '../../actions/userActions';
+import FieldsValidated from '../../helpers/FieldsValidated';
 
 const RegisterScreen = ({ location, history }) => {
   // hooks
@@ -32,13 +33,11 @@ const RegisterScreen = ({ location, history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (confirmPass !== password) {
-      setPassError('Password confirmation does not match password');
-    } else if (password.length < 6) {
-      setPassError('Password should not be less than 6 characters long');
-    } else {
-      dispatch(register(name, email, password));
-    }
+    const validated = FieldsValidated(name, email, password, confirmPass);
+
+    validated.success
+      ? dispatch(register(name, email, password))
+      : setPassError(validated.message);
   };
 
   return (
