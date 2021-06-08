@@ -1,9 +1,8 @@
 // libraries & methods
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
-import Auth from '../../helpers/auth';
+import Auth from '../../components/Auth';
 
 // UI components
 import Message from '../../components/Message';
@@ -28,24 +27,8 @@ const RegisterScreen = ({ location, history }) => {
   );
 
   // variables
-  const auth = Auth();
-  const cancelTokenSource = axios.CancelToken.source();
-  const redirect = location.search ? location.search.split('=')[1] : '/';
-  const from = new URLSearchParams(useLocation().search).get('from');
   let error = regError || passError;
-  let loading = regLoading || auth.loading;
-
-  useEffect(() => {
-    if (auth.logged) {
-      history.push(
-        redirect && from
-          ? `/${redirect}?from=${redirect}&redirect=${from}`
-          : '/'
-      );
-    }
-
-    return () => cancelTokenSource.cancel();
-  }, [history, auth]);
+  let loading = regLoading;
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -59,58 +42,60 @@ const RegisterScreen = ({ location, history }) => {
   };
 
   return (
-    <FormContainer>
-      <h1>Sign in</h1>
-      {error && <Message variant='danger'>{error}</Message>}
-      {loading && <Loader />}
-      <Form onSubmit={submitHandler}>
-        <Form.Group controlId='email'>
-          <Form.Label>Full Name</Form.Label>
-          <Form.Control
-            type='text'
-            value={name}
-            className='form-field'
-            onChange={(e) => setName(e.target.value)}
-            required
-          ></Form.Control>
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type='email'
-            value={email}
-            className='form-field'
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          ></Form.Control>
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type='password'
-            value={password}
-            className='form-field'
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          ></Form.Control>
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type='password'
-            value={confirmPass}
-            className='form-field'
-            onChange={(e) => setConfirmPass(e.target.value)}
-            required
-          ></Form.Control>
-        </Form.Group>
-        <Button type='submit' className='btn-block' variant='info'>
-          Register
-        </Button>
-      </Form>
-      <Row className='py-3'>
-        <Col className='text-center'>
-          Already have account?{' '}
-          <Link to='/signin'>
-            <span className='link'>Login</span>
-          </Link>
-        </Col>
-      </Row>
-    </FormContainer>
+    <Auth history={history} reverse>
+      <FormContainer>
+        <h1>Sign in</h1>
+        {error && <Message variant='danger'>{error}</Message>}
+        {loading && <Loader />}
+        <Form onSubmit={submitHandler}>
+          <Form.Group controlId='email'>
+            <Form.Label>Full Name</Form.Label>
+            <Form.Control
+              type='text'
+              value={name}
+              className='form-field'
+              onChange={(e) => setName(e.target.value)}
+              required
+            ></Form.Control>
+            <Form.Label>Email Address</Form.Label>
+            <Form.Control
+              type='email'
+              value={email}
+              className='form-field'
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            ></Form.Control>
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type='password'
+              value={password}
+              className='form-field'
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            ></Form.Control>
+            <Form.Label>Confirm Password</Form.Label>
+            <Form.Control
+              type='password'
+              value={confirmPass}
+              className='form-field'
+              onChange={(e) => setConfirmPass(e.target.value)}
+              required
+            ></Form.Control>
+          </Form.Group>
+          <Button type='submit' className='btn-block' variant='info'>
+            Register
+          </Button>
+        </Form>
+        <Row className='py-3'>
+          <Col className='text-center'>
+            Already have account?{' '}
+            <Link to='/signin'>
+              <span className='link'>Login</span>
+            </Link>
+          </Col>
+        </Row>
+      </FormContainer>
+    </Auth>
   );
 };
 

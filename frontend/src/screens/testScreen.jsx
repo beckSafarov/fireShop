@@ -8,8 +8,6 @@ import Auth from '../components/Auth';
 const TestScreen = ({ location, history, match }) => {
   useEffect(() => {
     // consoleLocs();
-
-    console.log(location.search.split('=')[1]);
   }, []);
 
   const consoleLocs = () => {
@@ -21,12 +19,12 @@ const TestScreen = ({ location, history, match }) => {
 
   return (
     <>
-      {/* <Auth history={history}>
+      <Auth history={history}>
         <h1>Welcome to auth component</h1>
         <p>Message from testscreen</p>
-      </Auth> */}
-      <h1>Welcome to testscreen</h1>
-      <p>Message from testscreen</p>
+      </Auth>
+      {/* <h1>Welcome to testscreen</h1>
+      <p>Message from testscreen</p> */}
     </>
   );
 };
