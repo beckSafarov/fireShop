@@ -5,12 +5,11 @@ export const addToCart = (product, qty) => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.CART_REQUIRE_ADD_ITEM });
 
-    const cancelTokenSource = axios.CancelToken.source();
     product.qty = qty;
 
     const config = {
       headers: { 'Content-Type': 'application/json' },
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     };
 
     const data = await axios.post(`/api/users/cartitems`, product, config);
@@ -49,10 +48,8 @@ export const getAllCartItems = () => async (dispatch) => {
   try {
     dispatch({ type: constants.CART_REQUIRE_ALL_ITEMS });
 
-    const cancelTokenSource = axios.CancelToken.source();
-
     const data = await axios.get(`/api/users/cartitems`, {
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     });
 
     dispatch({
@@ -78,11 +75,9 @@ export const qtyReset = (id, qty) => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.CARD_ITEM_QUANTITY_RESET_REQUIRE });
 
-    const cancelTokenSource = axios.CancelToken.source();
-
     const config = {
       headers: { 'Content-Type': 'application/json' },
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     };
 
     const body = { _id: id, qty };
@@ -120,10 +115,8 @@ export const removeItem = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.CART_REMOVE_ITEM_REQUEST });
 
-    const cancelTokenSource = axios.CancelToken.source();
-
     const serverResponse = await axios.delete(`/api/users/cartItems/${id}`, {
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     });
 
     dispatch({

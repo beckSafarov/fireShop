@@ -134,7 +134,7 @@ const CartScreen = ({ history }) => {
                 <ListGroup variant='flush'>
                   <ListGroup.Item>
                     <h4>Subtotal: {calcs.subtotal} item(s)</h4>
-                    <h4>Total price: ${calcs.totalPrice} </h4>
+                    <h4>Total price: ${calcs.productsPrice} </h4>
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Button

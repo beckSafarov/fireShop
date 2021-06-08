@@ -54,14 +54,14 @@ const PlaceOrderScreen = ({ history }) => {
       }
     };
 
-    if (!orderCreated.success) {
+    if (userInfo && !orderCreated.success) {
       !window.paypal ? addPaypalScript() : setSdkReady(true);
     } else if (orderCreated.success) {
       history.push(`/payment-success?id=${orderCreated.order._id}`);
     }
 
     return () => axios.CancelToken.source().cancel();
-  }, [dispatch, orderCreated.success, userInfo, cart.cartItems]);
+  }, [userInfo, dispatch, orderCreated.success, cart.cartItems.length]);
 
   const successPaymentHandler = (paymentResult) => {
     const paymentInfo = {
