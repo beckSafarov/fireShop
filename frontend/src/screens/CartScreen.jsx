@@ -20,7 +20,7 @@ const CartScreen = ({ history }) => {
     variant: 'info',
     message: null,
   });
-  const [updatedQty, setUpdatedQty] = useState([]);
+  const [updatedQty, setUpdatedQty] = useState({});
 
   //redux related
   const dispatch = useDispatch();
@@ -41,7 +41,9 @@ const CartScreen = ({ history }) => {
       if (update.success) {
         setMsgHandler('success');
       } else if (update.error) {
-        setMsg({ ...msg, message: update.error });
+        let newMsgObj = msg;
+        newMsgObj.message = update.error;
+        setMsg(newMsgObj);
         setMsgHandler('danger', 3);
       }
     });
@@ -58,34 +60,18 @@ const CartScreen = ({ history }) => {
     if (window.confirm(msg)) dispatch(removeItem(id));
   };
 
-  const updatedQtyHandler = (id, qty) => {
-    if (updatedQty.length === 0) {
-      let newUpdatedQty = updatedQty;
-      newUpdatedQty.push({ _id: id, qty });
-      setUpdatedQty(newUpdatedQty);
-    } else {
-      for (let i = 0; i < updatedQty.length; i++) {
-        if (updatedQty[i]._id === id) {
-          let newUpdatedQty = updatedQty;
-          newUpdatedQty[i].qty = qty;
-          setUpdatedQty(newUpdatedQty);
-          break;
-        }
-        if (i === updatedQty.length - 1) {
-          let newUpdatedQty = updatedQty;
-          newUpdatedQty.push({ _id: id, qty });
-          setUpdatedQty(newUpdatedQty);
-        }
-      }
-    }
-  };
-
   const qtyResetHandler = (id, qty) => {
     dispatch(qtyReset(id, qty));
-    updatedQtyHandler(id, qty);
+
+    // prepare successful message
     let newMsgObj = msg;
     newMsgObj.message = 'Updated successfully';
     setMsg(newMsgObj);
+
+    // update the qty in the current window
+    let currUpdated = updatedQty;
+    currUpdated[id] = qty;
+    setUpdatedQty(currUpdated);
   };
 
   const checkoutHandler = () => {
@@ -120,7 +106,7 @@ const CartScreen = ({ history }) => {
                   <CartItem
                     key={item._id}
                     item={item}
-                    newQty={updatedQty.find((curr) => curr._id === item._id)}
+                    newQty={updatedQty[item._id]}
                     qtyResetHandler={qtyResetHandler}
                     removeFromCart={removeFromCart}
                   />

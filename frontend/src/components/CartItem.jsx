@@ -18,7 +18,7 @@ const CartItem = ({ item, newQty, qtyResetHandler, removeFromCart }) => {
         <Col md={2}>
           <Form.Control
             as='select'
-            value={newQty ? newQty.qty : item.qty}
+            defaultValue={newQty ? newQty : item.qty}
             onChange={(e) => qtyResetHandler(item._id, e.target.value)}
           >
             <CountOptions countInStock={item.countInStock} />
