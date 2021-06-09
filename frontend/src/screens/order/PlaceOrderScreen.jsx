@@ -35,33 +35,41 @@ const PlaceOrderScreen = ({ history }) => {
   const [paymentError, setPaymentError] = useState(false);
   const [paymentErrorMessage, setPaymentErrorMessage] = useState('undefined');
 
-  useEffect(() => {
-    if (userInfo && cart.cartItems.length === 0) dispatch(getAllCartItems());
-
-    const addPaypalScript = async () => {
-      try {
-        const { data: clientId } = await axios.get('/api/config/paypal', {
-          cancelToken: axios.CancelToken.source().token,
-        });
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.async = true;
-        script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
-        script.onload = () => setSdkReady(true);
-        document.body.appendChild(script);
-      } catch (err) {
-        console.log(`Error happened while axios request: ${err.message}`);
+  useEffect(
+    () => {
+      if (userInfo && cart.cartItems.length === 0) dispatch(getAllCartItems());
+      if (userInfo && !userInfo.shippingAddress) {
+        history.push('/');
       }
-    };
 
-    if (userInfo && !orderCreated.success) {
-      !window.paypal ? addPaypalScript() : setSdkReady(true);
-    } else if (orderCreated.success) {
-      history.push(`/payment-success?id=${orderCreated.order._id}`);
-    }
+      const addPaypalScript = async () => {
+        try {
+          const { data: clientId } = await axios.get('/api/config/paypal', {
+            cancelToken: axios.CancelToken.source().token,
+          });
+          console.log('building paypal');
+          const script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.async = true;
+          script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
+          script.onload = () => setSdkReady(true);
+          document.body.appendChild(script);
+        } catch (err) {
+          console.log(`Error happened while axios request: ${err.message}`);
+        }
+      };
 
-    return () => axios.CancelToken.source().cancel();
-  }, [userInfo, dispatch, orderCreated.success, cart.cartItems.length]);
+      if (userInfo && !orderCreated.success) {
+        !window.paypal ? addPaypalScript() : setSdkReady(true);
+      } else if (orderCreated.success) {
+        history.push(`/payment-success?id=${orderCreated.order._id}`);
+      }
+
+      return () => axios.CancelToken.source().cancel();
+    },
+    [userInfo, dispatch, orderCreated.success, cart.cartItems.length],
+    history
+  );
 
   const successPaymentHandler = (paymentResult) => {
     const paymentInfo = {

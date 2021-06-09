@@ -13,9 +13,11 @@ const Auth = ({ children, history, reverse }) => {
 
   useEffect(() => {
     if (!reverse) {
-      logged ? setPermit(true) : history.push(`/signin?redirect=${originPage}`);
+      logged ? setPermit(true) : history.push(originPage);
     } else {
-      !logged ? setPermit(true) : history.push(`/${queryRedirect}`);
+      !logged
+        ? setPermit(true)
+        : history.push(queryRedirect ? `/${queryRedirect}` : '/');
     }
   }, [logged, reverse]);
 
