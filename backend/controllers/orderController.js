@@ -6,8 +6,6 @@ import Order from '../models/orderModel.js';
 //@desc  Private, need authorization
 export const addOrderItems = asyncHandler(async (req, res) => {
   const {
-    orderItems,
-    shippingAddress,
     paymentMethod,
     paymentResult,
     taxPrice,
@@ -16,15 +14,15 @@ export const addOrderItems = asyncHandler(async (req, res) => {
     paidAt,
   } = req.body;
 
-  if ((orderItems && orderItems.length === 0 && paymentResult) || !paidAt) {
+  if (req.user.cartItems.length === 0 || !paymentResult || !paymentMethod) {
     res.status(400);
     throw new Error('Insufficient data');
   }
 
   const order = new Order({
-    orderItems,
+    orderItems: req.user.cartItems,
     user: req.user._id,
-    shippingAddress,
+    shippingAddress: req.user.shippingAddress,
     paymentMethod,
     paymentResult,
     taxPrice,
@@ -33,6 +31,10 @@ export const addOrderItems = asyncHandler(async (req, res) => {
     isPaid: true,
     paidAt,
   });
+
+  // removing the purchased item from the cart of the user
+  req.user.cartItems = [];
+  await req.user.save();
 
   const createdOrder = await order.save();
 

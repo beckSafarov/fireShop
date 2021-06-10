@@ -5,6 +5,7 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import Auth from '../components/Auth';
 import { useLocation } from 'react-router-dom';
+import secret from '../secrets.json';
 
 const TestScreen = ({ location, history, match }) => {
   const [person, setPerson] = useState({

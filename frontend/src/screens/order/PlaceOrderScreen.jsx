@@ -1,34 +1,35 @@
-// libraries and methods
+// libraries
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { PayPalButton } from 'react-paypal-button-v2';
-import { Link } from 'react-router-dom';
-import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+
+// methods
 import Calculations from '../../helpers/calculations.js';
 import Auth from '../../components/Auth';
 
-// internal components
+// UI components
 import Message from '../../components/Message';
 import CheckOutSteps from '../../components/CheckOutSteps';
 import Loader from '../../components/Loader';
 import ListRow from '../../components/ListRow';
+import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap';
+import { PayPalButton } from 'react-paypal-button-v2';
+import { Link } from 'react-router-dom';
 
 // redux actions
 import { createOrder } from '../../actions/orderActions';
-import { getAllCartItems } from '../../actions/cartActions';
 
 const PlaceOrderScreen = ({ history }) => {
   // bringing redux related things
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
   const orderCreated = useSelector((state) => state.orderReducers);
 
   // variables
   const { userInfo } = useSelector((state) => state.userLogin);
-  const calcs = Calculations(cart.cartItems);
-  const loading = cart.loading || orderCreated.loading;
-  const error = cart.error || orderCreated.error;
+  const { cartItems } = userInfo;
+  const calcs = Calculations(cartItems);
+  const loading = orderCreated.loading;
+  const error = orderCreated.error;
 
   // hooks states
   const [sdkReady, setSdkReady] = useState(false);
@@ -37,8 +38,7 @@ const PlaceOrderScreen = ({ history }) => {
 
   useEffect(
     () => {
-      if (userInfo && cart.cartItems.length === 0) dispatch(getAllCartItems());
-      if (userInfo && !userInfo.shippingAddress) {
+      if ((userInfo && !userInfo.shippingAddress) || cartItems.length === 0) {
         history.push('/');
       }
 
@@ -67,7 +67,7 @@ const PlaceOrderScreen = ({ history }) => {
 
       return () => axios.CancelToken.source().cancel();
     },
-    [userInfo, dispatch, orderCreated.success, cart.cartItems.length],
+    [userInfo, dispatch, orderCreated.success],
     history
   );
 
@@ -81,9 +81,7 @@ const PlaceOrderScreen = ({ history }) => {
 
     dispatch(
       createOrder({
-        orderItems: cart.cartItems,
-        shippingAddress: userInfo.shippingAddress,
-        paymentMethod: cart.paymentMethod,
+        paymentMethod: 'Paypal',
         paymentResult: paymentInfo,
         taxPrice: calcs.taxPrice,
         shippingPrice: calcs.shippingPrice,
@@ -107,19 +105,17 @@ const PlaceOrderScreen = ({ history }) => {
         <Loader />
       ) : error ? (
         <Message variant='danger'>
-          {cart.error || (
-            <>
-              <h2 className='danger-text'>Payment Failed!</h2>
-              <p>Error: {orderCreated.error || paymentErrorMessage}</p>
-              {orderCreated.error && (
-                <p className='mt-10'>
-                  This seems like a server error so please contact us at{' '}
-                  <a href='mailto:support@proshop.com'>support@proshop.com</a>{' '}
-                  with screenshot
-                </p>
-              )}
-            </>
-          )}
+          <>
+            <h2 className='danger-text'>Payment Failed!</h2>
+            <p>Error: {orderCreated.error || paymentErrorMessage}</p>
+            {orderCreated.error && (
+              <p className='mt-10'>
+                This seems like a server error so please contact us at{' '}
+                <a href='mailto:support@proshop.com'>support@proshop.com</a>{' '}
+                with screenshot
+              </p>
+            )}
+          </>
         </Message>
       ) : userInfo ? (
         <>
@@ -149,7 +145,7 @@ const PlaceOrderScreen = ({ history }) => {
                 <ListGroup.Item>
                   <p>
                     <strong>Payment Method: </strong>
-                    {cart.paymentMethod}
+                    {'Paypal'}
                   </p>
                 </ListGroup.Item>
 
@@ -157,34 +153,27 @@ const PlaceOrderScreen = ({ history }) => {
                   <p>
                     <strong>Order items: </strong>
                   </p>
-                  {cart.cartItems.length === 0 ? (
-                    <Message>You cart is empty</Message>
-                  ) : (
-                    <ListGroup variant='flush'>
-                      {cart.cartItems.map((item, index) => (
-                        <ListGroup.Item key={index}>
-                          <Row>
-                            <Col md={1}>
-                              <Image
-                                src={item.image}
-                                alt={item.name}
-                                className='img-fluid img-rounded'
-                              />
-                            </Col>
-                            <Col>
-                              <Link to={`/product/${item._id}`}>
-                                {item.name}
-                              </Link>
-                            </Col>
-                            <Col md={4}>
-                              {item.qty} x {item.price} = $
-                              {item.qty * item.price}
-                            </Col>
-                          </Row>
-                        </ListGroup.Item>
-                      ))}
-                    </ListGroup>
-                  )}
+                  <ListGroup variant='flush'>
+                    {cartItems.map((item, index) => (
+                      <ListGroup.Item key={index}>
+                        <Row>
+                          <Col md={1}>
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              className='img-fluid img-rounded'
+                            />
+                          </Col>
+                          <Col>
+                            <Link to={`/product/${item._id}`}>{item.name}</Link>
+                          </Col>
+                          <Col md={4}>
+                            {item.qty} x {item.price} = ${item.qty * item.price}
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
                 </ListGroup.Item>
               </ListGroup>
             </Col>

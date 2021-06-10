@@ -76,7 +76,6 @@ export const authUser = asyncHandler(async (req, res) => {
 //@route DELETE /api/users
 //@desc  Private
 export const removeUser = asyncHandler(async (req, res) => {
-  console.log(req.body);
   const { id } = req.body;
   if (!id) {
     res.status(401);
@@ -157,7 +156,7 @@ export const updateShippingAddress = asyncHandler(async (req, res) => {
   }
 
   req.user.shippingAddress = req.body;
-  req.user.save();
+  await req.user.save();
 
   res
     .status(200)
