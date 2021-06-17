@@ -38,7 +38,7 @@ const PlaceOrderScreen = ({ history }) => {
 
   useEffect(
     () => {
-      if ((userInfo && !userInfo.shippingAddress) || cartItems.length === 0) {
+      if (userInfo && !userInfo.shippingAddress) {
         history.push('/');
       }
 

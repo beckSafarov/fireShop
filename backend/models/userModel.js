@@ -56,21 +56,29 @@ userSchema.pre('save', function (next) {
 });
 
 userSchema.methods.addCartItem = function (item) {
-  this.cartItems.push(item);
+  let done = false;
+  const more = done ? 'more' : '';
+  let a = this.cartItems;
+  for (let curr of a) {
+    if (curr._id == item._id) {
+      curr.qty += item.qty;
+      done = true;
+      break;
+    } else {
+      console.log(`${curr._id} is not equal to ${item._id}`);
+    }
+  }
+
+  done ? (this.cartItems = a) : this.cartItems.push(item);
+
+  return {
+    cartItems: this.cartItems,
+    more,
+  };
 };
 
 userSchema.methods.removeCartItem = function (passed) {
   this.cartItems = this.cartItems.filter((current) => current._id !== passed);
-};
-
-userSchema.methods.incOrDecCartItemQty = function (id, incValue, add = true) {
-  this.cartItems.forEach((current) => {
-    if (current._id === id) {
-      add ? (current.qty += incValue) : (current.qty -= incValue);
-    }
-  });
-
-  return this.cartItems;
 };
 
 userSchema.methods.updateCartItemQty = function (id, newQty) {

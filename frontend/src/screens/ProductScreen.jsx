@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import Auth from '../helpers/auth';
 
 // -- UI COMPONENTS --
 import {
@@ -23,14 +22,11 @@ import CountOptions from '../components/CountOptions';
 import { listProductDetails } from '../actions/productActions';
 import { addToCart } from '../actions/cartActions';
 import store from '../store';
+import * as lcs from '../helpers/LCS';
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
   const [qty, setQty] = useState(1);
-  const [visibility, setVisibility] = useState(false);
-  const [alertMessage, setMessage] = useState(
-    `Item(s) has been added to your cart`
-  );
   const [productAdded, setProductAdded] = useState(false);
   const [flashMsg, setFlashMsg] = useState({
     display: false,
@@ -40,27 +36,20 @@ const ProductScreen = ({ match, history }) => {
 
   // -- bringing redux stores --
   const dispatch = useDispatch();
-  const productDetails = useSelector((state) => state.productDetails);
-  const cart = useSelector((state) => state.cart);
-  const {
-    loading: productDetailsLoading,
-    error: productDetailsError,
-    product,
-  } = productDetails;
-
-  // variables
-  const auth = Auth();
-  const cancelTokenSource = axios.CancelToken.source();
-  let loading = productDetailsLoading || auth.loading || cart.loading;
-  let error = productDetailsError || cart.error;
+  const { loading, error, product } = useSelector(
+    (state) => state.productDetails
+  );
+  const { userInfo } = useSelector((state) => state.userLogin);
+  const logged = userInfo ? true : false;
 
   useEffect(() => {
-    if (product._id !== match.params.id) {
+    if (product && product._id !== match.params.id) {
       dispatch(listProductDetails(match.params.id));
     }
 
     const unsubscribe = store.subscribe(() => {
       let cart = store.getState().cart;
+
       if (productAdded) {
         if (cart.success) {
           flashMessage(cart.message, 'success');
@@ -72,17 +61,31 @@ const ProductScreen = ({ match, history }) => {
     });
 
     return () => {
-      cancelTokenSource.cancel();
+      axios.CancelToken.source().cancel();
       unsubscribe();
     };
-  }, [dispatch, product._id, match, productAdded, error]);
+  }, [dispatch, product, match, productAdded]);
 
-  // -- handle items added to cart --
-  const addToCartHandler = async () => {
-    auth.logged
-      ? dispatch(addToCart(product, Number(qty)))
-      : history.push(`/signin?redirect=product/${product._id}`);
-    setProductAdded(true);
+  const addToCartHandler = () => {
+    const more = lcs.have(product) ? 'more' : '';
+    dispatch(addToCart(product, Number(qty), logged));
+    // history.push(`/signin?redirect=product/${product._id}`);
+
+    if (logged) {
+      setProductAdded(true);
+    } else {
+      const message = `You added ${qty} ${more} ${product.name}(s) to your shopping cart`;
+      flashMessage(message, 'success');
+    }
+  };
+
+  const buyNowHandler = () => {
+    if (!userInfo) {
+      flashMessage('but you have no account?!', 'info');
+    } else {
+      dispatch(addToCart(product, Number(qty)));
+      history.push(userInfo.shippingAddress ? '/placeorder' : '/shipping');
+    }
   };
 
   const flashMessage = (msg, variant = 'danger', seconds = 3) => {
@@ -169,14 +172,26 @@ const ProductScreen = ({ match, history }) => {
                 </ListGroup.Item>
               )}
               <ListGroup.Item>
-                <Button
-                  onClick={addToCartHandler}
-                  className='btn-block'
-                  type='button'
-                  disabled={product.countInStock === 0}
-                >
-                  Add to cart
-                </Button>
+                <Row>
+                  <Button
+                    onClick={addToCartHandler}
+                    className='btn-block'
+                    type='button'
+                    disabled={product.countInStock === 0}
+                  >
+                    Add to cart
+                  </Button>
+                </Row>
+                {/* <Row className='my-1'>
+                  <Button
+                    onClick={buyNowHandler}
+                    className='btn-block'
+                    type='button'
+                    disabled={product.countInStock === 0}
+                  >
+                    Buy Now
+                  </Button>
+                </Row> */}
               </ListGroup.Item>
             </ListGroup>
           </Col>

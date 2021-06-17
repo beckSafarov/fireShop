@@ -20,8 +20,7 @@ const HomeScreen = () => {
   const cancelTokenSource = axios.CancelToken.source();
 
   useEffect(() => {
-    dispatch(listProducts());
-
+    if (products.length === 0) dispatch(listProducts());
     return () => cancelTokenSource.cancel();
   }, [dispatch]);
 

@@ -1,15 +1,14 @@
 import * as constants from '../constants.js';
 import axios from 'axios';
+import { getCart } from '../helpers/LCS';
 
 export const login = (email, password) => async (dispatch) => {
   try {
     dispatch({ type: constants.USER_LOGIN_REQUEST });
 
-    const cancelTokenSource = axios.CancelToken.source();
-
     const config = {
       headers: { 'Content-Type': 'application/json' },
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     };
 
     const { data } = await axios.post(
@@ -39,8 +38,10 @@ export const logout = () => async (dispatch) => {
     dispatch({ type: constants.USER_LOGOUT_REQUEST });
     await axios.put('/api/users/logout');
     dispatch({ type: constants.USER_LOGOUT_SUCCESS });
-    localStorage.removeItem('userInfo');
+
     dispatch({ type: constants.USER_DETAILS_CLEAR });
+    dispatch({ type: constants.CART_FLUSH });
+    window.location.reload();
   } catch (err) {
     if (axios.isCancel(err)) {
       console.log('axios request cancelled');
@@ -60,11 +61,9 @@ export const register = (name, email, password) => async (dispatch) => {
   try {
     dispatch({ type: constants.USER_REGISTER_REQUEST });
 
-    const cancelTokenSource = axios.CancelToken.source();
-
     const config = {
       headers: { 'Content-Type': 'application/json' },
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     };
 
     const { data } = await axios.post(
@@ -95,11 +94,9 @@ export const updateUserProfile = (user) => async (dispatch) => {
   try {
     dispatch({ type: constants.USER_DETAILS_UPDATE_REQUEST });
 
-    const cancelTokenSource = axios.CancelToken.source();
-
     const config = {
       headers: { 'Content-Type': 'application/json' },
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     };
 
     await axios.put('/api/users/profile', user, config);
@@ -124,10 +121,8 @@ export const getMe = () => async (dispatch, getState) => {
   try {
     dispatch({ type: constants.USER_LOGIN_REQUEST });
 
-    const cancelTokenSource = axios.CancelToken.source();
-
     const { data } = await axios.get('../api/users/me', {
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     });
 
     dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.user });
@@ -150,11 +145,9 @@ export const createShaddress = (shaddress) => async (dispatch) => {
   try {
     dispatch({ type: constants.SHADDRESS_POST_REQUEST });
 
-    const cancelTokenSource = axios.CancelToken.source();
-
     const config = {
       headers: { 'Content-Type': 'application/json' },
-      cancelToken: cancelTokenSource.token,
+      cancelToken: axios.CancelToken.source().token,
     };
 
     const { data } = await axios.post(

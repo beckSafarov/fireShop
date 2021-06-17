@@ -1,6 +1,7 @@
 // Methods
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 //redux actions
 import { getMe } from './actions/userActions';
@@ -30,14 +31,30 @@ import UserOrdersScreen from './screens/user/UserOrdersScreen';
 import OrderInfoScreen from './screens/user/OrderInfoScreen';
 import ShaddressScreen from './screens/user/ShaddressScreen';
 import testScreen from './screens/testScreen';
+import { flushCart, getCart } from './helpers/LCS';
+import { addToCart } from './actions/cartActions';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { loading, userInfo } = useSelector((state) => state.userLogin);
+  const { loading: userLoading, userInfo: logged } = useSelector(
+    (state) => state.userLogin
+  );
+  const { loading: cartLoading, error } = useSelector((state) => state.cart);
+
+  const lcc = getCart();
+  const loading = userLoading || cartLoading;
 
   useEffect(() => {
-    if (!userInfo) dispatch(getMe());
-  }, [dispatch]);
+    if (!logged) dispatch(getMe());
+
+    if (logged && lcc.length > 0) {
+      dispatch(addToCart(lcc, null, true, true));
+    }
+
+    console.log('Error: ' + error);
+
+    return () => axios.CancelToken.source().cancel();
+  }, [dispatch, logged, error]);
 
   return (
     <Router>

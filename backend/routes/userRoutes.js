@@ -1,6 +1,8 @@
 import express from 'express';
 import {
   addCartItem,
+  addMany,
+  flushCartItems,
   getAllCartItems,
   removeCartItem,
   updateCartItemQty,
@@ -40,7 +42,10 @@ router
   .route('/cartItems')
   .get(protect, getAllCartItems)
   .post(protect, addCartItem)
-  .put(protect, updateCartItemQty);
+  .put(protect, updateCartItemQty)
+  .delete(protect, flushCartItems);
+
+router.route('/cartItems/many').post(protect, addMany);
 router.route('/cartItems/:id').delete(protect, removeCartItem);
 
 export default router;

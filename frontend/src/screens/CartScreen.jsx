@@ -4,15 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import Auth from '../components/Auth';
 import Calculations from '../helpers/calculations';
+import * as lcs from '../helpers/LCS';
+
 // ui components
 import { Link } from 'react-router-dom';
 import { Row, Col, ListGroup, Button, Card } from 'react-bootstrap';
 import Message from '../components/Message';
-import Loader from '../components/Loader';
 import CartItem from '../components/CartItem';
+import EmptyCart from '../components/EmptyCart';
+
 // redux related imports
-import { getAllCartItems, qtyReset, removeItem } from '../actions/cartActions';
+import { qtyReset, removeItem } from '../actions/cartActions';
 import store from '../store';
+import Loader from '../components/Loader';
 
 const CartScreen = ({ history }) => {
   const [msg, setMsg] = useState({
@@ -24,18 +28,14 @@ const CartScreen = ({ history }) => {
 
   //redux related
   const dispatch = useDispatch();
-  const allCartItems = useSelector((state) => state.cart);
-  const { loading: cartItemsLoading } = allCartItems;
 
   // variables
   const { userInfo } = useSelector((state) => state.userLogin);
-  const cartItems = userInfo ? userInfo.cartItems : [];
+  const logged = userInfo ? true : false;
+  const cartItems = userInfo ? userInfo.cartItems : lcs.getCart();
   const calcs = Calculations(cartItems);
-  let loading = cartItemsLoading;
 
   useEffect(() => {
-    if (userInfo) dispatch(getAllCartItems());
-
     const unsubscribe = store.subscribe(() => {
       let update = store.getState().cart;
       if (update.success) {
@@ -52,16 +52,18 @@ const CartScreen = ({ history }) => {
       axios.CancelToken.source().cancel();
       unsubscribe();
     };
-  }, [userInfo, dispatch]);
+  }, [dispatch]);
 
   const removeFromCart = (id, name) => {
-    const msg = `Are you sure to delete ${name} from your cart?`;
-
-    if (window.confirm(msg)) dispatch(removeItem(id));
+    const confirmation = `Are you sure to delete ${name} from your cart?`;
+    let newMsgObj = msg;
+    newMsgObj.message = `${name} has been removed from your cart`;
+    setMsg(newMsgObj);
+    if (window.confirm(confirmation)) dispatch(removeItem(id, logged));
   };
 
   const qtyResetHandler = (id, qty) => {
-    dispatch(qtyReset(id, qty));
+    dispatch(qtyReset(id, qty, logged));
 
     // prepare successful message
     let newMsgObj = msg;
@@ -75,7 +77,7 @@ const CartScreen = ({ history }) => {
   };
 
   const checkoutHandler = () => {
-    history.push(`/signin?from=cart&redirect=shipping`);
+    history.push(`/signin?redirect=shipping`);
   };
 
   const setMsgHandler = (variant = 'info', seconds = 2) => {
@@ -86,61 +88,59 @@ const CartScreen = ({ history }) => {
   };
 
   return (
-    <Auth history={history}>
-      {loading ? (
-        <Loader />
-      ) : cartItems ? (
-        <Row>
-          <Col md={8}>
-            <h1>Shopping Cart</h1>
-            {msg.display && (
-              <Message variant={msg.variant}>{msg.message}</Message>
-            )}
-            {cartItems.length === 0 ? (
-              <Message>
-                Your cart is empty <Link to='/'>Go back</Link>
-              </Message>
-            ) : (
-              <ListGroup variant='flush'>
-                {cartItems.map((item) => (
-                  <CartItem
-                    key={item._id}
-                    item={item}
-                    newQty={updatedQty[item._id]}
-                    qtyResetHandler={qtyResetHandler}
-                    removeFromCart={removeFromCart}
-                  />
-                ))}
-              </ListGroup>
-            )}
-          </Col>
-          <Col md={4}>
-            {calcs.subtotal !== 0 && (
-              <Card>
+    <>
+      {cartItems ? (
+        <>
+          {cartItems.length === 0 ? (
+            <EmptyCart />
+          ) : (
+            <Row>
+              <Col md={8}>
+                <h1>Shopping Cart</h1>
+                {msg.display && (
+                  <Message variant={msg.variant}>{msg.message}</Message>
+                )}
                 <ListGroup variant='flush'>
-                  <ListGroup.Item>
-                    <h4>Subtotal: {calcs.subtotal} item(s)</h4>
-                    <h4>Total price: ${calcs.productsPrice} </h4>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Button
-                      type='button'
-                      className='btn-block'
-                      disabled={cartItems.length === 0}
-                      onClick={checkoutHandler}
-                    >
-                      Proceed to Checkout
-                    </Button>
-                  </ListGroup.Item>
+                  {cartItems.map((item) => (
+                    <CartItem
+                      key={item._id}
+                      item={item}
+                      newQty={updatedQty[item._id]}
+                      qtyResetHandler={qtyResetHandler}
+                      removeFromCart={removeFromCart}
+                    />
+                  ))}
                 </ListGroup>
-              </Card>
-            )}
-          </Col>
-        </Row>
+              </Col>
+              <Col md={4}>
+                {calcs.subtotal !== 0 && (
+                  <Card>
+                    <ListGroup variant='flush'>
+                      <ListGroup.Item>
+                        <h4>Subtotal: {calcs.subtotal} item(s)</h4>
+                        <h4>Total price: ${calcs.productsPrice} </h4>
+                      </ListGroup.Item>
+                      <ListGroup.Item>
+                        <Button
+                          type='button'
+                          className='btn-block'
+                          disabled={cartItems.length === 0}
+                          onClick={checkoutHandler}
+                        >
+                          Proceed to Checkout
+                        </Button>
+                      </ListGroup.Item>
+                    </ListGroup>
+                  </Card>
+                )}
+              </Col>
+            </Row>
+          )}
+        </>
       ) : (
-        <p>you should never see this</p>
+        <Loader />
       )}
-    </Auth>
+    </>
   );
 };
 

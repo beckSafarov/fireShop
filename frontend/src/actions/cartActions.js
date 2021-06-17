@@ -1,140 +1,143 @@
 import * as constants from '../constants.js';
 import axios from 'axios';
+import * as lcs from '../helpers/LCS.js';
 
-export const addToCart = (product, qty) => async (dispatch, getState) => {
-  try {
-    dispatch({ type: constants.CART_REQUIRE_ADD_ITEM });
+export const addToCart =
+  (product, qty, logged = true, many = false) =>
+  async (dispatch, getState) => {
+    try {
+      dispatch({ type: constants.CART_REQUIRE_ADD_ITEM });
 
-    product.qty = qty;
+      if (!many) product.qty = qty;
 
-    const config = {
-      headers: { 'Content-Type': 'application/json' },
-      cancelToken: axios.CancelToken.source().token,
-    };
+      if (logged) {
+        const config = {
+          headers: { 'Content-Type': 'application/json' },
+          cancelToken: axios.CancelToken.source().token,
+        };
 
-    const data = await axios.post(`/api/users/cartitems`, product, config);
+        const manyRoute = many ? '/many' : '';
+        console.log(`Sending response to /api/users/cartItems${manyRoute}`);
+        const res = await axios.post(
+          `/api/users/cartItems${manyRoute}`,
+          product,
+          config
+        );
 
-    dispatch({
-      type: constants.CART_ADD_ITEM,
-      payload: {
-        cartItems: data.data.cartItems,
-        message: data.data.message,
-      },
-    });
+        dispatch({
+          type: constants.CART_ADD_ITEM,
+          payload: {
+            cartItems: res.data.cartItems,
+            message: res.data.message,
+          },
+        });
 
-    const newCartItems = getState().cart.cartItems;
-    dispatch({
-      type: constants.USER_INFO_UPDATE,
-      payload: {
-        cartItems: newCartItems,
-      },
-    });
-  } catch (err) {
-    if (axios.isCancel(err)) {
-      console.log('axios request cancelled');
-    } else {
-      dispatch({
-        type: constants.CART_ADD_ITEM_FAIL,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
-      });
+        if (many) lcs.flushCart();
+
+        const newCartItems = getState().cart.cartItems;
+        dispatch({
+          type: constants.USER_INFO_UPDATE,
+          payload: {
+            cartItems: newCartItems,
+          },
+        });
+      } else {
+        const { cart: newCart, message } = lcs.add(product);
+        dispatch({
+          type: constants.CART_ADD_ITEM,
+          payload: {
+            cartItems: newCart,
+            message: message,
+          },
+        });
+      }
+    } catch (err) {
+      if (axios.isCancel(err)) {
+        console.log('axios request cancelled');
+      } else {
+        dispatch({
+          type: constants.CART_ADD_ITEM_FAIL,
+          payload:
+            err.response && err.response.data.message
+              ? err.response.data.message
+              : err.message,
+        });
+      }
     }
-  }
-};
+  };
 
-export const getAllCartItems = () => async (dispatch) => {
-  try {
-    dispatch({ type: constants.CART_REQUIRE_ALL_ITEMS });
+export const qtyReset =
+  (id, qty, logged = true) =>
+  async (dispatch) => {
+    try {
+      dispatch({ type: constants.CARD_ITEM_QUANTITY_RESET_REQUIRE });
+      const body = { _id: id, qty };
 
-    const data = await axios.get(`/api/users/cartitems`, {
-      cancelToken: axios.CancelToken.source().token,
-    });
+      if (logged) {
+        const config = {
+          headers: { 'Content-Type': 'application/json' },
+          cancelToken: axios.CancelToken.source().token,
+        };
 
-    dispatch({
-      type: constants.CART_REQUIRE_ALL_ITEMS_SUCCESS,
-      payload: data.data.cartItems,
-    });
-  } catch (err) {
-    if (axios.isCancel(err)) {
-      console.log('axios request cancelled');
-    } else {
-      dispatch({
-        type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
-      });
+        const res = await axios.put(`api/users/cartItems`, body, config);
+
+        dispatch({
+          type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
+          payload: res.data.cartItems,
+        });
+      } else {
+        const cartAfterUpdate = lcs.qtyUpdate(body);
+        dispatch({
+          type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
+          payload: cartAfterUpdate,
+        });
+      }
+    } catch (err) {
+      if (axios.isCancel(err)) {
+        console.log('axios request cancelled');
+      } else {
+        dispatch({
+          type: constants.CARD_ITEM_QUANTITY_RESET_FAIL,
+          payload:
+            err.response && err.response.data.message
+              ? err.response.data.message
+              : err.message,
+        });
+      }
     }
-  }
-};
+  };
 
-export const qtyReset = (id, qty) => async (dispatch, getState) => {
-  try {
-    dispatch({ type: constants.CARD_ITEM_QUANTITY_RESET_REQUIRE });
+export const removeItem =
+  (id, logged = true) =>
+  async (dispatch, getState) => {
+    try {
+      dispatch({ type: constants.CART_REMOVE_ITEM_REQUEST });
 
-    const config = {
-      headers: { 'Content-Type': 'application/json' },
-      cancelToken: axios.CancelToken.source().token,
-    };
+      if (logged) {
+        const res = await axios.delete(`/api/users/cartItems/${id}`, {
+          cancelToken: axios.CancelToken.source().token,
+        });
 
-    const body = { _id: id, qty };
+        dispatch({
+          type: constants.CART_REQUIRE_ALL_ITEMS_SUCCESS,
+          payload: res.data.cartItems,
+        });
 
-    const serverResponse = await axios.put(`api/users/cartItems`, body, config);
-
-    dispatch({
-      type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
-      payload: serverResponse.data.cartItems,
-    });
-
-    // const newCartItems = getState().cart.cartItems;
-    // dispatch({
-    //   type: constants.USER_INFO_UPDATE,
-    //   payload: {
-    //     cartItems: newCartItems,
-    //   },
-    // });
-  } catch (err) {
-    if (axios.isCancel(err)) {
-      console.log('axios request cancelled');
-    } else {
-      dispatch({
-        type: constants.CARD_ITEM_QUANTITY_RESET_FAIL,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
-      });
-    }
-  }
-};
-
-export const removeItem = (id) => async (dispatch, getState) => {
-  try {
-    dispatch({ type: constants.CART_REMOVE_ITEM_REQUEST });
-
-    const serverResponse = await axios.delete(`/api/users/cartItems/${id}`, {
-      cancelToken: axios.CancelToken.source().token,
-    });
-
-    dispatch({
-      type: constants.CART_REQUIRE_ALL_ITEMS_SUCCESS,
-      payload: serverResponse.data.cartItems,
-    });
-
-    const newCartItems = getState().cart.cartItems;
-    dispatch({
-      type: constants.USER_INFO_UPDATE,
-      payload: {
-        cartItems: newCartItems,
-      },
-    });
-  } catch (err) {
-    if (axios.isCancel(err)) {
-      console.log('axios request cancelled');
-    } else {
+        const newCartItems = getState().cart.cartItems;
+        dispatch({
+          type: constants.USER_INFO_UPDATE,
+          payload: {
+            cartItems: newCartItems,
+          },
+        });
+      } else {
+        const cartAfterRemoval = lcs.remove({ _id: id });
+        dispatch({
+          type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
+          payload: cartAfterRemoval,
+        });
+      }
+    } catch (err) {
       if (axios.isCancel(err)) {
         console.log('axios request cancelled');
       } else {
@@ -147,8 +150,7 @@ export const removeItem = (id) => async (dispatch, getState) => {
         });
       }
     }
-  }
-};
+  };
 
 export const savePaymentMethod = (data) => (dispatch) => {
   dispatch({

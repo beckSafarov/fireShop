@@ -99,10 +99,19 @@ export const cartReducer = (
         ...state,
         shippingAddress: action.payload,
       };
+
     case constants.CART_SAVE_PAYMENT_METHOD:
       return {
         ...state,
         paymentMethod: action.payload,
+      };
+
+    case constants.CART_FLUSH:
+      return {
+        loading: false,
+        message: null,
+        cartItems: [],
+        shippingAddress: {},
       };
     default:
       return state;
