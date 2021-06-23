@@ -123,6 +123,27 @@ export const updateCartItemQty = asyncHandler(async (req, res) => {
   });
 });
 
+export const updateItemQts = asyncHandler(async (req, res) => {
+  // {41423:2, 23433:3, ....};
+  const qts = req.body;
+  const cartItems = req.user.cartItems;
+  Object.keys(qts).forEach((id) => {
+    for (let i = 0; i < cartItems.length; i++) {
+      if (cartItems[i]._id === id) {
+        cartItems[i].qty = qts[id];
+        break;
+      }
+    }
+  });
+
+  req.user.cartItems = cartItems;
+  req.user.save();
+  res.status(200).json({
+    success: true,
+    cartItems: req.user.cartItems,
+  });
+});
+
 //@desc  get all items from cart
 //@route GET /api/users/cartitems
 //@desc  Private, need authorization

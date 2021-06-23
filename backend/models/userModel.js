@@ -57,15 +57,12 @@ userSchema.pre('save', function (next) {
 
 userSchema.methods.addCartItem = function (item) {
   let done = false;
-  const more = done ? 'more' : '';
   let a = this.cartItems;
   for (let curr of a) {
     if (curr._id == item._id) {
       curr.qty += item.qty;
       done = true;
       break;
-    } else {
-      console.log(`${curr._id} is not equal to ${item._id}`);
     }
   }
 
@@ -73,7 +70,7 @@ userSchema.methods.addCartItem = function (item) {
 
   return {
     cartItems: this.cartItems,
-    more,
+    more: done ? 'more' : '',
   };
 };
 

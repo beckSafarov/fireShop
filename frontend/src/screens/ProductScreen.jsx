@@ -22,7 +22,7 @@ import CountOptions from '../components/CountOptions';
 import { listProductDetails } from '../actions/productActions';
 import { addToCart } from '../actions/cartActions';
 import store from '../store';
-import * as lcs from '../helpers/LCS';
+import * as lcs from '../helpers/cartLCS';
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --

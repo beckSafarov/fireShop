@@ -6,6 +6,7 @@ import {
   getAllCartItems,
   removeCartItem,
   updateCartItemQty,
+  updateItemQts,
 } from '../controllers/cartController.js';
 const router = express.Router();
 import {
@@ -45,7 +46,10 @@ router
   .put(protect, updateCartItemQty)
   .delete(protect, flushCartItems);
 
-router.route('/cartItems/many').post(protect, addMany);
+router
+  .route('/cartItems/many')
+  .post(protect, addMany)
+  .put(protect, updateItemQts);
 router.route('/cartItems/:id').delete(protect, removeCartItem);
 
 export default router;

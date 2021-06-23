@@ -4,115 +4,88 @@ export const cartReducer = (
   state = { loading: false, message: null, cartItems: [], shippingAddress: {} },
   action
 ) => {
+  const Error = () => {
+    return {
+      ...state,
+      success: false,
+      loading: false,
+      error: action.payload,
+    };
+  };
+
+  const Loading = () => {
+    return { ...state, loading: true };
+  };
+
+  const Success = (cartItems, successType, message, shaddress) => {
+    return {
+      loading: false,
+      success: true,
+      successType: successType || 'undefined',
+      message: message || null,
+      cartItems: cartItems || state.cartItems,
+      shippingAddress: shaddress || state.shippingAddress,
+    };
+  };
+
   switch (action.type) {
     case constants.CART_REQUIRE_ADD_ITEM:
-      return { ...state, loading: false };
+      return Loading();
+
     case constants.CART_ADD_ITEM:
-      return {
-        ...state,
-        success: true,
-        cartItems: action.payload.cartItems,
-        message: action.payload.message,
-      };
+      const { cartItems, message } = action.payload;
+      return Success(cartItems, '', message);
+
     case constants.CART_ADD_ITEM_FAIL:
-      return {
-        ...state,
-        success: false,
-        loading: false,
-        error: action.payload,
-      };
+      return Error();
+
     case constants.CART_REQUIRE_ALL_ITEMS:
-      return {
-        ...state,
-        success: undefined,
-        loading: true,
-      };
+      return Loading();
+
     case constants.CART_REQUIRE_ALL_ITEMS_SUCCESS:
-      return {
-        ...state,
-        success: undefined,
-        loading: false,
-        cartItems: action.payload,
-      };
+      return Success(action.payload, 'require');
+
     case constants.CART_REQUIRE_ALL_ITEMS_FAIL:
-      return {
-        ...state,
-        success: false,
-        loading: false,
-        error: action.payload,
-      };
+      return Error();
+
     case constants.CARD_ITEM_QUANTITY_RESET_REQUIRE:
-      return {
-        ...state,
-        loading: true,
-      };
+      return Loading();
+
     case constants.CARD_ITEM_QUANTITY_RESET_SUCCESS:
-      return {
-        ...state,
-        success: true,
-        loading: false,
-        cartItems: [...state.cartItems, action.payload],
-      };
+      return Success(action.payload, 'reset');
+
     case constants.CARD_ITEM_QUANTITY_RESET_FAIL:
-      return {
-        ...state,
-        success: false,
-        loading: false,
-        error: action.payload,
-      };
-    case constants.CART_REQUIRE_ALL_ITEMS_SUCCESS:
-      return {
-        ...state,
-        success: true,
-        loading: false,
-        cartItems: action.payload,
-      };
-    case constants.CART_REQUIRE_ALL_ITEMS_FAIL:
-      return {
-        ...state,
-        success: false,
-        loading: false,
-        error: action.payload,
-      };
+      return Error();
+
     case constants.CART_REMOVE_ITEM_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
+      return Loading();
+
     case constants.CART_REMOVE_ITEM_SUCCESS:
-      return {
-        ...state,
-        success: true,
-        loading: false,
-        cartItems: action.payload,
-      };
+      return Success(action.payload, 'remove');
+
     case constants.CART_REMOVE_ITEM_FAILURE:
-      return {
-        ...state,
-        success: false,
-        loading: false,
-        error: action.payload,
-      };
+      return Error();
+
+    case constants.CART_PROPERTY_RESET:
+      //action.payload = 'ewfwefw'
+      let newState = state;
+      newState[action.payload] = null;
+      return newState;
     case constants.CART_SAVE_SHIPPING_ADDRESS:
-      //type: ..., payload: shippingAddress
-      return {
-        ...state,
-        shippingAddress: action.payload,
-      };
+      return { ...state, shippingAddress: action.payload };
 
     case constants.CART_SAVE_PAYMENT_METHOD:
-      return {
-        ...state,
-        paymentMethod: action.payload,
-      };
+      return { ...state, paymentMethod: action.payload };
+
+    case constants.CART_FLUSH_REQUIRE:
+      return Loading();
 
     case constants.CART_FLUSH:
-      return {
-        loading: false,
-        message: null,
-        cartItems: [],
-        shippingAddress: {},
-      };
+      return Success([], '', null, {});
+
+    case constants.CART_FLUSH_FAIL:
+      return Error();
+
     default:
       return state;
   }

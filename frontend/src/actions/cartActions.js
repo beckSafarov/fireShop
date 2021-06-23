@@ -1,6 +1,6 @@
 import * as constants from '../constants.js';
 import axios from 'axios';
-import * as lcs from '../helpers/LCS.js';
+import * as lcs from '../helpers/cartLCS.js';
 
 export const addToCart =
   (product, qty, logged = true, many = false) =>
@@ -17,7 +17,6 @@ export const addToCart =
         };
 
         const manyRoute = many ? '/many' : '';
-        console.log(`Sending response to /api/users/cartItems${manyRoute}`);
         const res = await axios.post(
           `/api/users/cartItems${manyRoute}`,
           product,
@@ -107,6 +106,43 @@ export const qtyReset =
     }
   };
 
+export const qtsReset = (body) => async (dispatch) => {
+  try {
+    dispatch({ type: constants.CARD_ITEM_QUANTITY_RESET_REQUIRE });
+
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+      cancelToken: axios.CancelToken.source().token,
+    };
+
+    const res = await axios.put('api/users/cartItems/many', body, config);
+
+    dispatch({
+      type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
+      payload: res.data.cartItems,
+    });
+
+    dispatch({
+      type: constants.USER_INFO_UPDATE,
+      payload: {
+        cartItems: res.data.cartItems,
+      },
+    });
+  } catch (err) {
+    if (axios.isCancel(err)) {
+      console.log('axios request cancelled');
+    } else {
+      dispatch({
+        type: constants.CARD_ITEM_QUANTITY_RESET_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
+  }
+};
+
 export const removeItem =
   (id, logged = true) =>
   async (dispatch, getState) => {
@@ -159,4 +195,12 @@ export const savePaymentMethod = (data) => (dispatch) => {
   });
 
   localStorage.setItem('paymentMethod', JSON.stringify(data));
+};
+
+export const flushCart = () => async (dispatch) => {
+  try {
+    dispatch({
+      type: constants.CART_FLUSH,
+    });
+  } catch (err) {}
 };

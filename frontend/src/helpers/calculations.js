@@ -1,4 +1,4 @@
-const Calculations = (cartItems = []) => {
+export const Calculations = (cartItems = []) => {
   if (cartItems.length === 0)
     return {
       subtotal: 0,
@@ -17,11 +17,10 @@ const Calculations = (cartItems = []) => {
     return (Math.round(num * 100) / 100).toFixed(2);
   };
 
-  // calculating the total price of products
-  let productsPrice = 0;
-  cartItems.forEach((item) => {
-    productsPrice += item.qty * item.price;
-  });
+  const productsPrice = cartItems.reduce(
+    (total, curr) => total + curr.qty * curr.price,
+    0
+  );
 
   // calculating the shipping price
   const shippingPrice = addDecimals(
@@ -43,4 +42,30 @@ const Calculations = (cartItems = []) => {
   };
 };
 
-export default Calculations;
+export const cartScreenCalcs = (cartItems = [], qtyLcs) => {
+  let lcs = !qtyLcs.isEmpty;
+  let productsPrice = 0;
+
+  if (lcs) {
+    let updatedQts = qtyLcs.getQts();
+    Object.keys(updatedQts).forEach((id) => {
+      for (let i = 0; i < cartItems.length; i++) {
+        if (id === cartItems[i]) {
+          cartItems[i].qty = updatedQts[id];
+          break;
+        }
+      }
+    });
+  }
+
+  const subtotal = cartItems.reduce(
+    (total, current) => (total += current.qty),
+    0
+  );
+
+  cartItems.forEach((i) => {
+    productsPrice += i.qty * i.price;
+  });
+
+  return { subtotal, productsPrice };
+};

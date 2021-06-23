@@ -7,7 +7,7 @@ import axios from 'axios';
 import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import Calculations from '../../helpers/calculations';
+import { Calculations } from '../../helpers/calculations';
 //Redux actions
 import { getOrderDetails } from '../../actions/orderActions';
 import Auth from '../../components/Auth';

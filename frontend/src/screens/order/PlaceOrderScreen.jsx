@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
 // methods
-import Calculations from '../../helpers/calculations.js';
+import { Calculations } from '../../helpers/calculations.js';
 import Auth from '../../components/Auth';
 
 // UI components

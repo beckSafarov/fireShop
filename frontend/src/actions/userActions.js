@@ -1,6 +1,6 @@
 import * as constants from '../constants.js';
 import axios from 'axios';
-import { getCart } from '../helpers/LCS';
+import { getCart } from '../helpers/cartLCS';
 
 export const login = (email, password) => async (dispatch) => {
   try {

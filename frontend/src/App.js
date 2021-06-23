@@ -31,7 +31,7 @@ import UserOrdersScreen from './screens/user/UserOrdersScreen';
 import OrderInfoScreen from './screens/user/OrderInfoScreen';
 import ShaddressScreen from './screens/user/ShaddressScreen';
 import testScreen from './screens/testScreen';
-import { flushCart, getCart } from './helpers/LCS';
+import { flushCart, getCart } from './helpers/cartLCS';
 import { addToCart } from './actions/cartActions';
 
 const App = () => {
@@ -50,8 +50,6 @@ const App = () => {
     if (logged && lcc.length > 0) {
       dispatch(addToCart(lcc, null, true, true));
     }
-
-    console.log('Error: ' + error);
 
     return () => axios.CancelToken.source().cancel();
   }, [dispatch, logged, error]);

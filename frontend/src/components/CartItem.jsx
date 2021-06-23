@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { qtyReset } from '../actions/cartActions';
 
 const CartItem = ({ item, newQty, qtyResetHandler, removeFromCart }) => {
-  console.log(item);
   return (
     <ListGroup.Item key={item._id}>
       <p> {item.name}</p>
