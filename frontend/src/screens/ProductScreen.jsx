@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-
+// -- Helpers
+import * as lcs from '../helpers/cartLCS';
 // -- UI COMPONENTS --
 import {
   Row,
@@ -17,17 +18,14 @@ import {
 import Rating from '../components/Rating';
 import Loader from '../components/Loader';
 import CountOptions from '../components/CountOptions';
-
 // -- REDUX ACTIONS
 import { listProductDetails } from '../actions/productActions';
-import { addToCart } from '../actions/cartActions';
-import store from '../store';
-import * as lcs from '../helpers/cartLCS';
+import { addToCart, buyNowAction } from '../actions/cartActions';
+import { CART_PROPERTY_RESET } from '../constants';
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
   const [qty, setQty] = useState(1);
-  const [productAdded, setProductAdded] = useState(false);
   const [flashMsg, setFlashMsg] = useState({
     display: false,
     msg: null,
@@ -40,6 +38,11 @@ const ProductScreen = ({ match, history }) => {
     (state) => state.productDetails
   );
   const { userInfo } = useSelector((state) => state.userLogin);
+  const {
+    successType,
+    error: cartError,
+    message: cartMessage,
+  } = useSelector((state) => state.cart);
   const logged = userInfo ? true : false;
 
   useEffect(() => {
@@ -47,45 +50,42 @@ const ProductScreen = ({ match, history }) => {
       dispatch(listProductDetails(match.params.id));
     }
 
-    const unsubscribe = store.subscribe(() => {
-      let cart = store.getState().cart;
-
-      if (productAdded) {
-        if (cart.success) {
-          flashMessage(cart.message, 'success');
-        } else if (cart.error) {
-          flashMessage(cart.error);
-        }
-        setProductAdded(false);
+    if (successType) {
+      switch (successType) {
+        case 'add':
+          flashMessage(cartMessage, 'success');
+          break;
+        case 'buyNow':
+          history.push(
+            logged
+              ? userInfo.shippingAddress
+                ? '/placeorder'
+                : '/shipping'
+              : '/signin?redirect=shipping'
+          );
+          break;
       }
-    });
+      rxReset('successType');
+    } else if (cartError) {
+      flashMessage(cartError);
+      rxReset('error');
+    }
 
-    return () => {
-      axios.CancelToken.source().cancel();
-      unsubscribe();
-    };
-  }, [dispatch, product, match, productAdded]);
+    return () => axios.CancelToken.source().cancel();
+  }, [dispatch, product, match, successType, cartError]);
 
   const addToCartHandler = () => {
     const more = lcs.have(product) ? 'more' : '';
     dispatch(addToCart(product, Number(qty), logged));
-    // history.push(`/signin?redirect=product/${product._id}`);
 
-    if (logged) {
-      setProductAdded(true);
-    } else {
-      const message = `You added ${qty} ${more} ${product.name}(s) to your shopping cart`;
-      flashMessage(message, 'success');
+    if (!logged) {
+      const text = `You added ${qty} ${more} ${product.name}(s) to your shopping cart`;
+      flashMessage(text, 'success');
     }
   };
 
   const buyNowHandler = () => {
-    if (!userInfo) {
-      flashMessage('but you have no account?!', 'info');
-    } else {
-      dispatch(addToCart(product, Number(qty)));
-      history.push(userInfo.shippingAddress ? '/placeorder' : '/shipping');
-    }
+    dispatch(buyNowAction(product, Number(qty), logged));
   };
 
   const flashMessage = (msg, variant = 'danger', seconds = 3) => {
@@ -94,6 +94,9 @@ const ProductScreen = ({ match, history }) => {
       setFlashMsg({ display: false });
     }, seconds * 1000);
   };
+
+  const rxReset = (property) =>
+    dispatch({ type: CART_PROPERTY_RESET, payload: property });
 
   return (
     <>
@@ -182,7 +185,7 @@ const ProductScreen = ({ match, history }) => {
                     Add to cart
                   </Button>
                 </Row>
-                {/* <Row className='my-1'>
+                <Row className='my-1'>
                   <Button
                     onClick={buyNowHandler}
                     className='btn-block'
@@ -191,7 +194,7 @@ const ProductScreen = ({ match, history }) => {
                   >
                     Buy Now
                   </Button>
-                </Row> */}
+                </Row>
               </ListGroup.Item>
             </ListGroup>
           </Col>

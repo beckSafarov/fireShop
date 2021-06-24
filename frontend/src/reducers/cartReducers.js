@@ -34,9 +34,18 @@ export const cartReducer = (
 
     case constants.CART_ADD_ITEM:
       const { cartItems, message } = action.payload;
-      return Success(cartItems, '', message);
+      return Success(cartItems, 'add', message);
 
     case constants.CART_ADD_ITEM_FAIL:
+      return Error();
+
+    case constants.CART_REQUIRE_BUY_NOW:
+      return Loading();
+
+    case constants.CART_BUY_NOW_SUCCESS:
+      return Success(action.payload.cartItems, 'buyNow', null);
+
+    case constants.CART_BUY_NOW_FAIL:
       return Error();
 
     case constants.CART_REQUIRE_ALL_ITEMS:

@@ -65,6 +65,56 @@ export const addToCart =
     }
   };
 
+export const buyNowAction =
+  (product, qty, logged) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: constants.CART_REQUIRE_BUY_NOW });
+
+      product.qty = qty;
+
+      if (logged) {
+        const config = {
+          headers: { 'Content-Type': 'application/json' },
+          cancelToken: axios.CancelToken.source().token,
+        };
+
+        const res = await axios.post(`/api/users/cartItems`, product, config);
+
+        dispatch({
+          type: constants.CART_BUY_NOW_SUCCESS,
+          payload: {
+            cartItems: res.data.cartItems,
+            message: res.data.message,
+          },
+        });
+        const newCartItems = getState().cart.cartItems;
+        dispatch({
+          type: constants.USER_INFO_UPDATE,
+          payload: {
+            cartItems: newCartItems,
+          },
+        });
+      } else {
+        const { cart: newCart, message } = lcs.add(product);
+        dispatch({
+          type: constants.CART_BUY_NOW_SUCCESS,
+          payload: {
+            cartItems: newCart,
+            message: message,
+          },
+        });
+      }
+    } catch (err) {
+      dispatch({
+        type: constants.CART_BUY_NOW_FAIL,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      });
+    }
+  };
+
 export const qtyReset =
   (id, qty, logged = true) =>
   async (dispatch) => {
