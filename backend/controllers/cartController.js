@@ -81,48 +81,6 @@ export const addMany = asyncHandler(async (req, res) => {
   });
 });
 
-//@desc  add a cart item
-//@route PUT /api/users/cartitems
-//@desc  Private, need authorization
-export const updateCartItemQty = asyncHandler(async (req, res) => {
-  const { _id, qty: newQty } = req.body;
-  if (!_id || !newQty) {
-    res.status(404);
-    throw new Error(`Insufficient data`);
-  }
-  const userList = await User.find({ _id: req.user.id, 'cartItems._id': _id });
-  const user = userList.pop();
-  if (!user) {
-    res.status(404);
-    throw new Error(
-      `Invalid order id. Seems like you do not have such product in your cart`
-    );
-  }
-
-  // change the cart items countInStock from the db
-  const { qty: oldQty } = user.cartItems.find((product) => product._id === _id);
-  const item = await Product.findById(_id);
-
-  if (item.countInStock >= newQty) {
-    item.countInStock -= newQty - oldQty;
-    await item.save();
-  } else {
-    res.status(400);
-    throw new Error(
-      `Not enough products in stock. In stock: ${item.countInStock}, you require: ${newQty}`
-    );
-  }
-
-  // update user's cart item's quantity
-  const newCartItems = await user.updateCartItemQty(_id, newQty);
-  await user.save();
-
-  res.status(200).json({
-    success: true,
-    cartItems: newCartItems,
-  });
-});
-
 export const updateItemQts = asyncHandler(async (req, res) => {
   // {41423:2, 23433:3, ....};
   const qts = req.body;

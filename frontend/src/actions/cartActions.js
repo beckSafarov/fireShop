@@ -115,47 +115,6 @@ export const buyNowAction =
     }
   };
 
-export const qtyReset =
-  (id, qty, logged = true) =>
-  async (dispatch) => {
-    try {
-      dispatch({ type: constants.CARD_ITEM_QUANTITY_RESET_REQUIRE });
-      const body = { _id: id, qty };
-
-      if (logged) {
-        const config = {
-          headers: { 'Content-Type': 'application/json' },
-          cancelToken: axios.CancelToken.source().token,
-        };
-
-        const res = await axios.put(`api/users/cartItems`, body, config);
-
-        dispatch({
-          type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
-          payload: res.data.cartItems,
-        });
-      } else {
-        const cartAfterUpdate = lcs.qtyUpdate(body);
-        dispatch({
-          type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
-          payload: cartAfterUpdate,
-        });
-      }
-    } catch (err) {
-      if (axios.isCancel(err)) {
-        console.log('axios request cancelled');
-      } else {
-        dispatch({
-          type: constants.CARD_ITEM_QUANTITY_RESET_FAIL,
-          payload:
-            err.response && err.response.data.message
-              ? err.response.data.message
-              : err.message,
-        });
-      }
-    }
-  };
-
 export const qtsReset = (body) => async (dispatch) => {
   try {
     dispatch({ type: constants.CARD_ITEM_QUANTITY_RESET_REQUIRE });

@@ -1,13 +1,13 @@
 import express from 'express';
-import {
-  addCartItem,
-  addMany,
-  flushCartItems,
-  getAllCartItems,
-  removeCartItem,
-  updateCartItemQty,
-  updateItemQts,
-} from '../controllers/cartController.js';
+// import {
+//   addCartItem,
+//   addMany,
+//   flushCartItems,
+//   getAllCartItems,
+//   removeCartItem,
+//   updateCartItemQty,
+//   updateItemQts,
+// } from '../controllers/cartController.js';
 const router = express.Router();
 import {
   authUser,
@@ -22,6 +22,7 @@ import {
   updateUser,
 } from '../controllers/userController.js';
 import { protect } from '../middleware/auth.js';
+// import cartRoutes from './cartRoutes';
 
 // main
 router.route('/').get(getAllUsers).post(signUser).delete(protect, removeUser);
@@ -39,17 +40,19 @@ router.route('/login').post(authUser);
 router.route('/logout').put(protect, logout);
 
 // cart items related
-router
-  .route('/cartItems')
-  .get(protect, getAllCartItems)
-  .post(protect, addCartItem)
-  .put(protect, updateCartItemQty)
-  .delete(protect, flushCartItems);
+// router.use('/cartItems', cartRoutes);
 
-router
-  .route('/cartItems/many')
-  .post(protect, addMany)
-  .put(protect, updateItemQts);
-router.route('/cartItems/:id').delete(protect, removeCartItem);
+// router
+//   .route('/cartItems')
+//   .get(protect, getAllCartItems)
+//   .post(protect, addCartItem)
+//   .put(protect, updateCartItemQty)
+//   .delete(protect, flushCartItems);
+
+// router
+//   .route('/cartItems/many')
+//   .post(protect, addMany)
+//   .put(protect, updateItemQts);
+// router.route('/cartItems/:id').delete(protect, removeCartItem);
 
 export default router;
