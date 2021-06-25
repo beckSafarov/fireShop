@@ -18,6 +18,10 @@ const TestScreen = ({ location, history, match }) => {
 
   const changeStatus = (value) => setStatus(value * 3);
 
+  const clickMe = () => {
+    history.push('/shipping');
+  };
+
   return (
     <>
       <h1>Welcome to test page</h1>
@@ -46,6 +50,11 @@ const TestScreen = ({ location, history, match }) => {
           <h2>Status: {status}</h2>
         </Row>
       </Col>
+      <div className='py-4'>
+        <Button onClick={clickMe} block>
+          Click me
+        </Button>
+      </div>
     </>
   );
 };

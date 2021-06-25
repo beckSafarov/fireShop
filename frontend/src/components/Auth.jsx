@@ -17,7 +17,7 @@ const Auth = ({ children, history, reverse }) => {
     } else {
       !logged
         ? setPermit(true)
-        : history.push(queryRedirect ? `/${queryRedirect}` : '/');
+        : history.push(queryRedirect ? `/${queryRedirect}` : originPage);
     }
   }, [logged, reverse]);
 
@@ -25,10 +25,10 @@ const Auth = ({ children, history, reverse }) => {
 };
 
 Auth.defaultProps = {
-  children: <h1>Auth page</h1>,
+  children: <h1>Plain Auth Wrapper</h1>,
   history: {
     location: { pathname: '/' },
-    push: (loc = '/') => (window.location.href = loc),
+    push: (loc = '/profile') => (window.location.href = loc),
   },
   reverse: false,
 };

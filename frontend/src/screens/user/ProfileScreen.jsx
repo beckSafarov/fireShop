@@ -81,22 +81,21 @@ const ProfileScreen = ({ history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    const validation =
-      password === ''
-        ? FieldsValidated(name, email)
-        : FieldsValidated(name, email, password, confirmPass);
+    const validation = password
+      ? FieldsValidated(name, email)
+      : FieldsValidated(name, email, password, confirmPass);
 
     if (validation.success) {
       dispatch(
         updateUserProfile({
-          name: name !== '' ? name : undefined,
-          email: email !== '' ? email : undefined,
-          password: password !== '' ? password : undefined,
+          name: name ? name : undefined,
+          email: email ? email : undefined,
+          password: password ? password : undefined,
         })
       );
       setUpdated({
-        name: name !== '' && name,
-        email: email !== '' && email,
+        name: name && name,
+        email: email && email,
       });
     } else {
       setMessageHandler('danger', validation.message);

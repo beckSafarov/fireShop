@@ -29,12 +29,15 @@ const ShippingScreen = ({ history, location, match }) => {
 
   // variables
   const { userInfo } = useSelector((state) => state.userLogin);
+  const cart = useSelector((state) => state.cart);
   let loading = shaddress.loading;
 
   useEffect(() => {
     if (userInfo) {
-      if (userInfo.cartItems.length === 0) history.push('/');
-      if (userInfo.shippingAddress && address === '') resetValues();
+      if (userInfo.cartItems.length === 0 && cart.cartItems.length === 0) {
+        history.push('/');
+      }
+      if (userInfo.shippingAddress && !address) resetValues();
     }
 
     const unsubscribe = store.subscribe(() => {
