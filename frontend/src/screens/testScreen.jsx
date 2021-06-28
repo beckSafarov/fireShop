@@ -1,25 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { Row, Col, Form } from 'react-bootstrap';
+import { Link, useLocation } from 'react-router-dom';
+import { Row, Col, Nav, Form } from 'react-bootstrap';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import Auth from '../components/Auth';
-import { useLocation } from 'react-router-dom';
 import secret from '../secrets.json';
 import { Button } from 'react-bootstrap';
 import * as lcs from '../helpers/cartLCS';
+import { LinkContainer } from 'react-router-bootstrap';
+import { DropMenu, DropLink } from '../components/Dropdown';
 
 const TestScreen = ({ location, history, match }) => {
   const people = ['Beck', 'Tom'];
   const [status, setStatus] = useState(10);
+  const [positive, setPositive] = useState(false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    // window.addEventListener('click', dropMenuHandler);
+    // return () => window.removeEventListener('click', dropMenuHandler);
+  }, []);
 
   const changeStatus = (value) => setStatus(value * 3);
 
   const clickMe = () => {
-    history.push('/shipping');
+    // console.log('click me');
+    setPositive(!positive);
   };
 
   return (
@@ -50,11 +56,6 @@ const TestScreen = ({ location, history, match }) => {
           <h2>Status: {status}</h2>
         </Row>
       </Col>
-      <div className='py-4'>
-        <Button onClick={clickMe} block>
-          Click me
-        </Button>
-      </div>
     </>
   );
 };

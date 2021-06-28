@@ -26,7 +26,7 @@ const PlaceOrderScreen = ({ history }) => {
 
   // variables
   const { userInfo } = useSelector((state) => state.userLogin);
-  const { cartItems } = userInfo;
+  const cartItems = userInfo ? userInfo.cartItems : [];
   const calcs = Calculations(cartItems);
   const loading = orderCreated.loading;
   const error = orderCreated.error;

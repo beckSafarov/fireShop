@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { logout } from '../actions/userActions';
+import { DropLink } from '../components/Dropdown';
 
 const Header = ({ history }) => {
   const dispatch = useDispatch();
@@ -53,6 +54,13 @@ const Header = ({ history }) => {
                     <i className='fas fa-user'></i> Sign in
                   </Nav.Link>
                 </LinkContainer>
+              )}
+              {userInfo && userInfo.isAdmin && (
+                <NavDropdown title={'Admin Menu'} id='username'>
+                  <LinkContainer to='/userList'>
+                    <NavDropdown.Item key={1}>Users List</NavDropdown.Item>
+                  </LinkContainer>
+                </NavDropdown>
               )}
             </Nav>
           </Navbar.Collapse>

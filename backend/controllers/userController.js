@@ -62,36 +62,30 @@ export const authUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email }).select('+password');
 
-  if (!user || !(await bcrypt.compareSync(password, user.password))) {
+  if (!user || !bcrypt.compareSync(password, user.password)) {
     res.status(401);
     throw new Error(`Invalid credentials`);
   }
 
   user.password = undefined;
-  user.isAdmin = undefined;
   sendToken(user.id, res, user);
 });
 
 //@desc  delete a user
-//@route DELETE /api/users
-//@desc  Private
+//@route DELETE /api/users/:id
+//@desc  Private. Admin only
 export const removeUser = asyncHandler(async (req, res) => {
-  const { id } = req.body;
-  if (!id) {
-    res.status(401);
-    throw new Error(`User id not provided`);
-  }
-  const userExists = await User.findById(id);
-  if (!userExists) {
+  const id = req.params.id;
+
+  const deletedUser = await User.findByIdAndDelete(id);
+  if (!deletedUser) {
     res.status(404);
     throw new Error('No such user found');
   }
-  const name = userExists.name;
-  await User.findByIdAndDelete(id);
 
   res.status(200).json({
     success: true,
-    message: `${name} has been deleted`,
+    message: `${deletedUser.name} has been deleted`,
   });
 });
 

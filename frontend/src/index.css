@@ -106,3 +106,74 @@ strong {
   width: 100%;
   padding: 50px 0 50px 0;
 }
+
+.adminRow {
+  background-color: #29a3a3;
+  color: #fff;
+}
+
+.flat-btn {
+  border: none;
+  padding: 5px 10px 5px 10px;
+  background-color: transparent;
+  color: #55595c;
+}
+
+.dropdown-menu {
+  position: relative;
+  margin-top: 0;
+  display: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  height: max-content;
+  width: inherit;
+}
+
+.dropdown-menu > a,
+.dropdown-menu div {
+  position: relative;
+  padding: 10px 15px 10px 10px;
+  /* border: 1px solid #000; */
+}
+
+.dropdown-menu > a:hover,
+.dropdown-menu div:hover {
+  background-color: #e6e6e6;
+}
+
+.dropdown-menu.active {
+  display: block;
+}
+
+.two-horizontal-icons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.two-horizontal-icons .fa-trash {
+  cursor: pointer;
+}
+
+.two-horizontal-icons .fa-edit:hover {
+  color: #1aff8c;
+}
+.two-horizontal-icons .fa-trash:hover {
+  color: #ff4d4d;
+}
+
+/* loader container that does not block the screen */
+.loader-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ccc;
+  opacity: 0.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

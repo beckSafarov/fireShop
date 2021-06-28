@@ -33,6 +33,7 @@ import ShaddressScreen from './screens/user/ShaddressScreen';
 import testScreen from './screens/testScreen';
 import { flushCart, getCart } from './helpers/cartLCS';
 import { addToCart } from './actions/cartActions';
+import UserListScreen from './screens/admin/UserListScreen';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -85,6 +86,9 @@ const App = () => {
             <Route path='/payment' component={PaymentScreen}></Route>
             <Route path='/payment-success' component={PaymentSuccess}></Route>
             <Route path='/payment-failure' component={PaymentFailure}></Route>
+
+            {/* admin routes */}
+            <Route path='/userlist' component={UserListScreen}></Route>
 
             {/*test route */}
             {process.env.NODE_ENV === 'development' && (
