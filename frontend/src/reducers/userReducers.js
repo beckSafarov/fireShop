@@ -1,30 +1,30 @@
-import * as constants from '../constants';
+import * as cs from '../constants';
+const Loading = (loading = true) => ({ loading });
+const Error = (error) => ({ loading: false, error });
+const Success = (userInfo = null) => ({
+  loading: false,
+  success: true,
+  userInfo,
+});
 
 export const userLoginReducer = (state = {}, action) => {
   switch (action.type) {
-    case constants.USER_LOGIN_REQUEST:
-      return { loading: true };
-    case constants.USER_LOGIN_SUCCESS:
-      return { loading: false, success: true, userInfo: action.payload };
-    case constants.USER_LOGIN_FAILURE:
-      return { loading: false, error: action.payload };
-    case constants.USER_LOGOUT_REQUEST:
-      return { loading: false };
-    case constants.USER_LOGOUT_SUCCESS:
-      return { loading: false, success: true };
-    case constants.USER_LOGOUT_FAILURE:
-      return { loading: false, error: action.payload };
-    case constants.USER_INFO_UPDATE:
-      return {
-        loading: false,
-        success: true,
-        userInfo: { ...state.userInfo, ...action.payload },
-      };
-    case constants.USER_DETAILS_CLEAR:
-      return {
-        loading: false,
-        success: true,
-      };
+    case cs.USER_LOGIN_REQUEST:
+      return Loading();
+    case cs.USER_LOGIN_SUCCESS:
+      return Success(action.payload);
+    case cs.USER_LOGIN_FAILURE:
+      return Error(action.payload);
+    case cs.USER_LOGOUT_REQUEST:
+      return Loading(false);
+    case cs.USER_LOGOUT_SUCCESS:
+      return Success();
+    case cs.USER_LOGOUT_FAILURE:
+      return Error(action.payload);
+    case cs.USER_INFO_UPDATE:
+      return Success({ ...state.userInfo, ...action.payload });
+    case cs.USER_DETAILS_CLEAR:
+      return Success(undefined);
     default:
       return state;
   }
@@ -32,12 +32,12 @@ export const userLoginReducer = (state = {}, action) => {
 
 export const userRegisterReducer = (state = {}, action) => {
   switch (action.type) {
-    case constants.USER_REGISTER_REQUEST:
-      return { loading: true };
-    case constants.USER_REGISTER_SUCCESS:
-      return { loading: false, success: true };
-    case constants.USER_REGISTER_FAILURE:
-      return { loading: false, error: action.payload };
+    case cs.USER_REGISTER_REQUEST:
+      return Loading();
+    case cs.USER_REGISTER_SUCCESS:
+      return Success(undefined);
+    case cs.USER_REGISTER_FAILURE:
+      return Error(action.payload);
     default:
       return state;
   }
@@ -45,12 +45,12 @@ export const userRegisterReducer = (state = {}, action) => {
 
 export const updateUserDetailsReducer = (state = {}, action) => {
   switch (action.type) {
-    case constants.USER_DETAILS_UPDATE_REQUEST:
-      return { loading: true };
-    case constants.USER_DETAILS_UPDATE_SUCCESS:
-      return { loading: false, success: true };
-    case constants.USER_DETAILS_UPDATE_FAILURE:
-      return { loading: false, error: action.payload };
+    case cs.USER_DETAILS_UPDATE_REQUEST:
+      return Loading();
+    case cs.USER_DETAILS_UPDATE_SUCCESS:
+      return Success(undefined);
+    case cs.USER_DETAILS_UPDATE_FAILURE:
+      return Error(action.payload);
     default:
       return state;
   }
@@ -58,12 +58,12 @@ export const updateUserDetailsReducer = (state = {}, action) => {
 
 export const ShaddressReducer = (state = {}, action) => {
   switch (action.type) {
-    case constants.SHADDRESS_POST_REQUEST:
-      return { loading: true };
-    case constants.SHADDRESS_POST_SUCCESS:
+    case cs.SHADDRESS_POST_REQUEST:
+      return Loading();
+    case cs.SHADDRESS_POST_SUCCESS:
       return { loading: false, success: true, data: action.payload };
-    case constants.SHADDRESS_POST_FAILURE:
-      return { loading: false, error: action.payload };
+    case cs.SHADDRESS_POST_FAILURE:
+      return Error(action.payload);
     default:
       return state;
   }
@@ -71,13 +71,13 @@ export const ShaddressReducer = (state = {}, action) => {
 
 export const userListReducer = (state = { users: [] }, action) => {
   switch (action.type) {
-    case constants.USER_LIST_REQUEST:
-      return { loading: true };
-    case constants.USER_LIST_SUCCESS:
+    case cs.USER_LIST_REQUEST:
+      return Loading();
+    case cs.USER_LIST_SUCCESS:
       return { loading: false, users: action.payload };
-    case constants.USER_LIST_FAILURE:
-      return { loading: false, error: action.payload };
-    case constants.USER_LIST_REMOVE:
+    case cs.USER_LIST_FAILURE:
+      return Error(action.payload);
+    case cs.USER_LIST_REMOVE:
       // action.payload = erre23g (id of the user)
       let currList = state.users;
       const newList = currList.filter((user) => user._id !== action.payload);
@@ -89,12 +89,12 @@ export const userListReducer = (state = { users: [] }, action) => {
 
 export const userDeleteReducer = (state = {}, action) => {
   switch (action.type) {
-    case constants.USER_DELETE_REQUEST:
-      return { loading: true };
-    case constants.USER_DELETE_SUCCESS:
+    case cs.USER_DELETE_REQUEST:
+      return Loading();
+    case cs.USER_DELETE_SUCCESS:
       return { loading: false, success: true, message: action.payload };
-    case constants.USER_DELETE_FAILURE:
-      return { loading: false, error: action.payload };
+    case cs.USER_DELETE_FAILURE:
+      return Error(action.payload);
     default:
       return state;
   }

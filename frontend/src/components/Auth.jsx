@@ -7,20 +7,19 @@ const Auth = ({ children, history, reverse, adminOnly }) => {
   const { loading, userInfo: logged } = useSelector((state) => state.userLogin);
   const { location: loc } = history;
 
-  const originPage = loc.pathname.replace('/', '');
   let queryRedirect = new URLSearchParams(loc.search).get('redirect');
   if (queryRedirect === '/') queryRedirect = '';
 
   useEffect(() => {
     if (!reverse) {
-      if (adminOnly) {
-        logged
-          ? !logged.isAdmin
-            ? history.push('/')
-            : setPermit(true)
-          : history.push('/');
-      } else {
-        logged ? setPermit(true) : history.push('/');
+      if (loading !== undefined && logged) {
+        adminOnly
+          ? logged.isAdmin
+            ? setPermit(true)
+            : history.push('/')
+          : setPermit(true);
+      } else if (loading !== undefined && !logged) {
+        history.push('/');
       }
     } else {
       !logged

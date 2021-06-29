@@ -112,11 +112,8 @@ strong {
   color: #fff;
 }
 
-.flat-btn {
-  border: none;
-  padding: 5px 10px 5px 10px;
-  background-color: transparent;
-  color: #55595c;
+.adminRow i {
+  color: #fff;
 }
 
 .dropdown-menu {
@@ -162,6 +159,13 @@ strong {
 }
 .two-horizontal-icons .fa-trash:hover {
   color: #ff4d4d;
+}
+
+.flat-btn {
+  border: none;
+  padding: 5px 10px 5px 10px;
+  background-color: transparent;
+  color: #55595c;
 }
 
 /* loader container that does not block the screen */

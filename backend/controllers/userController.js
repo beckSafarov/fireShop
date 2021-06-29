@@ -4,14 +4,6 @@ import bcrypt from 'bcryptjs';
 import { sendToken } from '../utils/sendToken.js';
 import jwt from 'jsonwebtoken';
 
-//@desc  Get all current users
-//@route GET /api/users
-//@desc  Public (for now)
-export const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find();
-  res.status(200).json(users);
-});
-
 //@desc  Get one user
 //@route GET /api/users/profile
 //@desc  Private
@@ -69,24 +61,6 @@ export const authUser = asyncHandler(async (req, res) => {
 
   user.password = undefined;
   sendToken(user.id, res, user);
-});
-
-//@desc  delete a user
-//@route DELETE /api/users/:id
-//@desc  Private. Admin only
-export const removeUser = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-
-  const deletedUser = await User.findByIdAndDelete(id);
-  if (!deletedUser) {
-    res.status(404);
-    throw new Error('No such user found');
-  }
-
-  res.status(200).json({
-    success: true,
-    message: `${deletedUser.name} has been deleted`,
-  });
 });
 
 //@desc  currently logged in user

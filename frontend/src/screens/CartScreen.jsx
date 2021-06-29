@@ -56,9 +56,7 @@ const CartScreen = ({ history }) => {
     const c = `Are you sure to delete ${name} from your cart?`;
     if (window.confirm(c)) dispatch(removeItem(id, logged));
     let currCart = cartItems;
-    currCart.forEach((item, index) => {
-      if (item._id === id) currCart.splice(index, 1);
-    });
+    currCart = currCart.filter((item) => item._id !== id);
     setCartItems(currCart);
   };
 

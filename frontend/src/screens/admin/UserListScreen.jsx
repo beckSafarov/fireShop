@@ -43,7 +43,7 @@ const UserListScreen = ({ history }) => {
     if (window.confirm(c)) dispatch(deleteUser(id));
   };
 
-  const flashMsgHandler = (variant, msg, seconds = 2) => {
+  const flashMsgHandler = (variant, msg, seconds = 3) => {
     setFlashMsg({ display: true, variant, msg });
     setTimeout(() => {
       setFlashMsg({ ...flashMsg, display: false });
