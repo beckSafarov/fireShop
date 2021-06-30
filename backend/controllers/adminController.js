@@ -33,7 +33,6 @@ export const updateUserById = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('No such user found!');
   }
-
   res.status(200).json({ user });
 });
 

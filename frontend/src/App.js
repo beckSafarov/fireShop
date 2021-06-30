@@ -88,7 +88,7 @@ const App = () => {
             <Route path='/payment-failure' component={PaymentFailure}></Route>
 
             {/* admin routes */}
-            <Route path='/userlist' component={UserListScreen}></Route>
+            <Route path='/admin/userlist' component={UserListScreen}></Route>
 
             {/*test route */}
             {process.env.NODE_ENV === 'development' && (

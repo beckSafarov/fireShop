@@ -19,12 +19,36 @@ export const listUsers = () => async (dispatch) => {
   }
 };
 
+export const adminUpdateUser = (id, body) => async (dispatch) => {
+  try {
+    dispatch({ type: constants.ADMIN_USER_UPDATE_REQUEST });
+
+    const config = {
+      headers: { 'Content-Type': 'application/json' },
+      cancelToken: axios.CancelToken.source().token,
+    };
+
+    const { data } = await axios.put(`/api/users/${id}`, body, config);
+
+    dispatch({ type: constants.ADMIN_USER_UPDATE_SUCCESS, payload: data.user });
+    dispatch({ type: constants.USER_LIST_UPDATE, payload: data.user });
+  } catch (err) {
+    dispatch({
+      type: constants.ADMIN_USER_UPDATE_FAILURE,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};
+
 export const deleteUser = (id) => async (dispatch) => {
   try {
     dispatch({ type: constants.USER_DELETE_REQUEST });
 
     const { data } = await axios.delete(`/api/users/${id}`);
-    console.log(data);
+
     dispatch({ type: constants.USER_LIST_REMOVE, payload: id });
     dispatch({ type: constants.USER_DELETE_SUCCESS, payload: data.message });
   } catch (err) {

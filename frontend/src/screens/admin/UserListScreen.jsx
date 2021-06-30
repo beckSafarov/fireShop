@@ -10,6 +10,7 @@ import Loader from '../../components/Loader';
 import { Table, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Spinner from '../../components/Spinner';
 import Exceptional from '../../components/Exceptional';
+import UserEditPopup from '../../components/UserEditPopup';
 
 // redux actions
 import { listUsers, deleteUser } from '../../actions/adminActions';
@@ -20,23 +21,28 @@ const UserListScreen = ({ history }) => {
   const { loading: listLoading, error, users } = userList;
   const {
     loading: deleteLoading,
-    success: deleteSuccess,
+    success: deleted,
     message,
     error: deleteError,
   } = useSelector((state) => state.userDelete);
+
   const [flashMsg, setFlashMsg] = useState({
     display: false,
     variant: 'info',
     msg: '',
   });
+  const [modal, setModal] = useState({
+    display: false,
+    userInfo: null,
+  });
 
   useEffect(() => {
     if (!users || users.length === 0) dispatch(listUsers());
 
-    if (deleteSuccess) flashMsgHandler('success', message);
+    if (deleted) flashMsgHandler('success', message);
 
     if (deleteError) flashMsgHandler('danger', deleteError);
-  }, [dispatch, deleteSuccess, deleteError]);
+  }, [dispatch, deleted, deleteError]);
 
   const deleteHandler = (id, name = 'undefined') => {
     const c = `Are you sure to delete ${name}?`;
@@ -48,6 +54,10 @@ const UserListScreen = ({ history }) => {
     setTimeout(() => {
       setFlashMsg({ ...flashMsg, display: false });
     }, seconds * 1000);
+  };
+
+  const modalHandler = (userInfo, display = true) => {
+    setModal({ display, userInfo });
   };
 
   return (
@@ -63,7 +73,7 @@ const UserListScreen = ({ history }) => {
             <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
           )}
           {deleteLoading && <Spinner />}
-          <Table striped bordered responsive className='tale-sm'>
+          <Table striped bordered responsive hover className='tale-sm'>
             <thead>
               <tr>
                 <th>ID</th>
@@ -87,9 +97,10 @@ const UserListScreen = ({ history }) => {
                   <td>
                     <div className='two-horizontal-icons'>
                       <div>
-                        <Link to={`/users/${user._id}/edit`}>
-                          <i className='fas fa-edit'></i>
-                        </Link>
+                        <i
+                          onClick={() => modalHandler(user)}
+                          className='fas fa-edit'
+                        ></i>
                       </div>
                       <div>
                         <i
@@ -103,6 +114,7 @@ const UserListScreen = ({ history }) => {
               ))}
             </tbody>
           </Table>
+          <UserEditPopup modal={modal} setModal={setModal} />
         </>
       ) : (
         <Exceptional />

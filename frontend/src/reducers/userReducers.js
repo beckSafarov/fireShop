@@ -68,34 +68,3 @@ export const ShaddressReducer = (state = {}, action) => {
       return state;
   }
 };
-
-export const userListReducer = (state = { users: [] }, action) => {
-  switch (action.type) {
-    case cs.USER_LIST_REQUEST:
-      return Loading();
-    case cs.USER_LIST_SUCCESS:
-      return { loading: false, users: action.payload };
-    case cs.USER_LIST_FAILURE:
-      return Error(action.payload);
-    case cs.USER_LIST_REMOVE:
-      // action.payload = erre23g (id of the user)
-      let currList = state.users;
-      const newList = currList.filter((user) => user._id !== action.payload);
-      return { ...state, users: newList };
-    default:
-      return state;
-  }
-};
-
-export const userDeleteReducer = (state = {}, action) => {
-  switch (action.type) {
-    case cs.USER_DELETE_REQUEST:
-      return Loading();
-    case cs.USER_DELETE_SUCCESS:
-      return { loading: false, success: true, message: action.payload };
-    case cs.USER_DELETE_FAILURE:
-      return Error(action.payload);
-    default:
-      return state;
-  }
-};

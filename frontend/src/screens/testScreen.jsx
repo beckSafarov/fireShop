@@ -5,7 +5,6 @@ import { Row, Col, Nav, Form } from 'react-bootstrap';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import Auth from '../components/Auth';
-import secret from '../secrets.json';
 import { Button } from 'react-bootstrap';
 import * as lcs from '../helpers/cartLCS';
 import { LinkContainer } from 'react-router-bootstrap';

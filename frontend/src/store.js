@@ -5,6 +5,7 @@ import * as productReducers from './reducers/productReducers.js';
 import * as cartReducers from './reducers/cartReducers.js';
 import * as userReducers from './reducers/userReducers';
 import * as orderReducers from './reducers/orderReducers';
+import * as adminReducers from './reducers/adminReducers';
 
 //this is the root reducer that includes all reducers
 const reducer = combineReducers({
@@ -15,9 +16,10 @@ const reducer = combineReducers({
   userLogin: userReducers.userLoginReducer,
   userRegister: userReducers.userRegisterReducer,
   userDetailsUpdate: userReducers.updateUserDetailsReducer,
-  userList: userReducers.userListReducer,
-  userDelete: userReducers.userDeleteReducer,
   shaddress: userReducers.ShaddressReducer,
+  userList: adminReducers.userListReducer,
+  userDelete: adminReducers.userDeleteReducer,
+  adminUserUpdate: adminReducers.adminUserUpdateReducer,
   orderReducers: orderReducers.orderCreateReducer,
   orderDetails: orderReducers.orderDetailsReducer,
   myOrders: orderReducers.myOrdersReducer,

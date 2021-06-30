@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
+import FormContainer from '../components/FormContainer';
 
 export const ReadOnlyForm = ({ name, email, onClick }) => {
   return (
@@ -183,7 +184,6 @@ export const ShaddressReadForm = ({ values, functions, profile = true }) => {
 export const ShaddressUpdateForm = ({
   values,
   functions,
-  profile = true,
   addressExists = true,
 }) => {
   const { address, city, postalCode, country } = values;
@@ -260,6 +260,104 @@ export const ShaddressUpdateForm = ({
           </Button>
         </div>
       )}
+    </Form>
+  );
+};
+
+export const AdminUserUpdateForm = ({ values, functions }) => {
+  const { name, email, admin, address, city, postalCode, country, change } =
+    values;
+  const { changesHandler, submitHandler } = functions;
+  console.log(address);
+  return (
+    <Form>
+      <Form.Group controlId='formBasicEmail'>
+        <Form.Label>Full Name</Form.Label>
+        <Form.Control
+          type='text'
+          name='name'
+          value={name}
+          className='form-field'
+          onChange={changesHandler}
+        ></Form.Control>
+        <div className='py-2'>
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            type='email'
+            name='email'
+            value={email}
+            className='form-field'
+            onChange={changesHandler}
+          ></Form.Control>
+        </div>
+        <div className='py-2'>
+          <Form.Check
+            type='switch'
+            defaultChecked={admin}
+            variant='info'
+            id='custom-switch'
+            name='admin'
+            label={admin ? 'Admin' : 'Not admin'}
+            onChange={changesHandler}
+          />
+        </div>
+        <div className='py-2'>
+          <Form.Label>Address</Form.Label>
+          <Form.Control
+            type='text'
+            name='address'
+            defaultValue={address}
+            className='form-field'
+            onChange={changesHandler}
+            required
+          ></Form.Control>
+        </div>
+
+        <div className='py-2'>
+          <Form.Label>City</Form.Label>
+          <Form.Control
+            type='text'
+            name='city'
+            defaultValue={city}
+            className='form-field'
+            onChange={changesHandler}
+            required
+          ></Form.Control>
+        </div>
+        <div className='py-2'>
+          <Form.Label>Postal Code</Form.Label>
+          <Form.Control
+            type='number'
+            name='postalCode'
+            defaultValue={postalCode}
+            className='form-field'
+            onChange={changesHandler}
+            required
+          ></Form.Control>
+        </div>
+        <div className='py-2'>
+          <Form.Label>Country</Form.Label>
+          <Form.Control
+            type='text'
+            name='country'
+            defaultValue={country}
+            className='form-field'
+            onChange={changesHandler}
+            required
+          ></Form.Control>
+        </div>
+      </Form.Group>
+      <div className='btn-container'>
+        <Button
+          type='submit'
+          variant='success'
+          onClick={submitHandler}
+          disabled={!change}
+          block
+        >
+          Save
+        </Button>
+      </div>
     </Form>
   );
 };

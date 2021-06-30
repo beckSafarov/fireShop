@@ -150,7 +150,8 @@ strong {
   width: 100%;
 }
 
-.two-horizontal-icons .fa-trash {
+.two-horizontal-icons .fa-trash,
+.two-horizontal-icons .fa-edit {
   cursor: pointer;
 }
 
@@ -181,3 +182,14 @@ strong {
   justify-content: center;
   align-items: center;
 }
+
+/* for modals */
+.row-flex-end {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+/* .row-flex-end .btn-container{
+  margin-right: 20px;
+} */
