@@ -7,6 +7,7 @@ import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 //function declarations
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 
 app.use(cookieParser());
 app.use('/api/products', productRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/users/cartItems', cartRoutes);
 app.use('/api/orders', orderRoutes);
