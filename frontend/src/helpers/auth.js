@@ -2,10 +2,12 @@ import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 
 const Auth = () => {
-  const { loading, userInfo: userLogged } = useSelector(
-    (state) => state.userLogin
-  );
-  const userNotLogged = loading === false && userLogged === undefined;
+  const {
+    loading,
+    userInfo: userLogged,
+    error,
+  } = useSelector((state) => state.userLogin);
+  const userNotLogged = loading === false && userLogged === null;
 
   const [logged, setLogged] = useState(null);
 
@@ -15,6 +17,7 @@ const Auth = () => {
 
   return {
     loading,
+    error: error || undefined,
     logged,
     userInfo: userLogged,
   };

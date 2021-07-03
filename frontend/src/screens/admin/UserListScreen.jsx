@@ -1,19 +1,19 @@
 // libraries & methods
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Auth from '../../components/Auth';
 
 // UI components
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import { Table, Button, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import Spinner from '../../components/Spinner';
 import Exceptional from '../../components/Exceptional';
 import UserEditPopup from '../../components/UserEditPopup';
 
 // redux actions
 import { listUsers, deleteUser } from '../../actions/adminActions';
+import { USER_LIST_PROPERTY_RESET } from '../../constants';
 
 const UserListScreen = ({ history }) => {
   const dispatch = useDispatch();
@@ -39,9 +39,15 @@ const UserListScreen = ({ history }) => {
   useEffect(() => {
     if (!users || users.length === 0) dispatch(listUsers());
 
-    if (deleted) flashMsgHandler('success', message);
+    if (deleted) {
+      flashMsgHandler('success', message);
+      rxReset('message');
+    }
 
-    if (deleteError) flashMsgHandler('danger', deleteError);
+    if (deleteError) {
+      flashMsgHandler('danger', deleteError);
+      rxReset('error');
+    }
   }, [dispatch, deleted, deleteError]);
 
   const deleteHandler = (id, name = 'undefined') => {
@@ -58,6 +64,13 @@ const UserListScreen = ({ history }) => {
 
   const modalHandler = (userInfo, display = true) => {
     setModal({ display, userInfo });
+  };
+
+  const rxReset = (payload) => {
+    dispatch({
+      type: USER_LIST_PROPERTY_RESET,
+      payload,
+    });
   };
 
   return (

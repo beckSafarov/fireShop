@@ -61,8 +61,6 @@ const UserEditPopup = ({ modal, setModal }) => {
       flashMsgHandler(error, 'danger');
       rxReset('error');
     }
-
-    return () => resetValues(false);
   }, [modal, updated, error]);
 
   const madeChanges = () => {

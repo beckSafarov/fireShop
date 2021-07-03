@@ -14,7 +14,7 @@ router.use('/', protect, isAdmin);
 router.route('/users').get(getAllUsers);
 
 router
-  .route('users/:id')
+  .route('/users/:id')
   .get(getUserById)
   .put(updateUserById)
   .delete(removeUser);

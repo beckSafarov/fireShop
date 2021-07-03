@@ -7,16 +7,16 @@ import {
   getAllCartItems,
   removeCartItem,
   updateItemQts,
+  updateQty,
 } from '../controllers/cartController.js';
 import { protect } from '../middleware/auth.js';
 
-router
-  .route('/')
-  .get(protect, getAllCartItems)
-  .post(protect, addCartItem)
-  .delete(protect, flushCartItems);
+router.use('/', protect);
 
-router.route('/many').post(protect, addMany).put(protect, updateItemQts);
-router.route('/:id').delete(protect, removeCartItem);
+router.route('/').get(getAllCartItems).post(addCartItem).delete(flushCartItems);
+
+router.route('/many').post(addMany).put(updateItemQts);
+router.route('/qty').put(updateQty);
+router.route('/:id').delete(removeCartItem);
 
 export default router;

@@ -9,6 +9,8 @@ import { Button } from 'react-bootstrap';
 import * as lcs from '../helpers/cartLCS';
 import { LinkContainer } from 'react-router-bootstrap';
 import { DropMenu, DropLink } from '../components/Dropdown';
+import ConfirmModal from '../components/ConfirmModal';
+import Spinner from '../components/Spinner';
 
 const TestScreen = ({ location, history, match }) => {
   const people = ['Beck', 'Tom'];
@@ -31,6 +33,7 @@ const TestScreen = ({ location, history, match }) => {
     <>
       <h1>Welcome to test page</h1>
       <p>playground for testing stuff</p>
+      {positive && <Spinner />}
       <Col>
         <Row>
           <Form.Control
@@ -48,8 +51,13 @@ const TestScreen = ({ location, history, match }) => {
               {3}
             </option>
           </Form.Control>
+
+          <Button variant='success' onClick={clickMe}>
+            Click me
+          </Button>
         </Row>
       </Col>
+      {/* <ConfirmModal active proceedText='Delete' primaryVariant='danger' /> */}
       <Col>
         <Row>
           <h2>Status: {status}</h2>

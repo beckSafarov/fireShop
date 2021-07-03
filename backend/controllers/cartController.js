@@ -81,6 +81,30 @@ export const addMany = asyncHandler(async (req, res) => {
   });
 });
 
+//@desc  add many cart items in an array
+//@route PUT /api/users/cartitems/qty
+//@desc  Private, need authorization
+export const updateQty = asyncHandler(async (req, res) => {
+  const cart = req.user.cartItems;
+  const { _id, qty } = req.body;
+  for (let i = 0; i < cart.length; i++) {
+    if (cart[i]._id === _id) {
+      cart[i].qty = qty;
+      break;
+    }
+  }
+
+  req.user.cartItems = cart;
+  req.user.save();
+  res.status(200).json({
+    success: true,
+    cartItems: req.user.cartItems,
+  });
+});
+
+//@desc  add many cart items in an array
+//@route PUT /api/users/cartitems/many
+//@desc  Private, need authorization
 export const updateItemQts = asyncHandler(async (req, res) => {
   // {41423:2, 23433:3, ....};
   const qts = req.body;

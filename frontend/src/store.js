@@ -6,6 +6,7 @@ import * as cartReducers from './reducers/cartReducers.js';
 import * as userReducers from './reducers/userReducers';
 import * as orderReducers from './reducers/orderReducers';
 import * as adminReducers from './reducers/adminReducers';
+import { getCart } from './helpers/cartLCS.js';
 
 //this is the root reducer that includes all reducers
 const reducer = combineReducers({
@@ -32,7 +33,7 @@ let paymentMethod = JSON.parse(localStorage.getItem('paymentMethod'));
 //this is the preloader that gets loaded in the build time
 const initialState = {
   cart: {
-    cartItems: [],
+    cartItems: getCart(),
     shippingAddress: shippingAddress || {},
     paymentMethod: paymentMethod || {},
   },

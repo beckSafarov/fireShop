@@ -11,6 +11,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import { Container } from 'react-bootstrap';
 import Loader from './components/Loader';
+import Spinner from './components/Spinner';
 import Message from './components/Message';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
@@ -34,26 +35,25 @@ import testScreen from './screens/testScreen';
 import { flushCart, getCart } from './helpers/cartLCS';
 import { addToCart } from './actions/cartActions';
 import UserListScreen from './screens/admin/UserListScreen';
+import Auth from './helpers/auth';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { loading: userLoading, userInfo: logged } = useSelector(
-    (state) => state.userLogin
-  );
   const { loading: cartLoading, error } = useSelector((state) => state.cart);
-
+  const auth = Auth();
   const lcc = getCart();
-  const loading = userLoading || cartLoading;
+  const loading = auth.loading || cartLoading;
 
   useEffect(() => {
-    if (!logged) dispatch(getMe());
+    if (auth.logged === null) dispatch(getMe());
 
-    if (logged && lcc.length > 0) {
+    if (auth.logged && lcc.length) {
+      // console.log('Welcome logged guy');
       dispatch(addToCart(lcc, null, true, true));
     }
 
     return () => axios.CancelToken.source().cancel();
-  }, [dispatch, logged, error]);
+  }, [dispatch, auth.logged]);
 
   return (
     <Router>

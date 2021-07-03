@@ -1,4 +1,5 @@
 import * as cs from '../constants';
+import resetProperty from '../helpers/resetProperty';
 const Loading = (loading = true) => ({ loading });
 const Error = (error) => ({ loading: false, error });
 
@@ -18,7 +19,6 @@ export const userListReducer = (state = { users: [] }, action) => {
     case cs.USER_LIST_FAILURE:
       return Error(action.payload);
     case cs.USER_LIST_UPDATE:
-      // action.payload: {_id: 24322, ...};
       const updatedUser = action.payload;
       for (let i = 0; i < currList.length; i++) {
         if (currList[i]._id === updatedUser._id) {
@@ -28,9 +28,14 @@ export const userListReducer = (state = { users: [] }, action) => {
       }
       return Success(currList);
     case cs.USER_LIST_REMOVE:
-      // action.payload = erre23g (id of the user)
       const newList = currList.filter((user) => user._id !== action.payload);
       return Success(newList);
+    case cs.USER_LIST_PROPERTY_RESET:
+      // return resetProperty(state, action);
+      let newState = state;
+      newState[action.payload] = null;
+      console.log(newState);
+      return newState;
     default:
       return state;
   }

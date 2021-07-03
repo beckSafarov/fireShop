@@ -125,7 +125,15 @@ export const getMe = () => async (dispatch, getState) => {
       cancelToken: axios.CancelToken.source().token,
     });
 
-    dispatch({ type: constants.USER_LOGIN_SUCCESS, payload: data.user });
+    dispatch({
+      type: constants.USER_LOGIN_SUCCESS,
+      payload: data.user || null,
+    });
+
+    dispatch({
+      type: constants.CART_ITEMS_RECEIVED,
+      payload: data.user ? data.user.cartItems : [],
+    });
   } catch (err) {
     if (axios.isCancel(err)) {
       console.log('axios request cancelled');

@@ -4,29 +4,24 @@ export const cartReducer = (
   state = { loading: false, message: null, cartItems: [], shippingAddress: {} },
   action
 ) => {
-  const Error = () => {
-    return {
-      ...state,
-      success: false,
-      loading: false,
-      error: action.payload,
-    };
-  };
+  let newCart = [];
+  const Error = () => ({
+    ...state,
+    success: false,
+    loading: false,
+    error: action.payload,
+  });
 
-  const Loading = () => {
-    return { ...state, loading: true };
-  };
+  const Loading = () => ({ ...state, loading: true });
 
-  const Success = (cartItems, successType, message, shaddress) => {
-    return {
-      loading: false,
-      success: true,
-      successType: successType || 'undefined',
-      message: message || null,
-      cartItems: cartItems || state.cartItems,
-      shippingAddress: shaddress || state.shippingAddress,
-    };
-  };
+  const Success = (cartItems, successType, message, shaddress) => ({
+    loading: false,
+    success: true,
+    successType: successType || 'undefined',
+    message: message || null,
+    cartItems: cartItems || state.cartItems,
+    shippingAddress: shaddress || state.shippingAddress,
+  });
 
   switch (action.type) {
     case constants.CART_REQUIRE_ADD_ITEM:
@@ -53,6 +48,8 @@ export const cartReducer = (
 
     case constants.CART_REQUIRE_ALL_ITEMS_SUCCESS:
       return Success(action.payload, 'require');
+    case constants.CART_ITEMS_RECEIVED:
+      return { ...state, cartItems: action.payload };
 
     case constants.CART_REQUIRE_ALL_ITEMS_FAIL:
       return Error();
@@ -61,7 +58,13 @@ export const cartReducer = (
       return Loading();
 
     case constants.CARD_ITEM_QUANTITY_RESET_SUCCESS:
-      return Success(action.payload, 'reset');
+      // {_id: 3232, qty: 2}
+      newCart = state.cartItems;
+      let { _id, qty } = action.payload;
+      newCart.forEach((item) => {
+        if (item._id === _id) item.qty = qty;
+      });
+      return Success(newCart, 'reset');
 
     case constants.CARD_ITEM_QUANTITY_RESET_FAIL:
       return Error();
@@ -70,16 +73,13 @@ export const cartReducer = (
       return Loading();
 
     case constants.CART_REMOVE_ITEM_SUCCESS:
-      return Success(action.payload, 'remove');
+      // action.payload = id
+      newCart = state.cartItems.filter((item) => item._id !== action.payload);
+      return Success(newCart, 'remove');
 
     case constants.CART_REMOVE_ITEM_FAILURE:
       return Error();
 
-    case constants.CART_PROPERTY_RESET:
-      //action.payload = 'ewfwefw'
-      let newState = state;
-      newState[action.payload] = null;
-      return newState;
     case constants.CART_SAVE_SHIPPING_ADDRESS:
       return { ...state, shippingAddress: action.payload };
 
@@ -88,6 +88,12 @@ export const cartReducer = (
 
     case constants.CART_FLUSH_REQUIRE:
       return Loading();
+
+    case constants.CART_PROPERTY_RESET:
+      //action.payload = 'ewfwefw'
+      let newState = state;
+      newState[action.payload] = null;
+      return newState;
 
     case constants.CART_FLUSH:
       return Success([], '', null, {});
