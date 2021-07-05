@@ -24,7 +24,7 @@ export const userLoginReducer = (state = {}, action) => {
     case cs.USER_INFO_UPDATE:
       return Success({ ...state.userInfo, ...action.payload });
     case cs.USER_DETAILS_CLEAR:
-      return Success(undefined);
+      return {};
     default:
       return state;
   }

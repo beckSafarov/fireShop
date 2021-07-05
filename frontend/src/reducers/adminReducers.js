@@ -1,10 +1,11 @@
 import * as cs from '../constants';
 import resetProperty from '../helpers/resetProperty';
-const Loading = (loading = true) => ({ loading });
-const Error = (error) => ({ loading: false, error });
+const Loading = (state = {}, loading = true) => ({ ...state, loading });
+const Error = (error, state = {}) => ({ loading: false, error, ...state });
 
 export const userListReducer = (state = { users: [] }, action) => {
   let currList = state.users;
+  let newState, newList;
 
   const Success = (users = action.payload) => ({
     loading: false,
@@ -28,27 +29,27 @@ export const userListReducer = (state = { users: [] }, action) => {
       }
       return Success(currList);
     case cs.USER_LIST_REMOVE:
-      const newList = currList.filter((user) => user._id !== action.payload);
+      newList = currList.filter((user) => user._id !== action.payload);
       return Success(newList);
     case cs.USER_LIST_PROPERTY_RESET:
-      // return resetProperty(state, action);
-      let newState = state;
+      newState = state;
       newState[action.payload] = null;
-      console.log(newState);
       return newState;
     default:
       return state;
   }
 };
 
-export const userDeleteReducer = (state = {}, action) => {
+export const adminUserDeleteReducer = (state = {}, action) => {
   switch (action.type) {
-    case cs.USER_DELETE_REQUEST:
+    case cs.ADMIN_USER_DELETE_REQUEST:
       return Loading();
-    case cs.USER_DELETE_SUCCESS:
+    case cs.ADMIN_USER_DELETE_SUCCESS:
       return { loading: false, success: true, message: action.payload };
-    case cs.USER_DELETE_FAILURE:
+    case cs.ADMIN_USER_DELETE_FAILURE:
       return Error(action.payload);
+    case cs.ADMIN_USER_DELETE_RESET:
+      return {};
     default:
       return state;
   }
@@ -63,9 +64,7 @@ export const adminUserUpdateReducer = (state = {}, action) => {
     case cs.ADMIN_USER_UPDATE_FAILURE:
       return Error(action.payload);
     case cs.ADMIN_USER_UPDATE_RESET:
-      let newState = state;
-      newState[action.payload] = null;
-      return newState;
+      return {};
     default:
       return state;
   }

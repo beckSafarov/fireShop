@@ -45,15 +45,21 @@ export const adminUpdateUser = (id, body) => async (dispatch) => {
 
 export const deleteUser = (id) => async (dispatch) => {
   try {
-    dispatch({ type: constants.USER_DELETE_REQUEST });
+    dispatch({ type: constants.ADMIN_USER_DELETE_REQUEST });
 
     const { data } = await axios.delete(`/api/admin/users/${id}`);
 
-    dispatch({ type: constants.USER_LIST_REMOVE, payload: id });
-    dispatch({ type: constants.USER_DELETE_SUCCESS, payload: data.message });
+    dispatch({
+      type: constants.USER_LIST_REMOVE,
+      payload: id,
+    });
+    dispatch({
+      type: constants.ADMIN_USER_DELETE_SUCCESS,
+      payload: data.message,
+    });
   } catch (err) {
     dispatch({
-      type: constants.USER_DELETE_FAILURE,
+      type: constants.ADMIN_USER_DELETE_FAILURE,
       payload:
         err.response && err.response.data.message
           ? err.response.data.message

@@ -28,15 +28,15 @@ const ShippingScreen = ({ history, location, match }) => {
   const shaddress = useSelector((state) => state.shaddress);
 
   // variables
-  const { userInfo } = useSelector((state) => state.userLogin);
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
   const cart = useSelector((state) => state.cart);
   let loading = shaddress.loading;
 
   useEffect(() => {
     if (userInfo) {
-      if (userInfo.cartItems.length === 0 && cart.cartItems.length === 0) {
+      if (userInfo.cartItems.length === 0 && cart.cartItems.length === 0)
         history.push('/');
-      }
       if (userInfo.shippingAddress && !address) resetValues();
     }
 
@@ -50,7 +50,7 @@ const ShippingScreen = ({ history, location, match }) => {
       axios.CancelToken.source().cancel();
       unsubscribe();
     };
-  }, [userInfo, history, address]);
+  }, [userInfo, history, address, cart]);
 
   const confirmHandler = () => history.push('/payment');
 

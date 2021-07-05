@@ -1,5 +1,5 @@
 // Methods
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import Auth from '../../components/Auth';
@@ -16,13 +16,10 @@ const UserOrdersScreen = ({ history }) => {
   const dispatch = useDispatch();
   const { loading, orders, error } = useSelector((state) => state.myOrders);
 
-  // variables
-  const { userInfo } = useSelector((state) => state.userLogin);
-
   useEffect(() => {
-    if (userInfo) dispatch(getMyOrders());
+    if (orders && orders.length === 0) dispatch(getMyOrders());
     return () => axios.CancelToken.source().cancel();
-  }, [dispatch, userInfo]);
+  }, [dispatch, orders]);
 
   return (
     <Auth history={history}>
@@ -31,7 +28,7 @@ const UserOrdersScreen = ({ history }) => {
           <Loader />
         ) : error ? (
           <Message variant='danger'>{error}</Message>
-        ) : orders.length === 0 ? (
+        ) : orders === null ? (
           <h3>You have no orders yet</h3>
         ) : (
           <>

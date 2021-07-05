@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Auth from '../../components/Auth';
+import axios from 'axios';
 
 // UI components
 import Message from '../../components/Message';
@@ -13,18 +14,25 @@ import UserEditPopup from '../../components/UserEditPopup';
 
 // redux actions
 import { listUsers, deleteUser } from '../../actions/adminActions';
-import { USER_LIST_PROPERTY_RESET } from '../../constants';
+import {
+  ADMIN_USER_DELETE_RESET,
+  ADMIN_USER_UPDATE_RESET,
+} from '../../constants';
 
 const UserListScreen = ({ history }) => {
   const dispatch = useDispatch();
-  const userList = useSelector((state) => state.userList);
-  const { loading: listLoading, error, users } = userList;
+  const {
+    loading: listLoading,
+    error,
+    users,
+  } = useSelector((state) => state.userList);
   const {
     loading: deleteLoading,
     success: deleted,
-    message,
     error: deleteError,
-  } = useSelector((state) => state.userDelete);
+    message,
+  } = useSelector((state) => state.adminUserDelete);
+  const { success: updated } = useSelector((state) => state.adminUserUpdate);
 
   const [flashMsg, setFlashMsg] = useState({
     display: false,
@@ -38,39 +46,36 @@ const UserListScreen = ({ history }) => {
 
   useEffect(() => {
     if (!users || users.length === 0) dispatch(listUsers());
-
     if (deleted) {
       flashMsgHandler('success', message);
-      rxReset('message');
+      dispatch({ type: ADMIN_USER_DELETE_RESET });
+    }
+    if (deleteError) {
+      flashMsgHandler('danger', deleteError, 3);
+      dispatch({ type: ADMIN_USER_DELETE_RESET });
+    }
+    if (updated) {
+      flashMsgHandler('success', 'Updated successfully');
+      dispatch({ type: ADMIN_USER_UPDATE_RESET });
     }
 
-    if (deleteError) {
-      flashMsgHandler('danger', deleteError);
-      rxReset('error');
-    }
-  }, [dispatch, deleted, deleteError]);
+    return () => axios.CancelToken.source().cancel();
+  }, [dispatch, deleted, deleteError, updated]);
 
   const deleteHandler = (id, name = 'undefined') => {
     const c = `Are you sure to delete ${name}?`;
     if (window.confirm(c)) dispatch(deleteUser(id));
   };
 
-  const flashMsgHandler = (variant, msg, seconds = 3) => {
+  const flashMsgHandler = (variant, msg, seconds = 2) => {
     setFlashMsg({ display: true, variant, msg });
     setTimeout(() => {
-      setFlashMsg({ ...flashMsg, display: false });
+      setFlashMsg({ msg: '', display: false });
     }, seconds * 1000);
   };
 
   const modalHandler = (userInfo, display = true) => {
     setModal({ display, userInfo });
-  };
-
-  const rxReset = (payload) => {
-    dispatch({
-      type: USER_LIST_PROPERTY_RESET,
-      payload,
-    });
   };
 
   return (

@@ -1,7 +1,7 @@
 import * as constants from '../constants';
 
 export const cartReducer = (
-  state = { loading: false, message: null, cartItems: [], shippingAddress: {} },
+  state = { loading: false, message: null, cartItems: [] },
   action
 ) => {
   let newCart = [];
@@ -14,13 +14,12 @@ export const cartReducer = (
 
   const Loading = () => ({ ...state, loading: true });
 
-  const Success = (cartItems, successType, message, shaddress) => ({
+  const Success = (cartItems, successType, message) => ({
     loading: false,
     success: true,
     successType: successType || 'undefined',
     message: message || null,
     cartItems: cartItems || state.cartItems,
-    shippingAddress: shaddress || state.shippingAddress,
   });
 
   switch (action.type) {
@@ -80,9 +79,6 @@ export const cartReducer = (
     case constants.CART_REMOVE_ITEM_FAILURE:
       return Error();
 
-    case constants.CART_SAVE_SHIPPING_ADDRESS:
-      return { ...state, shippingAddress: action.payload };
-
     case constants.CART_SAVE_PAYMENT_METHOD:
       return { ...state, paymentMethod: action.payload };
 
@@ -90,13 +86,12 @@ export const cartReducer = (
       return Loading();
 
     case constants.CART_PROPERTY_RESET:
-      //action.payload = 'ewfwefw'
       let newState = state;
       newState[action.payload] = null;
       return newState;
 
     case constants.CART_FLUSH:
-      return Success([], '', null, {});
+      return Success([], '', null);
 
     case constants.CART_FLUSH_FAIL:
       return Error();

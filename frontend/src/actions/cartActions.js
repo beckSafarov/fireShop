@@ -110,38 +110,6 @@ export const buyNowAction =
     }
   };
 
-export const qtsReset = (body) => async (dispatch) => {
-  try {
-    dispatch({ type: constants.CARD_ITEM_QUANTITY_RESET_REQUIRE });
-
-    const res = await axios.put('api/users/cartItems/many', body, config);
-
-    dispatch({
-      type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
-      payload: res.data.cartItems,
-    });
-
-    dispatch({
-      type: constants.USER_INFO_UPDATE,
-      payload: {
-        cartItems: res.data.cartItems,
-      },
-    });
-  } catch (err) {
-    if (axios.isCancel(err)) {
-      console.log('axios request cancelled');
-    } else {
-      dispatch({
-        type: constants.CARD_ITEM_QUANTITY_RESET_FAIL,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
-      });
-    }
-  }
-};
-
 export const qtyReset =
   (product, logged = true) =>
   async (dispatch) => {
@@ -166,51 +134,6 @@ export const qtyReset =
       });
     }
   };
-
-// export const removeItem =
-//   (id, logged = true) =>
-//   async (dispatch, getState) => {
-//     try {
-//       dispatch({ type: constants.CART_REMOVE_ITEM_REQUEST });
-
-//       if (logged) {
-//         const res = await axios.delete(`/api/users/cartItems/${id}`, {
-//           cancelToken: axios.CancelToken.source().token,
-//         });
-
-//         dispatch({
-//           type: constants.CART_REQUIRE_ALL_ITEMS_SUCCESS,
-//           payload: res.data.cartItems,
-//         });
-
-//         const newCartItems = getState().cart.cartItems;
-//         dispatch({
-//           type: constants.USER_INFO_UPDATE,
-//           payload: {
-//             cartItems: newCartItems,
-//           },
-//         });
-//       } else {
-//         const cartAfterRemoval = lcs.remove({ _id: id });
-//         dispatch({
-//           type: constants.CARD_ITEM_QUANTITY_RESET_SUCCESS,
-//           payload: cartAfterRemoval,
-//         });
-//       }
-//     } catch (err) {
-//       if (axios.isCancel(err)) {
-//         console.log('axios request cancelled');
-//       } else {
-//         dispatch({
-//           type: constants.CART_REQUIRE_ALL_ITEMS_FAIL,
-//           payload:
-//             err.response && err.response.data.message
-//               ? err.response.data.message
-//               : err.message,
-//         });
-//       }
-//     }
-//   };
 
 export const removeItem =
   (id, logged = true) =>
