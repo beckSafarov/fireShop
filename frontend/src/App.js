@@ -40,20 +40,21 @@ import Auth from './helpers/auth';
 const App = () => {
   const dispatch = useDispatch();
   const { loading: cartLoading, error } = useSelector((state) => state.cart);
-  const auth = Auth();
+  const { loading: userLoading, userInfo } = useSelector(
+    (state) => state.userLogin
+  );
   const lcc = getCart();
-  const loading = auth.loading || cartLoading;
+  const loading = userLoading || cartLoading;
 
   useEffect(() => {
-    if (auth.logged === null) dispatch(getMe());
+    if (userInfo === null) dispatch(getMe());
 
-    if (auth.logged && lcc.length) {
-      // console.log('Welcome logged guy');
+    if (userInfo && lcc.length) {
       dispatch(addToCart(lcc, null, true, true));
     }
 
     return () => axios.CancelToken.source().cancel();
-  }, [dispatch, auth.logged]);
+  }, [dispatch, userInfo]);
 
   return (
     <Router>

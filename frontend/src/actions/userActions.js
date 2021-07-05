@@ -20,7 +20,7 @@ export const login = (email, password) => async (dispatch) => {
 
     dispatch({
       type: constants.CART_ITEMS_RECEIVED,
-      payload: data.data ? data.data.cartItems : [],
+      payload: data.data.cartItems,
     });
   } catch (err) {
     dispatch({
@@ -101,7 +101,7 @@ export const getMe = () => async (dispatch, getState) => {
 
     dispatch({
       type: constants.USER_LOGIN_SUCCESS,
-      payload: data.user || null,
+      payload: data.user || false,
     });
 
     dispatch({

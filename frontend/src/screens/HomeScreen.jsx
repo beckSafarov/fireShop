@@ -17,11 +17,10 @@ const HomeScreen = () => {
 
   const productList = useSelector((state) => state.productList);
   const { loading, error, products } = productList;
-  const cancelTokenSource = axios.CancelToken.source();
 
   useEffect(() => {
     if (products.length === 0) dispatch(listProducts());
-    return () => cancelTokenSource.cancel();
+    return () => axios.CancelToken.source().cancel();
   }, [dispatch]);
 
   return (
