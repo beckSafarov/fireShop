@@ -1,9 +1,7 @@
 import { LinkContainer } from 'react-router-bootstrap';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
-import { logout } from '../actions/userActions';
-import { DropLink } from '../components/Dropdown';
+import { logout } from '../../actions/userActions';
 
 const Header = ({ history }) => {
   const dispatch = useDispatch();

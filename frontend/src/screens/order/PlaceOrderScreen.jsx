@@ -4,14 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
 // methods
-import { Calculations } from '../../helpers/calculations.js';
-import Auth from '../../components/Auth';
+import { Calculations } from '../../helpers/Calculations';
 
 // UI components
-import Message from '../../components/Message';
-import CheckOutSteps from '../../components/CheckOutSteps';
-import Loader from '../../components/Loader';
-import ListRow from '../../components/ListRow';
+import {
+  Auth,
+  Loader,
+  Message,
+  CheckOutSteps,
+  ListRow,
+} from '../../components';
 import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap';
 import { PayPalButton } from 'react-paypal-button-v2';
 import { Link } from 'react-router-dom';

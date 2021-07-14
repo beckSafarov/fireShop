@@ -3,9 +3,8 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // UI components
-import Message from './Message';
-import Spinner from './Spinner';
 import Modal from 'react-bootstrap/Modal';
+import { Message, Spinner } from '../components';
 import { AdminUserUpdateForm } from './Forms';
 import { ADMIN_USER_UPDATE_RESET } from '../constants';
 

@@ -1,7 +1,6 @@
 import { Row, Col, ListGroup, Image, Form, Button } from 'react-bootstrap';
 import CountOptions from './CountOptions';
 import { Link } from 'react-router-dom';
-import { qtyReset } from '../actions/cartActions';
 
 const CartItem = ({ item, newQty, qtyResetHandler, removeFromCart }) => {
   return (

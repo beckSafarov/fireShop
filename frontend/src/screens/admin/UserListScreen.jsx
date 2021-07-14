@@ -1,16 +1,18 @@
 // libraries & methods
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Auth from '../../components/Auth';
 import axios from 'axios';
 
 // UI components
-import Message from '../../components/Message';
-import Loader from '../../components/Loader';
 import { Table } from 'react-bootstrap';
-import Spinner from '../../components/Spinner';
-import Exceptional from '../../components/Exceptional';
-import UserEditPopup from '../../components/UserEditPopup';
+import {
+  Auth,
+  Message,
+  Loader,
+  Spinner,
+  Exceptional,
+  UserEditPopup,
+} from '../../components';
 
 // redux actions
 import { listUsers, deleteUser } from '../../actions/adminActions';

@@ -2,15 +2,11 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { Row, Col, Nav, Form } from 'react-bootstrap';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import Auth from '../components/Auth';
 import { Button } from 'react-bootstrap';
 import * as lcs from '../helpers/cartLCS';
 import { LinkContainer } from 'react-router-bootstrap';
 import { DropMenu, DropLink } from '../components/Dropdown';
-import ConfirmModal from '../components/ConfirmModal';
-import Spinner from '../components/Spinner';
+import { Auth, Message, Spinner, Loader, ConfirmModal } from '../components';
 
 const TestScreen = ({ location, history, match }) => {
   const people = ['Beck', 'Tom'];

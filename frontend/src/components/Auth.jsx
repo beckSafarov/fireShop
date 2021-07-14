@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Loader from './Loader';
+import { Loader } from '../components';
 
 const Auth = ({ children, history, reverse, adminOnly }) => {
   const [permit, setPermit] = useState(false);

@@ -7,12 +7,8 @@ import axios from 'axios';
 import { getMe } from './actions/userActions';
 
 // UI components
-import Header from './components/Header';
-import Footer from './components/Footer';
 import { Container } from 'react-bootstrap';
-import Loader from './components/Loader';
-import Spinner from './components/Spinner';
-import Message from './components/Message';
+import { Header, Footer, Loader } from './components';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 // Screens
@@ -32,10 +28,9 @@ import UserOrdersScreen from './screens/user/UserOrdersScreen';
 import OrderInfoScreen from './screens/user/OrderInfoScreen';
 import ShaddressScreen from './screens/user/ShaddressScreen';
 import testScreen from './screens/testScreen';
-import { flushCart, getCart } from './helpers/cartLCS';
+import { getCart } from './helpers/cartLCS';
 import { addToCart } from './actions/cartActions';
 import UserListScreen from './screens/admin/UserListScreen';
-import Auth from './helpers/auth';
 
 const App = () => {
   const dispatch = useDispatch();

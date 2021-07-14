@@ -1,5 +1,4 @@
 import * as cs from '../constants';
-import resetProperty from '../helpers/resetProperty';
 const Loading = (state = {}, loading = true) => ({ ...state, loading });
 const Error = (error, state = {}) => ({ loading: false, error, ...state });
 

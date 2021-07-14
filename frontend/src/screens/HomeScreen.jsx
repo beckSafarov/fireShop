@@ -4,10 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
 // -- UI COMPONENTS
-import Message from '../components/Message';
-import Loader from '../components/Loader';
+import { Message, Loader, Product } from '../components';
 import { Row, Col } from 'react-bootstrap';
-import Product from '../components/Product';
 
 // -- REDUX RELATED IMPORTS
 import { listProducts } from '../actions/productActions.js';

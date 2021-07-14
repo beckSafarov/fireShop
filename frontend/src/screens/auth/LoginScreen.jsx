@@ -2,12 +2,9 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Auth from '../../components/Auth';
 
 // internal components
-import Message from '../../components/Message';
-import Loader from '../../components/Loader';
-import FormContainer from '../../components/FormContainer';
+import { Auth, Loader, Message, FormContainer } from '../../components';
 
 // redux actions
 import { login } from '../../actions/userActions';

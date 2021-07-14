@@ -3,21 +3,24 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 // -- helpers --
-import { Calculations } from '../helpers/calculations';
+import { Calculations } from '../helpers/Calculations';
 import * as cartLcs from '../helpers/cartLCS';
 import * as qtyLcs from '../helpers/qtyLCS';
+
 // -- ui components --
 import { Row, Col, ListGroup, Button, Card } from 'react-bootstrap';
-import Message from '../components/Message';
-import CartItem from '../components/CartItem';
-import EmptyCart from '../components/EmptyCart';
-import Spinner from '../components/Spinner';
+import {
+  Message,
+  CartItem,
+  EmptyCart,
+  Spinner,
+  ConfirmModal,
+  Exceptional,
+} from '../components';
 
 // -- redux related imports --
 import { qtyReset, removeItem } from '../actions/cartActions';
 import { CART_PROPERTY_RESET } from '../constants';
-import ConfirmModal from '../components/ConfirmModal';
-import Exceptional from '../components/Exceptional';
 
 const TestCartScreen = ({ history }) => {
   const dispatch = useDispatch();

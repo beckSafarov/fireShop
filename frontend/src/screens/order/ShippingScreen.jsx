@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 // ui components
-import Loader from '../../components/Loader';
-import Message from '../../components/Message';
-import CheckOutSteps from '../../components/CheckOutSteps';
+import {
+  Loader,
+  Message,
+  CheckOutSteps,
+  FormContainer,
+} from '../../components';
 import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms';
-import FormContainer from '../../components/FormContainer';
 
 // redux related
 import { createShaddress } from '../../actions/userActions';

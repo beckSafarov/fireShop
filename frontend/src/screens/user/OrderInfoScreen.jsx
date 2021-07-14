@@ -3,14 +3,16 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+
+// methods
+import { Calculations } from '../../helpers/Calculations';
+
 // UI components
 import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap';
-import Message from '../../components/Message';
-import Loader from '../../components/Loader';
-import { Calculations } from '../../helpers/calculations';
+import { Auth, Message, Loader } from '../../components';
+
 //Redux actions
 import { getOrderDetails } from '../../actions/orderActions';
-import Auth from '../../components/Auth';
 
 const OrderInfoScreen = ({ match, history }) => {
   const dispatch = useDispatch();

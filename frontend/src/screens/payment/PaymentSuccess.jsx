@@ -1,14 +1,11 @@
 import { useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getOrderDetails } from '../../actions/orderActions';
 import { useDispatch, useSelector } from 'react-redux';
-import Auth from '../../components/Auth';
 
 import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap';
-import Loader from '../../components/Loader';
-import Message from '../../components/Message';
 import axios from 'axios';
-import Exceptional from '../../components/Exceptional';
+import { Auth, Loader, Message, Exceptional } from '../../components';
 
 const PaymentSuccess = ({ history, location }) => {
   const dispatch = useDispatch();

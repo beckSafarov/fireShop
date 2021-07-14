@@ -3,13 +3,10 @@ import { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import Auth from '../../components/Auth';
 
 // -- COMPONENTS --
-import Message from '../../components/Message';
-import Loader from '../../components/Loader';
 import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms';
-import AccountSideMenu from '../../components/AccountSideMenu';
+import { Auth, Message, Loader, AccountSideMenu } from '../../components';
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile } from '../../actions/userActions';

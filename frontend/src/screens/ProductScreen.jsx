@@ -15,9 +15,8 @@ import {
   Form,
   Alert,
 } from 'react-bootstrap';
-import Rating from '../components/Rating';
-import Loader from '../components/Loader';
-import CountOptions from '../components/CountOptions';
+import { Rating, Loader, CountOptions } from '../components';
+
 // -- REDUX ACTIONS
 import { listProductDetails } from '../actions/productActions';
 import { addToCart, buyNowAction } from '../actions/cartActions';

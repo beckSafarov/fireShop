@@ -2,10 +2,9 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import Auth from '../../components/Auth';
+
 // UI components
-import Message from '../../components/Message';
-import Loader from '../../components/Loader';
+import { Message, Loader, Auth } from '../../components';
 import { Table, Container, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 // Redux related imports
