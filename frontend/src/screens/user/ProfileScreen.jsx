@@ -8,14 +8,13 @@ import Auth from '../../components/Auth';
 // -- COMPONENTS --
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import { LinkContainer } from 'react-router-bootstrap';
 import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms';
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile } from '../../actions/userActions';
 import AccountSideMenu from '../../components/AccountSideMenu';
-import store from '../../store';
 import FieldsValidated from '../../helpers/FieldsValidated';
+import { USER_DETAILS_PROPERTY_RESET, USER_INFO_UPDATE } from '../../constants';
 
 const ProfileScreen = ({ history }) => {
   // hooks
@@ -23,60 +22,60 @@ const ProfileScreen = ({ history }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
-  const [message, setMessage] = useState(null);
-  const [msgVariant, setmsgVariant] = useState('danger');
   const [editBtnClicked, setEditBtnClicked] = useState(false);
-  const [updated, setUpdated] = useState({
-    name: null,
-    email: null,
-  });
+  const [flashMsg, setFlashMsg] = useState({});
 
   // -- redux stores --
   const dispatch = useDispatch();
-  const updateRes = useSelector((state) => state.userDetailsUpdate);
+  const {
+    loading: updateLoading,
+    success: updateSuccess,
+    error: updateError,
+  } = useSelector((state) => state.userDetailsUpdate);
 
   // variables
   const { userInfo } = useSelector((state) => state.userLogin);
-  let loading = updateRes.loading;
+  const loading = updateLoading;
 
   useEffect(() => {
-    if (userInfo) resetValues();
+    userInfo && resetValues();
 
-    const unsubscribe = store.subscribe(() => {
-      let update = store.getState().userDetailsUpdate;
-      if (update.success) {
-        setEditBtnClicked(false);
-        setMessageHandler('success', 'Updated successfully');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      } else if (update.error) {
-        setMessageHandler('danger', update.error, 3);
-      }
-    });
+    if (updateSuccess) {
+      dispatch({
+        type: USER_INFO_UPDATE,
+        payload: { name, email },
+      });
+      setEditBtnClicked(false);
+      setMsgHandler('Updated successfully', 'success');
+      rxReset('success');
+      updateValues();
+    }
 
-    return () => {
-      axios.CancelToken.source().cancel();
-      unsubscribe();
-    };
-  }, [updateRes.success, userInfo]);
+    if (updateError) {
+      setMsgHandler(updateError, 'danger');
+      rxReset('success');
+    }
 
-  const setMessageHandler = (variant = 'danger', msg, seconds = 2) => {
-    setMessage(msg);
-    setmsgVariant(variant);
-    setTimeout(function () {
-      setMessage(null);
-    }, seconds * 1000);
+    return () => axios.CancelToken.source().cancel();
+  }, [updateSuccess, updateError, userInfo]);
+
+  const setMsgHandler = (msg, variant) => {
+    setFlashMsg({ display: true, variant, message: msg });
+    setTimeout(() => {
+      setFlashMsg({ display: false });
+    }, 3000);
   };
 
-  const resetValues = (
-    passedName = userInfo.name,
-    passedEmail = userInfo.email
-  ) => {
-    setName(passedName);
-    setEmail(passedEmail);
+  const resetValues = () => {
+    setName(userInfo.name);
+    setEmail(userInfo.email);
     setPassword('');
     setConfirmPass('');
+  };
+
+  const updateValues = () => {
+    setName(name);
+    setEmail(email);
   };
 
   const submitHandler = (e) => {
@@ -85,21 +84,15 @@ const ProfileScreen = ({ history }) => {
       ? FieldsValidated(name, email)
       : FieldsValidated(name, email, password, confirmPass);
 
-    if (validation.success) {
-      dispatch(
-        updateUserProfile({
-          name: name ? name : undefined,
-          email: email ? email : undefined,
-          password: password ? password : undefined,
-        })
-      );
-      setUpdated({
-        name: name && name,
-        email: email && email,
-      });
-    } else {
-      setMessageHandler('danger', validation.message);
-    }
+    validation.success
+      ? dispatch(
+          updateUserProfile({
+            name: name || undefined,
+            email: email || undefined,
+            password: password || undefined,
+          })
+        )
+      : setMsgHandler(validation.message, 'danger');
   };
 
   const cancelChanges = () => {
@@ -108,6 +101,13 @@ const ProfileScreen = ({ history }) => {
   };
 
   const editBtnHandler = () => setEditBtnClicked(true);
+
+  const rxReset = (payload) => {
+    dispatch({
+      type: USER_DETAILS_PROPERTY_RESET,
+      payload,
+    });
+  };
 
   //preparing props to pass to profile update form
   const values = { name, email };
@@ -134,11 +134,15 @@ const ProfileScreen = ({ history }) => {
               {userInfo && (
                 <>
                   <h3>User Profile</h3>
-                  {message && <Message variant={msgVariant}>{message}</Message>}
+                  {flashMsg.display && (
+                    <Message variant={flashMsg.variant}>
+                      {flashMsg.message}
+                    </Message>
+                  )}
                   {!editBtnClicked ? (
                     <ReadOnlyForm
-                      name={updated.name || name}
-                      email={updated.email || email}
+                      name={name}
+                      email={email}
                       onClick={editBtnHandler}
                     />
                   ) : (

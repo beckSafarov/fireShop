@@ -10,9 +10,9 @@ import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms';
 import FormContainer from '../../components/FormContainer';
 
 // redux related
-import store from '../../store';
 import { createShaddress } from '../../actions/userActions';
 import Auth from '../../components/Auth';
+import { SHADDRESS_PROPERTY_RESET, USER_INFO_UPDATE } from '../../constants';
 
 const ShippingScreen = ({ history, location, match }) => {
   // hooks
@@ -22,16 +22,25 @@ const ShippingScreen = ({ history, location, match }) => {
   const [country, setCountry] = useState('');
   const [addressExists, setAddressExists] = useState(false);
   const [editBtnClicked, setEditBtnClicked] = useState(false);
-
+  const [flashMsg, setFlashMsg] = useState({
+    display: false,
+    variant: '',
+    message: '',
+  });
+  const addressObj = { address, city, postalCode, country };
   // redux related
   const dispatch = useDispatch();
-  const shaddress = useSelector((state) => state.shaddress);
+  const {
+    loading: shaddressLoading,
+    success: shaddressSuccess,
+    error: shaddressError,
+  } = useSelector((state) => state.shaddress);
 
   // variables
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
   const cart = useSelector((state) => state.cart);
-  let loading = shaddress.loading;
+  const loading = shaddressLoading;
 
   useEffect(() => {
     if (userInfo) {
@@ -40,29 +49,30 @@ const ShippingScreen = ({ history, location, match }) => {
       if (userInfo.shippingAddress && !address) resetValues();
     }
 
-    const unsubscribe = store.subscribe(() => {
-      if (store.getState().shaddress.success) {
-        window.location.reload();
-      }
-    });
+    if (shaddressSuccess) {
+      dispatch({
+        type: USER_INFO_UPDATE,
+        payload: {
+          shippingAddress: addressObj,
+        },
+      });
+      setEditBtnClicked(!editBtnClicked);
+      msgHandler('Updated successfully', 'success');
+      rxReset('success');
+    }
 
-    return () => {
-      axios.CancelToken.source().cancel();
-      unsubscribe();
-    };
-  }, [userInfo, history, address, cart]);
+    if (shaddressError) {
+      msgHandler(shaddressError, 'danger');
+      rxReset('error');
+    }
+
+    return () => axios.CancelToken.source().cancel();
+  }, [userInfo, address, cart, shaddressSuccess, shaddressError]);
 
   const confirmHandler = () => history.push('/payment');
 
   const createAddressHandler = () => {
-    dispatch(
-      createShaddress({
-        address,
-        city,
-        postalCode,
-        country,
-      })
-    );
+    dispatch(createShaddress(addressObj));
   };
 
   const resetValues = () => {
@@ -98,13 +108,6 @@ const ShippingScreen = ({ history, location, match }) => {
     setEditBtnClicked(!editBtnClicked);
   };
 
-  const values = {
-    address,
-    city,
-    postalCode,
-    country,
-  };
-
   const functionsForReadForm = {
     onClick: editBtnHandler,
     onProceed: confirmHandler,
@@ -116,24 +119,39 @@ const ShippingScreen = ({ history, location, match }) => {
     cancelChanges,
   };
 
+  const msgHandler = (msg, variant) => {
+    setFlashMsg({ display: true, variant, message: msg });
+    setTimeout(() => {
+      setFlashMsg({ display: false });
+    }, 3000);
+  };
+
+  const rxReset = (payload) => {
+    dispatch({
+      type: SHADDRESS_PROPERTY_RESET,
+      payload,
+    });
+  };
+
   return (
     <Auth history={history}>
       <FormContainer>
         <CheckOutSteps step1 step2 />
         <h1>Shipping Address</h1>
+        {flashMsg.display && (
+          <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+        )}
         {loading ? (
           <Loader />
-        ) : shaddress.error ? (
-          <Message variant='danger'>{shaddress.error}</Message>
         ) : !editBtnClicked && userInfo && addressExists ? (
           <ShaddressReadForm
-            values={values}
+            values={addressObj}
             functions={functionsForReadForm}
             profile={false}
           />
         ) : editBtnClicked === true || !addressExists ? (
           <ShaddressUpdateForm
-            values={values}
+            values={addressObj}
             functions={functionsForUpdateForm}
             profile={false}
             addressExists={addressExists}

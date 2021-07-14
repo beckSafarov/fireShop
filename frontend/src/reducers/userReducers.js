@@ -44,6 +44,7 @@ export const userRegisterReducer = (state = {}, action) => {
 };
 
 export const updateUserDetailsReducer = (state = {}, action) => {
+  let newState = state;
   switch (action.type) {
     case cs.USER_DETAILS_UPDATE_REQUEST:
       return Loading();
@@ -51,12 +52,16 @@ export const updateUserDetailsReducer = (state = {}, action) => {
       return Success(undefined);
     case cs.USER_DETAILS_UPDATE_FAILURE:
       return Error(action.payload);
+    case cs.USER_DETAILS_PROPERTY_RESET:
+      newState[action.payload] = null;
+      return newState;
     default:
       return state;
   }
 };
 
 export const ShaddressReducer = (state = {}, action) => {
+  let newState = state;
   switch (action.type) {
     case cs.SHADDRESS_POST_REQUEST:
       return Loading();
@@ -64,6 +69,9 @@ export const ShaddressReducer = (state = {}, action) => {
       return { loading: false, success: true, data: action.payload };
     case cs.SHADDRESS_POST_FAILURE:
       return Error(action.payload);
+    case cs.SHADDRESS_PROPERTY_RESET:
+      newState[action.payload] = null;
+      return newState;
     default:
       return state;
   }

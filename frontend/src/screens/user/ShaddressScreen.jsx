@@ -13,50 +13,57 @@ import AccountSideMenu from '../../components/AccountSideMenu';
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile } from '../../actions/userActions';
-import store from '../../store';
+import { USER_DETAILS_PROPERTY_RESET } from '../../constants';
+import { USER_INFO_UPDATE } from '../../constants';
 
 const ShaddressScreen = ({ history }) => {
   //hooks
-  const [address, setAddress] = useState(null);
-  const [city, setCity] = useState(null);
-  const [postalCode, setPostalCode] = useState(null);
-  const [country, setCountry] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [msgVariant, setmsgVariant] = useState('danger');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('');
   const [editBtnClicked, setEditBtnClicked] = useState(false);
   const [valuesAssigned, setValuesAssigned] = useState(false);
+  const [flashMsg, setFlashMsg] = useState({});
+  const addressObj = { address, city, postalCode, country };
 
   // Redux stores
   const dispatch = useDispatch();
 
   // variables
   const { userInfo } = useSelector((state) => state.userLogin);
-  const addressUpdate = useSelector((state) => state.userDetailsUpdate);
-  let loading = addressUpdate.loading || !valuesAssigned;
+  const {
+    loading: updateLoading,
+    success: updateSuccess,
+    error: updateError,
+  } = useSelector((state) => state.userDetailsUpdate);
+  let loading = updateLoading || !valuesAssigned;
 
   useEffect(() => {
-    if (userInfo) resetValues();
+    userInfo && resetValues();
+    if (updateSuccess) {
+      dispatch({
+        type: USER_INFO_UPDATE,
+        payload: { shippingAddress: addressObj },
+      });
+      setEditBtnClicked(false);
+      setMsgHandler('Updated successfully', 'success');
+      rxReset('success');
+      updateFormValues();
+    }
 
-    const unsubscribe = store.subscribe(() => {
-      let update = store.getState().userDetailsUpdate;
-      if (update.success) {
-        setMsgHandler('Updated successfully', 'success');
-      } else if (update.error) {
-        setMsgHandler(update.error, 'danger');
-      }
-    });
+    if (updateError) {
+      setMsgHandler(updateError, 'danger');
+      rxReset('error');
+    }
 
-    return () => {
-      axios.CancelToken.source().cancel();
-      unsubscribe();
-    };
-  }, [addressUpdate.success]);
+    return () => axios.CancelToken.source().cancel();
+  }, [userInfo, updateSuccess, updateError]);
 
   const setMsgHandler = (msg, variant) => {
-    setMessage(msg);
-    setmsgVariant(variant);
-    setTimeout(function () {
-      setMessage(null);
+    setFlashMsg({ display: true, variant, message: msg });
+    setTimeout(() => {
+      setFlashMsg({ display: false });
     }, 3000);
   };
 
@@ -66,13 +73,15 @@ const ShaddressScreen = ({ history }) => {
       setCity(userInfo.shippingAddress.city);
       setPostalCode(userInfo.shippingAddress.postalCode);
       setCountry(userInfo.shippingAddress.country);
-    } else {
-      setAddress('');
-      setCity('');
-      setPostalCode('');
-      setCountry('');
     }
     setValuesAssigned(true);
+  };
+
+  const updateFormValues = () => {
+    setAddress(address);
+    setCity(city);
+    setPostalCode(postalCode);
+    setCountry(country);
   };
 
   const editBtnHandler = () => {
@@ -80,13 +89,13 @@ const ShaddressScreen = ({ history }) => {
     if (editBtnClicked) setValuesAssigned(false);
   };
 
-  const updateShaddressHandler = async () => {
+  const updateShaddressHandler = async (e) => {
+    e.preventDefault();
     dispatch(
       updateUserProfile({
         shippingAddress: { address, city, postalCode, country },
       })
     );
-    setEditBtnClicked(false);
   };
 
   const changesHandler = (event) => {
@@ -112,14 +121,14 @@ const ShaddressScreen = ({ history }) => {
     setEditBtnClicked(false);
   };
 
-  // -- VALUE & FUNCTION OBJECTS TO PASS TO COMPONENTS
-  const values = {
-    address,
-    city,
-    postalCode,
-    country,
+  const rxReset = (payload) => {
+    dispatch({
+      type: USER_DETAILS_PROPERTY_RESET,
+      payload,
+    });
   };
 
+  // functions to pass to form components
   const funcsToEditForm = {
     submitHandler: updateShaddressHandler,
     changesHandler,
@@ -140,17 +149,19 @@ const ShaddressScreen = ({ history }) => {
                 </Col>
                 <Col md={10} sm={10}>
                   <h3 className='mb-4'>Address</h3>
-                  {message !== null && (
-                    <Message variant={msgVariant}>{message}</Message>
+                  {flashMsg.display && (
+                    <Message variant={flashMsg.variant}>
+                      {flashMsg.message}
+                    </Message>
                   )}
                   {!editBtnClicked ? (
                     <ShaddressReadForm
-                      values={values}
+                      values={addressObj}
                       functions={{ onClick: editBtnHandler }}
                     />
                   ) : (
                     <ShaddressUpdateForm
-                      values={values}
+                      values={addressObj}
                       functions={funcsToEditForm}
                     />
                   )}
