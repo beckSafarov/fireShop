@@ -31,6 +31,7 @@ import testScreen from './screens/testScreen';
 import { getCart } from './helpers/cartLCS';
 import { addToCart } from './actions/cartActions';
 import UserListScreen from './screens/admin/UserListScreen';
+import ProductListScreen from './screens/admin/ProductListScreen';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -85,6 +86,10 @@ const App = () => {
 
             {/* admin routes */}
             <Route path='/admin/userlist' component={UserListScreen}></Route>
+            <Route
+              path='/admin/productlist'
+              component={ProductListScreen}
+            ></Route>
 
             {/*test route */}
             {process.env.NODE_ENV === 'development' && (

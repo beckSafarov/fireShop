@@ -47,7 +47,7 @@ const UserListScreen = ({ history }) => {
   });
 
   useEffect(() => {
-    if (!users || users.length === 0) dispatch(listUsers());
+    (!users || users.length === 0) && dispatch(listUsers());
     if (deleted) {
       flashMsgHandler('success', message);
       dispatch({ type: ADMIN_USER_DELETE_RESET });
@@ -93,7 +93,7 @@ const UserListScreen = ({ history }) => {
             <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
           )}
           {deleteLoading && <Spinner />}
-          <Table striped bordered responsive hover className='tale-sm'>
+          <Table responsive className='tale-sm'>
             <thead>
               <tr>
                 <th>ID</th>

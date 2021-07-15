@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 
 export const ReadOnlyForm = ({ name, email, onClick }) => {
@@ -267,7 +266,6 @@ export const AdminUserUpdateForm = ({ values, functions }) => {
   const { name, email, isAdmin: admin, change, shippingAddress } = values;
   const { address, country, postalCode, city } = shippingAddress;
   const { changesHandler, submitHandler } = functions;
-  // const [admin, setAdmin] = useState(isAdmin);
 
   return (
     <Form>
