@@ -1,6 +1,5 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
-import FormContainer from '../components/FormContainer';
 
 export const ReadOnlyForm = ({ name, email, onClick }) => {
   return (
@@ -265,10 +264,11 @@ export const ShaddressUpdateForm = ({
 };
 
 export const AdminUserUpdateForm = ({ values, functions }) => {
-  const { name, email, admin, address, city, postalCode, country, change } =
-    values;
+  const { name, email, isAdmin: admin, change, shippingAddress } = values;
+  const { address, country, postalCode, city } = shippingAddress;
   const { changesHandler, submitHandler } = functions;
-  console.log(address);
+  // const [admin, setAdmin] = useState(isAdmin);
+
   return (
     <Form>
       <Form.Group controlId='formBasicEmail'>
@@ -293,7 +293,7 @@ export const AdminUserUpdateForm = ({ values, functions }) => {
         <div className='py-2'>
           <Form.Check
             type='switch'
-            defaultChecked={admin}
+            checked={admin || false}
             variant='info'
             id='custom-switch'
             name='admin'

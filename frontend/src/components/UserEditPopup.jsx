@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // UI components
 import Modal from 'react-bootstrap/Modal';
-import { Message, Spinner } from '../components';
+import { Message, Spinner, ConfirmModal } from '.';
 import { AdminUserUpdateForm } from './Forms';
 import { ADMIN_USER_UPDATE_RESET } from '../constants';
 
@@ -33,67 +33,48 @@ const UserEditPopup = ({ modal, setModal }) => {
 
   // hooks
   const [userInfo, setUserInfo] = useState(defaultUserInfo);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [admin, setAdmin] = useState('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-  const [country, setCountry] = useState('');
+  const [user, setUser] = useState(defaultUserInfo);
   const [change, setChange] = useState(false);
-  const [flashMsg, setFlashMsg] = useState({
-    display: false,
-    variant: '',
-    msg: '',
+  const [confirmModal, setConfirmModal] = useState({
+    heading: 'Admin Privilege Changes',
   });
-  const fire = `Are you sure to cancel ${userInfo.name}'s admin rights?`;
+  const [flashMsg, setFlashMsg] = useState({});
+  const fire = `Are you sure to revoke ${userInfo.name}'s admin rights?`;
   const promote = `Are you sure to give ${userInfo.name} admin privileges?`;
+  let value, newUser;
 
   useEffect(() => {
-    if (modal && modal.userInfo) resetValues();
-    if (updated) {
-      rxReset('success');
-      hide();
-    }
+    modal && modal.userInfo && resetValues();
+    updated && hide();
 
     if (error) {
-      flashMsgHandler(error, 'danger');
+      msgHandler(error, 'danger');
       rxReset('error');
     }
   }, [modal, updated, error]);
 
   const madeChanges = () => {
-    return (
-      name !== userInfo.name ||
-      email !== userInfo.email ||
-      admin !== userInfo.isAdmin ||
-      address !== userInfo.shippingAddress.address ||
-      city !== userInfo.shippingAddress.city ||
-      postalCode !== userInfo.shippingAddress.postalCode ||
-      country !== userInfo.shippingAddress.country
-    );
+    let ch = false;
+    Object.keys(user).forEach((i) => {
+      if (typeof user[i] === 'object') {
+        Object.keys(user[i]).forEach((j) => {
+          ch = user[i][j] !== userInfo[i][j] ? true : ch;
+        });
+      } else {
+        ch = user[i] !== userInfo[i] ? true : ch;
+      }
+    });
+    return ch;
   };
 
   const submitHandler = (e) => {
     e.preventDefault();
-    const body = {
-      name,
-      email,
-      isAdmin: admin,
-      shippingAddress: {
-        address,
-        city,
-        postalCode,
-        country,
-      },
-    };
-
     if (madeChanges()) {
-      const validated = FieldsValidated(name, email);
-      if (validated.success) {
-        dispatch(adminUpdateUser(userInfo._id, body));
+      const vld = FieldsValidated(user.name, user.email);
+      if (vld.success) {
+        dispatch(adminUpdateUser(userInfo._id, user));
       } else {
-        flashMsgHandler(validated.message, 'danger');
+        msgHandler(vld.message, 'danger');
         setChange(false);
       }
     } else {
@@ -102,43 +83,53 @@ const UserEditPopup = ({ modal, setModal }) => {
   };
 
   const resetValues = (fromModal = true) => {
-    let src = modal.userInfo;
-    if (!fromModal) src = defaultUserInfo;
-    setUserInfo(src);
-    setName(src.name);
-    setEmail(src.email);
-    setAdmin(src.isAdmin);
-    setAddress(src.shippingAddress.address);
-    setCity(src.shippingAddress.city);
-    setPostalCode(src.shippingAddress.postalCode);
-    setCountry(src.shippingAddress.country);
+    const src = fromModal
+      ? {
+          ...modal.userInfo,
+          shippingAddress: {
+            ...modal.userInfo.shippingAddress,
+          },
+        }
+      : defaultUserInfo;
+    setUserInfo({ ...src, shippingAddress: { ...src.shippingAddress } });
+    setUser(src);
   };
 
   const changesHandler = (e) => {
     e.persist();
-    if (!change) setChange(true);
+    setChange(true);
+    value = e.target.value;
+    newUser = user;
     switch (e.target.name) {
       case 'name':
-        setName(e.target.value);
+        setUser({ ...user, name: value });
         break;
       case 'email':
-        setEmail(e.target.value);
+        setUser({ ...user, email: value });
         break;
       case 'admin':
-        const confirm = admin ? fire : promote;
-        if (window.confirm(confirm)) setAdmin(!admin);
+        setConfirmModal({
+          ...confirmModal,
+          display: true,
+          message: user.isAdmin ? fire : promote,
+          variant: user.isAdmin ? 'danger' : 'info',
+        });
         break;
       case 'address':
-        setAddress(e.target.value);
+        newUser.shippingAddress.address = value;
+        setUser(newUser);
         break;
       case 'city':
-        setCity(e.target.value);
+        newUser.shippingAddress.city = value;
+        setUser(newUser);
         break;
       case 'postalCode':
-        setPostalCode(e.target.value);
+        newUser.shippingAddress.postalCode = value;
+        setUser(newUser);
         break;
       case 'country':
-        setCountry(e.target.value);
+        newUser.shippingAddress.country = value;
+        setUser(newUser);
         break;
     }
   };
@@ -148,7 +139,7 @@ const UserEditPopup = ({ modal, setModal }) => {
     setChange(false);
   };
 
-  const flashMsgHandler = (msg, variant) => {
+  const msgHandler = (msg, variant) => {
     setFlashMsg({ display: true, msg, variant });
     setTimeout(() => {
       setFlashMsg({ ...msg, display: false });
@@ -162,21 +153,22 @@ const UserEditPopup = ({ modal, setModal }) => {
     });
   };
 
-  const values = {
-    name,
-    email,
-    admin,
-    address,
-    city,
-    postalCode,
-    country,
-    change,
+  const adminChangeProceed = (e) => {
+    e.preventDefault();
+    setUser({ ...user, isAdmin: !user.isAdmin });
+    hideModal();
+  };
+
+  const hideModal = () => {
+    setConfirmModal({ ...confirmModal, display: false });
   };
 
   const functions = {
     changesHandler,
     submitHandler,
   };
+
+  const values = { ...user, change };
 
   return (
     <Modal
@@ -185,6 +177,15 @@ const UserEditPopup = ({ modal, setModal }) => {
       dialogClassName='modal-90w'
       aria-labelledby='example-custom-modal-styling-title'
     >
+      <ConfirmModal
+        active={confirmModal.display}
+        heading={confirmModal.heading}
+        message={confirmModal.message}
+        confirmHandler={adminChangeProceed}
+        hideHandler={hideModal}
+        proceedText='Confirm'
+        primaryVariant={confirmModal.variant}
+      />
       <Modal.Header closeButton>
         <Modal.Title id='example-custom-modal-styling-title'>
           Updating: {userInfo.name}
@@ -194,7 +195,7 @@ const UserEditPopup = ({ modal, setModal }) => {
       {flashMsg.display && (
         <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
       )}
-      <Modal.Body>
+      <Modal.Body variant='flush'>
         <AdminUserUpdateForm values={values} functions={functions} />
       </Modal.Body>
     </Modal>
