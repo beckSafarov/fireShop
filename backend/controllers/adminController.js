@@ -39,7 +39,6 @@ export const updateUserById = asyncHandler(async (req, res) => {
 //@desc  delete a user
 //@route DELETE /api/admin/users/:id
 export const removeUser = asyncHandler(async (req, res) => {
-  throw new Error('Sample Error');
   const id = req.params.id;
 
   const deletedUser = await User.findByIdAndDelete(id);
