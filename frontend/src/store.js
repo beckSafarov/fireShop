@@ -12,7 +12,6 @@ import { getCart } from './helpers/cartLCS.js';
 const reducer = combineReducers({
   productList: productReducers.productListReducer,
   productDetails: productReducers.productDetailsReducer,
-  productPrices: productReducers.productPriceReducer,
   cart: cartReducers.cartReducer,
   userLogin: userReducers.userLoginReducer,
   userRegister: userReducers.userRegisterReducer,

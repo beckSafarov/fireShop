@@ -1,13 +1,49 @@
-import * as constants from '../constants.js';
+import * as cs from '../constants.js';
+const Loading = (state) => ({ ...state, loading: true });
+const Error = (state, error) => ({ ...state, loading: false, error });
+const Success = (products, type) => ({ loading: false, products, type });
 
 export const productListReducer = (state = { products: [] }, action) => {
+  let newProducts = state.products;
   switch (action.type) {
-    case constants.PRODUCT_LIST_REQUEST:
-      return { loading: true, products: [] };
-    case constants.PRODUCT_LIST_SUCCESS:
-      return { loading: false, products: action.payload };
-    case constants.PRODUCT_LIST_FAILURE:
-      return { loading: false, error: action.payload };
+    case cs.PRODUCT_LIST_REQUEST:
+      return Loading(state);
+    case cs.PRODUCT_LIST_SUCCESS:
+      return Success(action.payload, 'request');
+    case cs.PRODUCT_LIST_FAILURE:
+      return Error(state, action.payload);
+
+    case cs.PRODUCT_ADD_REQUEST:
+      return Loading(state);
+    case cs.PRODUCT_ADD_SUCCESS:
+      newProducts.push(action.payload);
+      return Success(newProducts, 'add');
+    case cs.PRODUCT_ADD_FAILURE:
+      return Error(state, action.payload);
+
+    case cs.PRODUCT_UPDATE_REQUEST:
+      return Loading(state);
+    case cs.PRODUCT_UPDATE_SUCCESS:
+      const { _id, body } = action.payload;
+      newProducts.forEach((p) => {
+        p = p._id === _id ? { ...p, ...body } : p;
+      });
+      return Success(newProducts, 'update');
+    case cs.PRODUCT_UPDATE_FAILURE:
+      return Error(state, action.payload);
+
+    case cs.PRODUCT_DELETE_REQUEST:
+      return Loading(state);
+    case cs.PRODUCT_DELETE_SUCCESS:
+      newProducts = state.products.filter((p) => p._id !== action.payload);
+      return Success(newProducts, 'delete');
+    case cs.PRODUCT_DELETE_FAILURE:
+      return Error(state, action.payload);
+
+    case cs.PRODUCT_LIST_PROPERTY_RESET:
+      let newState = { ...state };
+      newState[action.payload] = null;
+      return newState;
     default:
       return state;
   }
@@ -18,25 +54,12 @@ export const productDetailsReducer = (
   action
 ) => {
   switch (action.type) {
-    case constants.PRODUCT_DETAILS_REQUEST:
-      return { ...state, loading: true };
-    case constants.PRODUCT_DETAILS_SUCCESS:
-      return { loading: false, product: action.payload };
-    case constants.PRODUCT_DETAILS_FAILURE:
-      return { loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
-
-export const productPriceReducer = (state = { prices: [] }, action) => {
-  switch (action.type) {
-    case constants.PRODUCT_PRICE_REQUEST:
-      return { ...state, loading: true };
-    case constants.PRODUCT_PRICE_SUCCESS:
-      return { loading: false, prices: action.payload };
-    case constants.PRODUCT_PRICE_FAILURE:
-      return { loading: false, error: action.payload };
+    case cs.PRODUCT_DETAILS_REQUEST:
+      return Loading(state);
+    case cs.PRODUCT_DETAILS_SUCCESS:
+      return Success(action.payload);
+    case cs.PRODUCT_DETAILS_FAILURE:
+      return Error(state, action.payload);
     default:
       return state;
   }
