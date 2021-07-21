@@ -32,11 +32,11 @@ export const addProduct = asyncHandler(async (req, res) => {
     price: 0,
     user: req.user._id,
     image: '/images/sample.jpg',
-    brand: 'undefined',
-    category: 'undefined',
+    brand: 'No Brand',
+    category: 'No Category',
     countInStock: 0,
     numReviews: 0,
-    description: 'undefined',
+    description: 'Lorem ipsum dolor',
   });
 
   await product.save();

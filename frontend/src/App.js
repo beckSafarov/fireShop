@@ -32,6 +32,7 @@ import { getCart } from './helpers/cartLCS';
 import { addToCart } from './actions/cartActions';
 import UserListScreen from './screens/admin/UserListScreen';
 import ProductListScreen from './screens/admin/ProductListScreen';
+import ProductEditScreen from './screens/admin/ProductEditScreen';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -43,11 +44,8 @@ const App = () => {
   const loading = userLoading || cartLoading;
 
   useEffect(() => {
-    if (userInfo === null) dispatch(getMe());
-
-    if (userInfo && lcc.length) {
-      dispatch(addToCart(lcc, null, true, true));
-    }
+    userInfo === null && dispatch(getMe());
+    userInfo && lcc.length > 0 && dispatch(addToCart(lcc, null, true, true));
 
     return () => axios.CancelToken.source().cancel();
   }, [dispatch, userInfo]);
@@ -89,6 +87,10 @@ const App = () => {
             <Route
               path='/admin/productlist'
               component={ProductListScreen}
+            ></Route>
+            <Route
+              path='/admin/productedit/:id'
+              component={ProductEditScreen}
             ></Route>
 
             {/*test route */}

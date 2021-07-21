@@ -26,7 +26,6 @@ export const userListReducer = (state = { users: [] }, action) => {
           break;
         }
       }
-      console.log(currList);
       return Success(currList);
     case cs.USER_LIST_REMOVE:
       newList = currList.filter((user) => user._id !== action.payload);

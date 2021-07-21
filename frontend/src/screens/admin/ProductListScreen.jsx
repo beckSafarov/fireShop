@@ -5,20 +5,13 @@ import axios from 'axios';
 
 // UI components
 import { Table, Row, Col, Button } from 'react-bootstrap';
-import {
-  Auth,
-  Message,
-  Loader,
-  Exceptional,
-  ConfirmModal,
-  Spinner,
-} from '../../components';
+import { Auth, Message, ConfirmModal, Spinner } from '../../components';
 
 // redux actions
 import { listProducts } from '../../actions/productActions';
-import { Link } from 'react-router-dom';
-import { deleteProduct } from '../../actions/adminActions';
+import { addProduct, deleteProduct } from '../../actions/adminActions';
 import { PRODUCT_LIST_PROPERTY_RESET } from '../../constants';
+import { Link } from 'react-router-dom';
 
 const ProductListScreen = ({ history }) => {
   const dispatch = useDispatch();
@@ -38,7 +31,8 @@ const ProductListScreen = ({ history }) => {
           msgHandler('Updated successfully', 'success');
           break;
         case 'add':
-          msgHandler('Added successfully', 'success');
+          let newProduct = products.find((p) => p.price == 0);
+          history.push(`/admin/productedit/${newProduct._id}`);
           break;
       }
       rxReset('success');
@@ -52,13 +46,7 @@ const ProductListScreen = ({ history }) => {
     return () => axios.CancelToken.source().cancel();
   }, [dispatch, success, error]);
 
-  const createProductHandler = () => {
-    console.log('you clicked the new product btn');
-  };
-
-  const editProductHandler = () => {
-    console.log('you edited the product');
-  };
+  const createProductHandler = () => dispatch(addProduct());
 
   const deleteHandler = () => {
     dispatch(deleteProduct(confirmModal._id));
@@ -147,7 +135,9 @@ const ProductListScreen = ({ history }) => {
               <td>
                 <div className='two-horizontal-icons'>
                   <div>
-                    <i onClick={editProductHandler} className='fas fa-edit'></i>
+                    <Link to={`/admin/productedit/${product._id}`}>
+                      <i className='fas fa-edit'></i>
+                    </Link>
                   </div>
                   <div>
                     <i

@@ -15,4 +15,4 @@ export { default as Message } from './globals/Message.jsx';
 export { default as Product } from './Product/Product.jsx';
 export { default as Rating } from './Product/Rating.jsx';
 export { default as Spinner } from './globals/Spinner.jsx';
-export { default as UserEditPopup } from './UserEditPopup.jsx';
+export { default as UserEditPopup } from './Admin/UserEditPopup.jsx';

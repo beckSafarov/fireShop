@@ -4,13 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // UI components
 import Modal from 'react-bootstrap/Modal';
-import { Message, Spinner, ConfirmModal } from '.';
-import { AdminUserUpdateForm } from './Forms';
-import { ADMIN_USER_UPDATE_RESET } from '../constants';
+import { Message, Spinner, ConfirmModal } from '..';
+import { AdminUserUpdateForm } from '../Forms';
+
+// helpers
+import ObjectsCompare from '../../helpers/ObjectsCompare';
 
 // redux actions
-import { adminUpdateUser } from '../actions/adminActions';
-import FieldsValidated from '../helpers/FieldsValidated';
+import { ADMIN_USER_UPDATE_RESET } from '../../constants';
+import { adminUpdateUser } from '../../actions/adminActions';
+import FieldsValidated from '../../helpers/FieldsValidated';
 const defaultUserInfo = {
   name: '',
   email: '',
@@ -44,7 +47,7 @@ const UserEditPopup = ({ modal, setModal }) => {
   let value, newUser;
 
   useEffect(() => {
-    modal && modal.userInfo && resetValues();
+    modal && modal.userInfo && initValues();
     updated && hide();
 
     if (error) {
@@ -53,23 +56,10 @@ const UserEditPopup = ({ modal, setModal }) => {
     }
   }, [modal, updated, error]);
 
-  const madeChanges = () => {
-    let ch = false;
-    Object.keys(user).forEach((i) => {
-      if (typeof user[i] === 'object') {
-        Object.keys(user[i]).forEach((j) => {
-          ch = user[i][j] !== userInfo[i][j] ? true : ch;
-        });
-      } else {
-        ch = user[i] !== userInfo[i] ? true : ch;
-      }
-    });
-    return ch;
-  };
-
   const submitHandler = (e) => {
     e.preventDefault();
-    if (madeChanges()) {
+    const changed = ObjectsCompare(user, userInfo);
+    if (changed) {
       const vld = FieldsValidated(user.name, user.email);
       if (vld.success) {
         dispatch(adminUpdateUser(userInfo._id, user));
@@ -82,15 +72,13 @@ const UserEditPopup = ({ modal, setModal }) => {
     }
   };
 
-  const resetValues = (fromModal = true) => {
-    const src = fromModal
-      ? {
-          ...modal.userInfo,
-          shippingAddress: {
-            ...modal.userInfo.shippingAddress,
-          },
-        }
-      : defaultUserInfo;
+  const initValues = (fromModal = true) => {
+    const src = {
+      ...modal.userInfo,
+      shippingAddress: {
+        ...modal.userInfo.shippingAddress,
+      },
+    };
     setUserInfo({ ...src, shippingAddress: { ...src.shippingAddress } });
     setUser(src);
   };
@@ -156,10 +144,10 @@ const UserEditPopup = ({ modal, setModal }) => {
   const adminChangeProceed = (e) => {
     e.preventDefault();
     setUser({ ...user, isAdmin: !user.isAdmin });
-    hideModal();
+    hideConfirmWindow();
   };
 
-  const hideModal = () => {
+  const hideConfirmWindow = () => {
     setConfirmModal({ ...confirmModal, display: false });
   };
 
@@ -182,7 +170,7 @@ const UserEditPopup = ({ modal, setModal }) => {
         heading={confirmModal.heading}
         message={confirmModal.message}
         confirmHandler={adminChangeProceed}
-        hideHandler={hideModal}
+        hideHandler={hideConfirmWindow}
         proceedText='Confirm'
         primaryVariant={confirmModal.variant}
       />

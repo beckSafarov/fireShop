@@ -95,7 +95,7 @@ export const getMe = () => async (dispatch, getState) => {
   try {
     dispatch({ type: cs.USER_LOGIN_REQUEST });
 
-    const { data } = await axios.get('../api/users/me', {
+    const { data } = await axios.get('/api/users/me', {
       cancelToken: axios.CancelToken.source().token,
     });
 

@@ -63,11 +63,11 @@ export const deleteUser = (id) => async (dispatch) => {
   }
 };
 
-export const addProduct = (body) => async (dispatch) => {
+export const addProduct = () => async (dispatch) => {
   try {
     dispatch({ type: cs.PRODUCT_ADD_REQUEST });
-    await axios.post(`/api/products`, body, config);
-    dispatch({ type: cs.PRODUCT_ADD_SUCCESS, payload: body });
+    const { data } = await axios.post(`/api/products`);
+    dispatch({ type: cs.PRODUCT_ADD_SUCCESS, payload: data });
   } catch (err) {
     dispatch({
       type: cs.PRODUCT_ADD_FAILURE,
@@ -79,14 +79,23 @@ export const addProduct = (body) => async (dispatch) => {
   }
 };
 
-export const updateProduct = (id, body) => async (dispatch) => {
+export const updateProduct = (body) => async (dispatch) => {
   try {
-    dispatch({ type: cs.PRODUCT_UPDATE_REQUEST });
-    await axios.put(`/api/products/${id}`, body, config);
-    dispatch({ type: cs.PRODUCT_UPDATE_SUCCESS, payload: { _id: id, body } });
+    dispatch({ type: cs.PRODUCT_DETAILS_UPDATE_REQUEST });
+    await axios.put(`/api/products/${body._id}`, body, config);
+
+    dispatch({
+      type: cs.PRODUCT_DETAILS_UPDATE_SUCCESS,
+      payload: body,
+    });
+
+    dispatch({
+      type: cs.PRODUCT_UPDATE,
+      payload: body,
+    });
   } catch (err) {
     dispatch({
-      type: cs.PRODUCT_UPDATE_FAILURE,
+      type: cs.PRODUCT_DETAILS_UPDATE_FAILURE,
       payload:
         err.response && err.response.data.message
           ? err.response.data.message

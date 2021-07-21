@@ -15,7 +15,7 @@ import {
   Form,
   Alert,
 } from 'react-bootstrap';
-import { Rating, Loader, CountOptions } from '../components';
+import { Rating, Loader, CountOptions, Exceptional } from '../components';
 
 // -- REDUX ACTIONS
 import { listProductDetails } from '../actions/productActions';
@@ -33,9 +33,8 @@ const ProductScreen = ({ match, history }) => {
 
   // -- bringing redux stores --
   const dispatch = useDispatch();
-  const { loading, error, product } = useSelector(
-    (state) => state.productDetails
-  );
+  const productDetails = useSelector((state) => state.productDetails);
+  const { loading, error, product } = productDetails;
   const { userInfo } = useSelector((state) => state.userLogin);
   const {
     successType,
@@ -43,11 +42,10 @@ const ProductScreen = ({ match, history }) => {
     message: cartMessage,
   } = useSelector((state) => state.cart);
   const logged = userInfo ? true : false;
+  const dataExists = product && product.name && product._id === match.params.id;
 
   useEffect(() => {
-    if (product && product._id !== match.params.id) {
-      dispatch(listProductDetails(match.params.id));
-    }
+    !dataExists && dispatch(listProductDetails(match.params.id));
 
     if (successType) {
       switch (successType) {
@@ -71,7 +69,7 @@ const ProductScreen = ({ match, history }) => {
     }
 
     return () => axios.CancelToken.source().cancel();
-  }, [dispatch, product, match, successType, cartError]);
+  }, [dispatch, match, successType, cartError]);
 
   const addToCartHandler = () => {
     const more = lcs.have(product) ? 'more' : '';
@@ -105,7 +103,7 @@ const ProductScreen = ({ match, history }) => {
       {flashMsg.display && (
         <Alert variant={flashMsg.variant}>{flashMsg.msg}</Alert>
       )}
-      {loading ? (
+      {loading || !product ? (
         <Loader />
       ) : error ? (
         <Alert variant='danger'>{error}</Alert>
