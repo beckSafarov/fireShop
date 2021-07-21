@@ -363,105 +363,104 @@ export const AdminUserUpdateForm = ({ values, functions }) => {
 export const ProductUpdateForm = ({ values, functions }) => {
   return (
     <Form onSubmit={functions.submitHandler}>
-      <Form.Group controlId='formBasicEmail'>
-        <div className='py-2'>
-          <Form.Label>Product ID</Form.Label>
-          <Form.Control
-            type='text'
-            value={values._id || ''}
-            className='form-field'
-            disabled
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>Product Name</Form.Label>
-          <Form.Control
-            type='text'
-            name='name'
-            defaultValue={values.name}
-            className='form-field'
-            onChange={functions.changesHandler}
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>Price</Form.Label>
-          <Form.Control
-            type='number'
-            name='price'
-            defaultValue={values.price}
-            className='form-field'
-            onChange={functions.changesHandler}
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>User</Form.Label>
-          <Form.Control
-            type='text'
-            value={values.user || ''}
-            className='form-field'
-            disabled
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>Image</Form.Label>
-          <Form.Control
-            type='text'
-            defaultValue={values.image}
-            className='form-field'
-            disabled
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>Brand</Form.Label>
-          <Form.Control
-            type='text'
-            name='brand'
-            defaultValue={values.brand}
-            className='form-field'
-            onChange={functions.changesHandler}
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>Category</Form.Label>
-          <Form.Control
-            type='text'
-            name='category'
-            defaultValue={values.category}
-            className='form-field'
-            onChange={functions.changesHandler}
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>In Stock</Form.Label>
-          <Form.Control
-            type='number'
-            name='countInStock'
-            defaultValue={values.countInStock}
-            className='form-field'
-            onChange={functions.changesHandler}
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>Number of Reviews</Form.Label>
-          <Form.Control
-            type='number'
-            defaultValue={values.numReviews}
-            className='form-field'
-            disabled
-          ></Form.Control>
-        </div>
-        <div className='py-2'>
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            type='text'
-            as='textarea'
-            name='description'
-            defaultValue={values.description}
-            className='form-field'
-            onChange={functions.changesHandler}
-            style={{ height: '100px' }}
-          ></Form.Control>
-        </div>
+      <Form.Group controlId='image'>
+        <Form.Label>Image</Form.Label>
+        <Form.Control
+          type='text'
+          defaultValue={values.image}
+          className='form-field'
+          disabled
+        ></Form.Control>
+      </Form.Group>
+      <Form.Group controlId='id'>
+        <Form.Label>Product ID</Form.Label>
+        <Form.Control
+          type='text'
+          value={values._id || ''}
+          className='form-field'
+          disabled
+        ></Form.Control>
+      </Form.Group>
+      <Form.Group controlId='name'>
+        <Form.Label>Product Name</Form.Label>
+        <Form.Control
+          type='text'
+          name='name'
+          defaultValue={values.name}
+          className='form-field'
+          onChange={functions.changesHandler}
+        ></Form.Control>
+      </Form.Group>
+      <Form.Group controlId='price'>
+        <Form.Label>Price</Form.Label>
+        <Form.Control
+          type='number'
+          name='price'
+          defaultValue={values.price}
+          className='form-field'
+          onChange={functions.changesHandler}
+        ></Form.Control>
+      </Form.Group>
+      <Form.Group controlId='user'>
+        <Form.Label>User</Form.Label>
+        <Form.Control
+          type='text'
+          value={values.user || ''}
+          className='form-field'
+          disabled
+        ></Form.Control>
+      </Form.Group>
+      <Form.Group controlId='name'>
+        <Form.Label>Brand</Form.Label>
+        <Form.Control
+          type='text'
+          name='brand'
+          defaultValue={values.brand}
+          className='form-field'
+          onChange={functions.changesHandler}
+        ></Form.Control>
+      </Form.Group>
+      <Form.Group controlId='category'>
+        <Form.Label>Category</Form.Label>
+        <Form.Control
+          type='text'
+          name='category'
+          defaultValue={values.category}
+          className='form-field'
+          onChange={functions.changesHandler}
+        ></Form.Control>
+      </Form.Group>
+      <Form.Group controlId='countInStock'>
+        <Form.Label>In Stock</Form.Label>
+        <Form.Control
+          type='number'
+          name='countInStock'
+          defaultValue={values.countInStock}
+          className='form-field'
+          onChange={functions.changesHandler}
+        ></Form.Control>
+      </Form.Group>
+
+      <Form.Group controlId='numReviews'>
+        <Form.Label>Number of Reviews</Form.Label>
+        <Form.Control
+          type='number'
+          defaultValue={values.numReviews}
+          className='form-field'
+          disabled
+        ></Form.Control>
+      </Form.Group>
+      <Form.Group controlId='description'>
+        <Form.Label>Description</Form.Label>
+        <Form.Control
+          type='text'
+          as='textarea'
+          name='description'
+          defaultValue={values.description}
+          className='form-field'
+          onChange={functions.changesHandler}
+          style={{ height: '100px' }}
+        ></Form.Control>
       </Form.Group>
       <Row>
         <Col mb={2}>

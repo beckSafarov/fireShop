@@ -22,7 +22,7 @@ export const productListReducer = (state = { products: [] }, action) => {
     case cs.PRODUCT_LIST_SUCCESS:
       return Success(action.payload, 'request');
     case cs.PRODUCT_LIST_FAILURE:
-      return Error(state, action.payload);
+      return Error(state, action.payload, 'request');
     case cs.PRODUCT_ADD_REQUEST:
       return Loading(state);
     case cs.PRODUCT_ADD_SUCCESS:
@@ -30,7 +30,7 @@ export const productListReducer = (state = { products: [] }, action) => {
       newProducts.push(action.payload);
       return Success(newProducts, 'add');
     case cs.PRODUCT_ADD_FAILURE:
-      return Error(state, action.payload);
+      return Error(state, action.payload, 'add');
 
     case cs.PRODUCT_UPDATE:
       let newProduct = action.payload;
@@ -50,7 +50,7 @@ export const productListReducer = (state = { products: [] }, action) => {
       newProducts = state.products.filter((p) => p._id !== action.payload);
       return Success(newProducts, 'delete');
     case cs.PRODUCT_DELETE_FAILURE:
-      return Error(state, action.payload);
+      return Error(state, action.payload, 'delete');
 
     case cs.PRODUCT_LIST_PROPERTY_RESET:
       let newState = { ...state };

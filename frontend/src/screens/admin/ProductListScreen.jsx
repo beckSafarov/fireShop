@@ -21,6 +21,7 @@ const ProductListScreen = ({ history }) => {
   const { loading, error, products, success, type } = useSelector(
     (state) => state.productList
   );
+  const requestError = error && type === 'request' ? error : null;
 
   useEffect(() => {
     products.length === 0 && dispatch(listProducts());
@@ -28,22 +29,24 @@ const ProductListScreen = ({ history }) => {
     if (success) {
       switch (type) {
         case 'update':
-          msgHandler('Updated successfully', 'success');
+          msgHandler('Updated successfully');
           break;
         case 'add':
           let newProduct = products.find((p) => p.price == 0);
           history.push(`/admin/productedit/${newProduct._id}`);
           break;
       }
-      rxReset('success');
     }
 
-    if (error) {
-      msgHandler(error, 'danger');
-      rxReset(error);
-    }
+    error && type !== 'request' && msgHandler(error, 'danger');
 
-    return () => axios.CancelToken.source().cancel();
+    return () => {
+      axios.CancelToken.source().cancel();
+      dispatch({
+        type: PRODUCT_LIST_PROPERTY_RESET,
+        payload: success ? 'success' : 'error',
+      });
+    };
   }, [dispatch, success, error]);
 
   const createProductHandler = () => dispatch(addProduct());
@@ -57,7 +60,7 @@ const ProductListScreen = ({ history }) => {
     setConfirmModal({
       display: true,
       heading: `Deleting ${name}`,
-      message: `Are you sure to delete ${name}?`,
+      message: `Are you sure to delete ${name}? This action cannot be reverted`,
       proceedText: 'Delete',
       primaryVariant: 'Danger',
       _id,
@@ -66,18 +69,9 @@ const ProductListScreen = ({ history }) => {
 
   const hideModalHandler = () => setConfirmModal({ display: false });
 
-  const rxReset = (payload) => {
-    dispatch({
-      type: PRODUCT_LIST_PROPERTY_RESET,
-      payload,
-    });
-  };
-
-  const msgHandler = (msg, variant) => {
+  const msgHandler = (msg, variant = 'success') => {
     setFlashMsg({ display: true, message: msg, variant });
-    setTimeout(() => {
-      setFlashMsg({ display: false });
-    }, 3000);
+    setTimeout(() => setFlashMsg({}), 3000);
   };
 
   return (
@@ -109,48 +103,54 @@ const ProductListScreen = ({ history }) => {
         proceedText='Delete'
         primaryVariant='danger'
       />
-      <Table hover responsive className='tale-sm'>
-        <thead>
-          <tr>
-            <th>Photo</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Category</th>
-            <th>Brand</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product._id}>
-              <img
-                className='product-table-img'
-                src={product.image}
-                alt={product.name}
-              />
-              <td>{product.name}</td>
-              <td>$ {product.price}</td>
-              <td>{product.category}</td>
-              <td>{product.brand}</td>
-              <td>
-                <div className='two-horizontal-icons'>
-                  <div>
-                    <Link to={`/admin/productedit/${product._id}`}>
-                      <i className='fas fa-edit'></i>
-                    </Link>
-                  </div>
-                  <div>
-                    <i
-                      onClick={() => confirmHandler(product._id, product.name)}
-                      className='fas fa-trash'
-                    ></i>
-                  </div>
-                </div>
-              </td>
+      {requestError ? (
+        <Message variant='danger'>{requestError}</Message>
+      ) : (
+        <Table hover responsive className='tale-sm'>
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Brand</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr key={product._id}>
+                <img
+                  className='product-table-img'
+                  src={product.image}
+                  alt={product.name}
+                />
+                <td>{product.name}</td>
+                <td>$ {product.price}</td>
+                <td>{product.category}</td>
+                <td>{product.brand}</td>
+                <td>
+                  <div className='two-horizontal-icons'>
+                    <div>
+                      <Link to={`/admin/productedit/${product._id}`}>
+                        <i className='fas fa-edit'></i>
+                      </Link>
+                    </div>
+                    <div>
+                      <i
+                        onClick={() =>
+                          confirmHandler(product._id, product.name)
+                        }
+                        className='fas fa-trash'
+                      ></i>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
     </Auth>
   );
 };

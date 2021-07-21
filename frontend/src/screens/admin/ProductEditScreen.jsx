@@ -10,10 +10,7 @@ import { ProductUpdateForm } from '../../components/Forms';
 // redux actions
 import { updateProduct } from '../../actions/adminActions';
 import { listProductDetails } from '../../actions/productActions';
-import {
-  PRODUCT_DETAILS_RESET,
-  PRODUCT_LIST_PROPERTY_RESET,
-} from '../../constants';
+import { PRODUCT_DETAILS_RESET } from '../../constants';
 
 const ProductEditScreen = ({ history, match }) => {
   const dispatch = useDispatch();
@@ -39,18 +36,13 @@ const ProductEditScreen = ({ history, match }) => {
       : dispatch(listProductDetails(match.params.id));
 
     if ((success || error) && type === 'update') {
-      success && msgHandler('Updated successfully');
-      error && msgHandler(error, 'danger');
+      success
+        ? history.replace('/admin/productlist')
+        : msgHandler(error, 'danger');
       dispatch({
         type: PRODUCT_DETAILS_RESET,
         payload: success ? 'success' : 'error',
       });
-      if (success) {
-        dispatch({
-          type: PRODUCT_LIST_PROPERTY_RESET,
-          payload: 'success',
-        });
-      }
     }
 
     return () => axios.CancelToken.source().cancel();
@@ -72,9 +64,7 @@ const ProductEditScreen = ({ history, match }) => {
 
   const msgHandler = (msg, variant = 'success') => {
     setFlashMsg({ display: true, message: msg, variant });
-    setTimeout(() => {
-      setFlashMsg({ ...flashMsg, display: false });
-    }, 3000);
+    setTimeout(() => setFlashMsg({}), 3000);
   };
 
   const cancelChanges = () => window.location.reload();
