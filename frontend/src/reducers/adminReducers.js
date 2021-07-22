@@ -57,12 +57,27 @@ export const adminUserDeleteReducer = (state = {}, action) => {
 export const adminUserUpdateReducer = (state = {}, action) => {
   switch (action.type) {
     case cs.ADMIN_USER_UPDATE_REQUEST:
-      return Loading();
+      return Loading(state);
     case cs.ADMIN_USER_UPDATE_SUCCESS:
       return { loading: false, success: true, user: action.payload };
     case cs.ADMIN_USER_UPDATE_FAILURE:
-      return Error(action.payload);
+      return Error(action.payload, state);
     case cs.ADMIN_USER_UPDATE_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+export const imgUploadReducer = (state = {}, action) => {
+  switch (action.type) {
+    case cs.IMG_UPLOAD_REQUEST:
+      return Loading(state);
+    case cs.IMG_UPLOAD_SUCCESS:
+      return { loading: false, success: true, data: action.payload };
+    case cs.IMG_UPLOAD_FAILURE:
+      return Error(action.payload);
+    case cs.IMG_UPLOAD_RESET:
       return {};
     default:
       return state;

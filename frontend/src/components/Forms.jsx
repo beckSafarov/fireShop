@@ -360,17 +360,17 @@ export const AdminUserUpdateForm = ({ values, functions }) => {
   );
 };
 
-export const ProductUpdateForm = ({ values, functions }) => {
+export const ProductUpdateForm = ({ values, functions: func }) => {
   return (
-    <Form onSubmit={functions.submitHandler}>
+    <Form onSubmit={func.submitHandler}>
       <Form.Group controlId='image'>
-        <Form.Label>Image</Form.Label>
-        <Form.Control
-          type='text'
-          defaultValue={values.image}
-          className='form-field'
-          disabled
-        ></Form.Control>
+        <Form.File
+          id='image-file'
+          label={values.uploadLabel}
+          custom
+          onChange={func.uploadImgHandler}
+          accept='image/jpg, image/jpeg, image/png'
+        ></Form.File>
       </Form.Group>
       <Form.Group controlId='id'>
         <Form.Label>Product ID</Form.Label>
@@ -388,7 +388,7 @@ export const ProductUpdateForm = ({ values, functions }) => {
           name='name'
           defaultValue={values.name}
           className='form-field'
-          onChange={functions.changesHandler}
+          onChange={func.changesHandler}
         ></Form.Control>
       </Form.Group>
       <Form.Group controlId='price'>
@@ -398,7 +398,7 @@ export const ProductUpdateForm = ({ values, functions }) => {
           name='price'
           defaultValue={values.price}
           className='form-field'
-          onChange={functions.changesHandler}
+          onChange={func.changesHandler}
         ></Form.Control>
       </Form.Group>
       <Form.Group controlId='user'>
@@ -417,7 +417,7 @@ export const ProductUpdateForm = ({ values, functions }) => {
           name='brand'
           defaultValue={values.brand}
           className='form-field'
-          onChange={functions.changesHandler}
+          onChange={func.changesHandler}
         ></Form.Control>
       </Form.Group>
       <Form.Group controlId='category'>
@@ -427,7 +427,7 @@ export const ProductUpdateForm = ({ values, functions }) => {
           name='category'
           defaultValue={values.category}
           className='form-field'
-          onChange={functions.changesHandler}
+          onChange={func.changesHandler}
         ></Form.Control>
       </Form.Group>
       <Form.Group controlId='countInStock'>
@@ -437,7 +437,7 @@ export const ProductUpdateForm = ({ values, functions }) => {
           name='countInStock'
           defaultValue={values.countInStock}
           className='form-field'
-          onChange={functions.changesHandler}
+          onChange={func.changesHandler}
         ></Form.Control>
       </Form.Group>
 
@@ -458,7 +458,7 @@ export const ProductUpdateForm = ({ values, functions }) => {
           name='description'
           defaultValue={values.description}
           className='form-field'
-          onChange={functions.changesHandler}
+          onChange={func.changesHandler}
           style={{ height: '100px' }}
         ></Form.Control>
       </Form.Group>
@@ -468,7 +468,7 @@ export const ProductUpdateForm = ({ values, functions }) => {
             type='button'
             className='rounded-btn'
             variant='dark'
-            onClick={functions.cancelChanges}
+            onClick={func.cancelChanges}
             disabled={!values.change}
             block
           >

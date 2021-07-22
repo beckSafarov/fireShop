@@ -122,3 +122,27 @@ export const deleteProduct = (id) => async (dispatch) => {
     });
   }
 };
+
+export const imgUpload = (formData) => async (dispatch) => {
+  try {
+    dispatch({ type: cs.IMG_UPLOAD_REQUEST });
+
+    const { data } = await axios.post(`/api/upload/`, formData, {
+      headers: { 'Content-type': 'multipart/form-data' },
+    });
+
+    dispatch({
+      type: cs.IMG_UPLOAD_SUCCESS,
+      payload: data,
+    });
+  } catch (err) {
+    console.log(err);
+    dispatch({
+      type: cs.IMG_UPLOAD_FAILURE,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};

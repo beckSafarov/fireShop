@@ -197,6 +197,20 @@ strong {
   width: 100pt;
 }
 
+.centered-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 30px;
+  width: 100%;
+}
+
+.centered-img img {
+  width: 200px;
+  border-radius: 10px;
+  /* border: 1px solid #e6e6e6; */
+}
+
 /* .product-table-img img {
   width: 100pt;
 } */

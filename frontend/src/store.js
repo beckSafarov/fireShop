@@ -20,6 +20,7 @@ const reducer = combineReducers({
   userList: adminReducers.userListReducer,
   adminUserDelete: adminReducers.adminUserDeleteReducer,
   adminUserUpdate: adminReducers.adminUserUpdateReducer,
+  imgUploadStore: adminReducers.imgUploadReducer,
   orderReducers: orderReducers.orderCreateReducer,
   orderDetails: orderReducers.orderDetailsReducer,
   myOrders: orderReducers.myOrdersReducer,

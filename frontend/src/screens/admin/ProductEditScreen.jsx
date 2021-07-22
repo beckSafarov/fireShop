@@ -8,29 +8,47 @@ import { Auth, FormContainer, Message, Spinner } from '../../components';
 import { ProductUpdateForm } from '../../components/Forms';
 
 // redux actions
-import { updateProduct } from '../../actions/adminActions';
+import { imgUpload, updateProduct } from '../../actions/adminActions';
 import { listProductDetails } from '../../actions/productActions';
-import { PRODUCT_DETAILS_RESET } from '../../constants';
+import { IMG_UPLOAD_RESET, PRODUCT_DETAILS_RESET } from '../../constants';
 
 const ProductEditScreen = ({ history, match }) => {
+  // redux stuff
   const dispatch = useDispatch();
-  const { loading, success, type, product, error } = useSelector(
-    (state) => state.productDetails
-  );
-  const dataExists = product && product.name && product._id === match.params.id;
-
-  // hooks
-  const [updatedProduct, setUpdatedProduct] = useState(
-    dataExists ? { ...product } : {}
-  );
-  const [change, setChange] = useState(false);
-  const [flashMsg, setFlashMsg] = useState({});
-  let newProduct;
+  const {
+    loading: requestLoading,
+    success,
+    type,
+    product,
+    error,
+  } = useSelector((state) => state.productDetails);
+  const {
+    loading: uploadLoading,
+    success: uploaded,
+    data: uploadData,
+    error: uploadError,
+  } = useSelector((state) => state.imgUploadStore);
 
   // variables
   const requestError = error && type === 'request' ? error : null;
+  const loading = requestLoading || uploadLoading;
+  const dataExists = product && product.name && product._id === match.params.id;
+
+  // hooks
+  const [change, setChange] = useState(false);
+  const [flashMsg, setFlashMsg] = useState({});
+  let newProduct;
+  const [uploadLabel, setUploadLabel] = useState('No File Chosen');
+  const [updatedProduct, setUpdatedProduct] = useState(
+    dataExists ? { ...product } : {}
+  );
+  const [came, setCame] = useState(false);
 
   useEffect(() => {
+    if (!came) {
+      window.scrollTo(0, 0);
+      setCame(true);
+    }
     dataExists
       ? !updatedProduct.name && setUpdatedProduct({ ...product })
       : dispatch(listProductDetails(match.params.id));
@@ -45,8 +63,21 @@ const ProductEditScreen = ({ history, match }) => {
       });
     }
 
-    return () => axios.CancelToken.source().cancel();
-  }, [dispatch, product, match, success, error]);
+    if (uploaded || uploadError) {
+      if (uploaded) {
+        setUpdatedProduct({ ...updatedProduct, image: uploadData });
+        setChange(true);
+      }
+      uploadError && msgHandler(uploadError, 'danger', 5);
+      dispatch({ type: IMG_UPLOAD_RESET });
+    }
+
+    return () => {
+      axios.CancelToken.source().cancel();
+      setCame(false);
+      setChange(false);
+    };
+  }, [dispatch, product, match, success, error, uploaded, uploadError]);
 
   const changesHandler = (e) => {
     e.persist();
@@ -56,32 +87,48 @@ const ProductEditScreen = ({ history, match }) => {
     setUpdatedProduct(newProduct);
   };
 
+  const uploadImgHandler = (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    setUploadLabel(file.name);
+    // dispatch(imgUpload(formData));
+  };
+
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(updateProduct({ ...updatedProduct }));
     setChange(false);
   };
 
-  const msgHandler = (msg, variant = 'success') => {
+  const msgHandler = (msg, variant = 'success', s = 3) => {
     setFlashMsg({ display: true, message: msg, variant });
-    setTimeout(() => setFlashMsg({}), 3000);
+    setTimeout(() => setFlashMsg({}), s * 1000);
   };
 
   const cancelChanges = () => window.location.reload();
 
-  const values = { ...updatedProduct, change };
-  const functions = { changesHandler, submitHandler, cancelChanges };
+  const values = { ...updatedProduct, change, uploadLabel };
+  const functions = {
+    changesHandler,
+    uploadImgHandler,
+    submitHandler,
+    cancelChanges,
+  };
 
   return (
     <Auth history={history} adminOnly>
       <FormContainer>
-        <h2>{product ? product.name : ''}</h2>
+        <h2 id='heading'>{product ? product.name : ''}</h2>
         {loading && <Spinner />}
         {requestError && <Message variant='danger'>{requestError}</Message>}
         {flashMsg.display && (
           <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
         )}
         <div className='py-4'>
+          <div className='centered-img'>
+            <img src={updatedProduct.image} alt='Product Image' />
+          </div>
           <ProductUpdateForm values={values} functions={functions} />
         </div>
       </FormContainer>
