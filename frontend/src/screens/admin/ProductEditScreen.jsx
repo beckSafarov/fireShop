@@ -92,7 +92,7 @@ const ProductEditScreen = ({ history, match }) => {
     const formData = new FormData();
     formData.append('image', file);
     setUploadLabel(file.name);
-    // dispatch(imgUpload(formData));
+    dispatch(imgUpload(formData));
   };
 
   const submitHandler = (e) => {

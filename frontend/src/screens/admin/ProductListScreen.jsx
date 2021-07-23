@@ -10,7 +10,7 @@ import { Auth, Message, ConfirmModal, Spinner } from '../../components';
 // redux actions
 import { listProducts } from '../../actions/productActions';
 import { addProduct, deleteProduct } from '../../actions/adminActions';
-import { PRODUCT_LIST_PROPERTY_RESET } from '../../constants';
+import { PRODUCT_LIST_PROPERTY_RESET as listReset } from '../../constants';
 import { Link } from 'react-router-dom';
 
 const ProductListScreen = ({ history }) => {
@@ -32,21 +32,19 @@ const ProductListScreen = ({ history }) => {
           msgHandler('Updated successfully');
           break;
         case 'add':
-          let newProduct = products.find((p) => p.price == 0);
+          const newProduct = products.find((p) => p.price == 0);
           history.push(`/admin/productedit/${newProduct._id}`);
           break;
       }
+      rxReset(success ? 'success' : 'error');
     }
 
-    error && type !== 'request' && msgHandler(error, 'danger');
+    if (error && type !== 'request') {
+      msgHandler(error, 'danger');
+      rxReset('error');
+    }
 
-    return () => {
-      axios.CancelToken.source().cancel();
-      dispatch({
-        type: PRODUCT_LIST_PROPERTY_RESET,
-        payload: success ? 'success' : 'error',
-      });
-    };
+    return () => axios.CancelToken.source().cancel();
   }, [dispatch, success, error]);
 
   const createProductHandler = () => dispatch(addProduct());
@@ -73,6 +71,8 @@ const ProductListScreen = ({ history }) => {
     setFlashMsg({ display: true, message: msg, variant });
     setTimeout(() => setFlashMsg({}), 3000);
   };
+
+  const rxReset = (payload) => dispatch({ type: listReset, payload });
 
   return (
     <Auth history={history} adminOnly>
