@@ -28,14 +28,7 @@ export const ReadOnlyForm = ({ name, email, onClick }) => {
 
 export const ProfileUpdateForm = ({ values, functions }) => {
   const { name, email } = values;
-  const {
-    submitHandler,
-    setName,
-    setEmail,
-    setPassword,
-    setConfirmPass,
-    cancelChanges,
-  } = functions;
+  const { submitHandler, changesHandler, cancelChanges } = functions;
   return (
     <Form onSubmit={submitHandler}>
       <Form.Group controlId='text'>
@@ -44,30 +37,34 @@ export const ProfileUpdateForm = ({ values, functions }) => {
         </Form.Label>
         <Form.Control
           type='text'
-          value={name}
+          name='name'
+          defaultValue={name}
           className='form-field'
-          onChange={(e) => setName(e.target.value)}
+          onChange={changesHandler}
         ></Form.Control>
         <Form.Label>
           Email<span className='danger-text'>*</span>
         </Form.Label>
         <Form.Control
           type='email'
-          value={email}
+          name='email'
+          defaultValue={email}
           className='form-field'
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={changesHandler}
         ></Form.Control>
-        <Form.Label>Password</Form.Label>
+        <Form.Label>New Password</Form.Label>
         <Form.Control
+          name='password'
           type='password'
           className='form-field'
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={changesHandler}
         ></Form.Control>
         <Form.Label>Confirm Password</Form.Label>
         <Form.Control
+          name='confirmPass'
           type='password'
           className='form-field'
-          onChange={(e) => setConfirmPass(e.target.value)}
+          onChange={changesHandler}
         ></Form.Control>
       </Form.Group>
       <Row>
