@@ -20,44 +20,31 @@ import {
 
 // -- redux related imports --
 import { qtyReset, removeItem } from '../actions/cartActions';
-import { CART_PROPERTY_RESET } from '../constants';
+import { CART_PROPERTY_RESET as cartReset } from '../constants';
 
-const TestCartScreen = ({ history }) => {
+const CartScreen = ({ history }) => {
   const dispatch = useDispatch();
+  // hooks
   const [cartItems, setCartItems] = useState(cartLcs.getCart());
-  const [msg, setMsg] = useState({
-    display: false,
-    variant: 'info',
-    message: '',
-  });
+  const [flashMsg, setFlashMsg] = useState({});
+  const [confirmModal, setConfirmModal] = useState({});
 
   // redux stores and related stuff
-  const { loading: userLoading, userInfo } = useSelector(
-    (state) => state.userLogin
-  );
+  const { userInfo: logged } = useSelector((state) => state.userLogin);
   const cart = useSelector((state) => state.cart);
   const { loading: cartLoading, error } = cart;
-  const logged = userInfo ? true : false;
 
-  const [confirmModal, setConfirmModal] = useState({
-    display: false,
-    heading: 'Are you sure?',
-    message: '',
-  });
+  // variables
+  const updating = cartItems && cartLoading;
   const calcs = Calculations(cartItems);
 
   useEffect(() => {
-    if (error) {
-      msg.message = error;
-      setMsg(msg);
-      setMsgHandler('danger', 3);
-    }
-
-    if (cart) setCartItems(cart.cartItems);
+    error && msgHandler(error);
+    cart && setCartItems(cart.cartItems);
 
     return () => {
       axios.CancelToken.source().cancel();
-      dispatch({ type: CART_PROPERTY_RESET, payload: 'error' });
+      dispatch({ type: cartReset, payload: 'error' });
     };
   }, [dispatch, error, cart]);
 
@@ -71,19 +58,15 @@ const TestCartScreen = ({ history }) => {
     });
   };
 
-  const qtyResetHandler = (id, qty) => {
+  const qtyResetHandler = (id, qty) =>
     dispatch(qtyReset({ _id: id, qty: Number(qty) }, logged));
-  };
 
-  const checkoutHandler = () => {
+  const checkoutHandler = () =>
     history.push(logged ? '/shipping' : '/signin?redirect=shipping');
-  };
 
-  const setMsgHandler = (variant = 'info', seconds = 2) => {
-    setMsg({ ...msg, display: true, variant });
-    setTimeout(() => {
-      setMsg({ ...msg, display: false });
-    }, seconds * 1000);
+  const msgHandler = (message, variant = 'danger') => {
+    setFlashMsg({ display: true, message, variant });
+    setTimeout(() => setFlashMsg({}), 3000);
   };
 
   const proceedModalHandler = (e) => {
@@ -92,19 +75,18 @@ const TestCartScreen = ({ history }) => {
     dispatch(removeItem(confirmModal._id, logged));
   };
 
-  const hideModalHandler = () => {
+  const hideModalHandler = () =>
     setConfirmModal({ ...confirmModal, display: false });
-  };
 
   return (
     <>
-      {cartLoading || (userLoading && <Spinner />)}
       {cartItems ? (
         <>
           {cartItems.length === 0 ? (
             <EmptyCart />
           ) : (
             <Row>
+              {updating && <Spinner />}
               <ConfirmModal
                 active={confirmModal.display}
                 heading={confirmModal.heading}
@@ -116,8 +98,10 @@ const TestCartScreen = ({ history }) => {
               />
               <Col md={8}>
                 <h1>Shopping Cart</h1>
-                {msg.display && (
-                  <Message variant={msg.variant}>{msg.message}</Message>
+                {flashMsg.display && (
+                  <Message variant={flashMsg.variant}>
+                    {flashMsg.message}
+                  </Message>
                 )}
                 <ListGroup variant='flush'>
                   {cartItems.map((item) => (
@@ -163,4 +147,4 @@ const TestCartScreen = ({ history }) => {
   );
 };
 
-export default TestCartScreen;
+export default CartScreen;

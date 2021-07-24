@@ -1,4 +1,4 @@
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Form, Button, Row, Col } from 'react-bootstrap'
 
 export const ReadOnlyForm = ({ name, email, onClick }) => {
   return (
@@ -23,12 +23,12 @@ export const ReadOnlyForm = ({ name, email, onClick }) => {
         </Button>
       </div>
     </Form>
-  );
-};
+  )
+}
 
 export const ProfileUpdateForm = ({ values, functions }) => {
-  const { name, email } = values;
-  const { submitHandler, changesHandler, cancelChanges } = functions;
+  const { name, email } = values
+  const { submitHandler, changesHandler, cancelChanges } = functions
   return (
     <Form onSubmit={submitHandler}>
       <Form.Group controlId='text'>
@@ -86,12 +86,12 @@ export const ProfileUpdateForm = ({ values, functions }) => {
         </Col>
       </Row>
     </Form>
-  );
-};
+  )
+}
 
 export const ShaddressReadForm = ({ values, functions, profile = true }) => {
-  const { address, city, postalCode, country } = values;
-  const { onClick, onProceed } = functions;
+  const { address, city, postalCode, country } = values
+  const { onClick, onProceed } = functions
 
   return (
     <Form>
@@ -173,16 +173,16 @@ export const ShaddressReadForm = ({ values, functions, profile = true }) => {
         </Row>
       )}
     </Form>
-  );
-};
+  )
+}
 
 export const ShaddressUpdateForm = ({
   values,
   functions,
   addressExists = true,
 }) => {
-  const { address, city, postalCode, country } = values;
-  const { submitHandler, changesHandler, cancelChanges } = functions;
+  const { address, city, postalCode, country, changed } = values
+  const { submitHandler, changesHandler, cancelChanges } = functions
 
   return (
     <Form onSubmit={submitHandler}>
@@ -242,6 +242,7 @@ export const ShaddressUpdateForm = ({
               type='submit'
               className='rounded-btn'
               variant='success'
+              disabled={!changed}
               block
             >
               <i className='fas fa-save'></i> Save
@@ -256,13 +257,13 @@ export const ShaddressUpdateForm = ({
         </div>
       )}
     </Form>
-  );
-};
+  )
+}
 
 export const AdminUserUpdateForm = ({ values, functions }) => {
-  const { name, email, isAdmin: admin, change, shippingAddress } = values;
-  const { address, country, postalCode, city } = shippingAddress;
-  const { changesHandler, submitHandler } = functions;
+  const { name, email, isAdmin: admin, change, shippingAddress } = values
+  const { address, country, postalCode, city } = shippingAddress
+  const { changesHandler, submitHandler } = functions
 
   return (
     <Form>
@@ -354,8 +355,8 @@ export const AdminUserUpdateForm = ({ values, functions }) => {
         </Button>
       </div>
     </Form>
-  );
-};
+  )
+}
 
 export const ProductUpdateForm = ({ values, functions: func }) => {
   return (
@@ -485,5 +486,5 @@ export const ProductUpdateForm = ({ values, functions: func }) => {
         </Col>
       </Row>
     </Form>
-  );
-};
+  )
+}
