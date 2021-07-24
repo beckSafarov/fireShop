@@ -271,7 +271,7 @@ export const AdminUserUpdateForm = ({ values, functions }) => {
         <Form.Control
           type='text'
           name='name'
-          value={name}
+          defaultValue={name}
           className='form-field'
           onChange={changesHandler}
         ></Form.Control>
@@ -280,7 +280,7 @@ export const AdminUserUpdateForm = ({ values, functions }) => {
           <Form.Control
             type='email'
             name='email'
-            value={email}
+            defaultValue={email}
             className='form-field'
             onChange={changesHandler}
           ></Form.Control>

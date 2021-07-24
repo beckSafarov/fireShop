@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
 // -- COMPONENTS --
-import { Auth, Message, Loader, Spinner } from '../../components';
+import { Auth, Message, Spinner } from '../../components';
 import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms';
 
 // -- REDUX RELATED IMPORTS --
@@ -113,25 +113,21 @@ const ProfileScreen = ({ history }) => {
             <AccountSideMenu active={1} />
           </Col>
           <Col md={10} sm={10}>
-            {userInfo && (
-              <>
-                <h3>User Profile</h3>
-                {flashMsg.display && (
-                  <Message variant={flashMsg.variant}>
-                    {flashMsg.message}
-                  </Message>
-                )}
-                {editClicked ? (
-                  <ProfileUpdateForm values={fields} functions={functions} />
-                ) : (
-                  <ReadOnlyForm
-                    name={fields.name}
-                    email={fields.email}
-                    onClick={editBtnHandler}
-                  />
-                )}
-              </>
-            )}
+            <>
+              <h3>User Profile</h3>
+              {flashMsg.display && (
+                <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+              )}
+              {editClicked ? (
+                <ProfileUpdateForm values={fields} functions={functions} />
+              ) : (
+                <ReadOnlyForm
+                  name={fields.name}
+                  email={fields.email}
+                  onClick={editBtnHandler}
+                />
+              )}
+            </>
           </Col>
         </>
       </Row>

@@ -11,10 +11,10 @@ import { AdminUserUpdateForm } from '../Forms';
 import ObjectsCompare from '../../helpers/ObjectsCompare';
 
 // redux actions
-import { ADMIN_USER_UPDATE_RESET } from '../../constants';
+import { ADMIN_USER_UPDATE_RESET as updateReset } from '../../constants';
 import { adminUpdateUser } from '../../actions/adminActions';
 import FieldsValidated from '../../helpers/FieldsValidated';
-const defaultUserInfo = {
+const defaultFields = {
   name: '',
   email: '',
   admin: false,
@@ -35,8 +35,8 @@ const UserEditPopup = ({ modal, setModal }) => {
   } = useSelector((state) => state.adminUserUpdate);
 
   // hooks
-  const [userInfo, setUserInfo] = useState(defaultUserInfo);
-  const [user, setUser] = useState(defaultUserInfo);
+  const [userInfo, setUserInfo] = useState(defaultFields);
+  const [user, setUser] = useState(defaultFields);
   const [change, setChange] = useState(false);
   const [confirmModal, setConfirmModal] = useState({
     heading: 'Admin Privilege Changes',
@@ -44,7 +44,7 @@ const UserEditPopup = ({ modal, setModal }) => {
   const [flashMsg, setFlashMsg] = useState({});
   const fire = `Are you sure to revoke ${userInfo.name}'s admin rights?`;
   const promote = `Are you sure to give ${userInfo.name} admin privileges?`;
-  let value, newUser;
+  let value, newUser, fieldName;
 
   useEffect(() => {
     modal && modal.userInfo && initValues();
@@ -52,7 +52,7 @@ const UserEditPopup = ({ modal, setModal }) => {
 
     if (error) {
       msgHandler(error, 'danger');
-      rxReset('error');
+      dispatch({ type: updateReset, payload: 'error' });
     }
   }, [modal, updated, error]);
 
@@ -72,7 +72,7 @@ const UserEditPopup = ({ modal, setModal }) => {
     }
   };
 
-  const initValues = (fromModal = true) => {
+  const initValues = () => {
     const src = {
       ...modal.userInfo,
       shippingAddress: {
@@ -86,14 +86,14 @@ const UserEditPopup = ({ modal, setModal }) => {
   const changesHandler = (e) => {
     e.persist();
     setChange(true);
+    newUser = { ...user };
+    fieldName = e.target.name;
     value = e.target.value;
-    newUser = user;
-    switch (e.target.name) {
+    switch (fieldName) {
       case 'name':
-        setUser({ ...user, name: value });
-        break;
       case 'email':
-        setUser({ ...user, email: value });
+        newUser[fieldName] = value;
+        setUser(newUser);
         break;
       case 'admin':
         setConfirmModal({
@@ -103,27 +103,15 @@ const UserEditPopup = ({ modal, setModal }) => {
           variant: user.isAdmin ? 'danger' : 'info',
         });
         break;
-      case 'address':
-        newUser.shippingAddress.address = value;
-        setUser(newUser);
-        break;
-      case 'city':
-        newUser.shippingAddress.city = value;
-        setUser(newUser);
-        break;
-      case 'postalCode':
-        newUser.shippingAddress.postalCode = value;
-        setUser(newUser);
-        break;
-      case 'country':
-        newUser.shippingAddress.country = value;
+      default:
+        newUser.shippingAddress[fieldName] = value;
         setUser(newUser);
         break;
     }
   };
 
   const hide = () => {
-    setModal({ display: false, userInfo: defaultUserInfo });
+    setModal({ display: false, userInfo: defaultFields });
     setChange(false);
   };
 
@@ -134,27 +122,14 @@ const UserEditPopup = ({ modal, setModal }) => {
     }, 3000);
   };
 
-  const rxReset = (payload) => {
-    dispatch({
-      type: ADMIN_USER_UPDATE_RESET,
-      payload,
-    });
-  };
-
   const adminChangeProceed = (e) => {
     e.preventDefault();
     setUser({ ...user, isAdmin: !user.isAdmin });
     hideConfirmWindow();
   };
 
-  const hideConfirmWindow = () => {
+  const hideConfirmWindow = () =>
     setConfirmModal({ ...confirmModal, display: false });
-  };
-
-  const functions = {
-    changesHandler,
-    submitHandler,
-  };
 
   const values = { ...user, change };
 
@@ -184,7 +159,10 @@ const UserEditPopup = ({ modal, setModal }) => {
         <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
       )}
       <Modal.Body variant='flush'>
-        <AdminUserUpdateForm values={values} functions={functions} />
+        <AdminUserUpdateForm
+          values={values}
+          functions={(changesHandler, submitHandler)}
+        />
       </Modal.Body>
     </Modal>
   );
@@ -194,7 +172,7 @@ UserEditPopup.defaultProps = {
   active: false,
   modal: {
     display: false,
-    userInfo: defaultUserInfo,
+    userInfo: defaultFields,
   },
 };
 

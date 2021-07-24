@@ -32,6 +32,10 @@ h1 {
   margin: 0.1rem;
 }
 
+.centered-text {
+  text-align: center;
+}
+
 .form-field {
   border: 1px solid #ccc;
   border-radius: 10px;

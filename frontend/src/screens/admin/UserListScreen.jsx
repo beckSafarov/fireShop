@@ -25,7 +25,7 @@ const UserListScreen = ({ history }) => {
   const dispatch = useDispatch();
   const {
     loading: listLoading,
-    error,
+    error: listRequestError,
     users,
   } = useSelector((state) => state.userList);
   const {
@@ -36,11 +36,7 @@ const UserListScreen = ({ history }) => {
   } = useSelector((state) => state.adminUserDelete);
   const { success: updated } = useSelector((state) => state.adminUserUpdate);
 
-  const [flashMsg, setFlashMsg] = useState({
-    display: false,
-    variant: 'info',
-    msg: '',
-  });
+  const [flashMsg, setFlashMsg] = useState({});
   const [modal, setModal] = useState({
     display: false,
     userInfo: null,
@@ -48,16 +44,14 @@ const UserListScreen = ({ history }) => {
 
   useEffect(() => {
     (!users || users.length === 0) && dispatch(listUsers());
-    if (deleted) {
-      flashMsgHandler('success', message);
+
+    if (deleted || deleteError) {
+      deleted ? msgHandler(message) : msgHandler(deleteError, 'danger', 3);
       dispatch({ type: ADMIN_USER_DELETE_RESET });
     }
-    if (deleteError) {
-      flashMsgHandler('danger', deleteError, 3);
-      dispatch({ type: ADMIN_USER_DELETE_RESET });
-    }
+
     if (updated) {
-      flashMsgHandler('success', 'Updated successfully');
+      msgHandler('Updated successfully');
       dispatch({ type: ADMIN_USER_UPDATE_RESET });
     }
 
@@ -66,14 +60,12 @@ const UserListScreen = ({ history }) => {
 
   const deleteHandler = (id, name = 'undefined') => {
     const c = `Are you sure to delete ${name}?`;
-    if (window.confirm(c)) dispatch(deleteUser(id));
+    window.confirm(c) && dispatch(deleteUser(id));
   };
 
-  const flashMsgHandler = (variant, msg, seconds = 2) => {
+  const msgHandler = (msg, variant = 'success', s = 2) => {
     setFlashMsg({ display: true, variant, msg });
-    setTimeout(() => {
-      setFlashMsg({ msg: '', display: false });
-    }, seconds * 1000);
+    setTimeout(() => setFlashMsg({}), s * 1000);
   };
 
   const modalHandler = (userInfo, display = true) => {
@@ -84,9 +76,9 @@ const UserListScreen = ({ history }) => {
     <Auth history={history} adminOnly>
       {listLoading ? (
         <Loader />
-      ) : error ? (
-        <Message variant='danger'>{error}</Message>
-      ) : users ? (
+      ) : listRequestError ? (
+        <Message variant='danger'>{listRequestError}</Message>
+      ) : users && users.length > 0 ? (
         <>
           <h1>Users</h1>
           {flashMsg.display && (
@@ -110,9 +102,16 @@ const UserListScreen = ({ history }) => {
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>
-                    {user.shippingAddress.address}, {user.shippingAddress.city},{' '}
-                    {user.shippingAddress.postalCode},{' '}
-                    {user.shippingAddress.country}
+                    {user.shippingAddress ? (
+                      <>
+                        {user.shippingAddress.address},{' '}
+                        {user.shippingAddress.city},{' '}
+                        {user.shippingAddress.postalCode},{' '}
+                        {user.shippingAddress.country}
+                      </>
+                    ) : (
+                      <p></p>
+                    )}
                   </td>
                   <td>
                     <div className='two-horizontal-icons'>
