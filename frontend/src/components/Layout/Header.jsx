@@ -1,15 +1,15 @@
-import { LinkContainer } from 'react-router-bootstrap';
-import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../actions/userActions';
+import { useState, useEffect } from 'react'
+import { LinkContainer } from 'react-router-bootstrap'
+import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../../actions/userActions'
 
 const Header = ({ history }) => {
-  const dispatch = useDispatch();
-  const { userInfo } = useSelector((state) => state.userLogin);
+  const dispatch = useDispatch()
+  const { userInfo } = useSelector((state) => state.userLogin)
+  const cartItems = userInfo && userInfo.cartItems ? userInfo.cartItems : null
 
-  const logoutHandler = () => {
-    dispatch(logout());
-  };
+  const logoutHandler = () => dispatch(logout())
 
   return (
     <header>
@@ -18,7 +18,6 @@ const Header = ({ history }) => {
           <LinkContainer to='/'>
             <Navbar.Brand>FireShop</Navbar.Brand>
           </LinkContainer>
-
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
             <Nav className='ml-auto'>
@@ -31,7 +30,8 @@ const Header = ({ history }) => {
               )}
               <LinkContainer to='/cart'>
                 <Nav.Link>
-                  <i className='fas fa-shopping-cart'></i> Cart
+                  <i className='fas fa-shopping-cart'></i> Cart{' '}
+                  {cartItems && `(${cartItems.length})`}
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
@@ -68,7 +68,7 @@ const Header = ({ history }) => {
         </Container>
       </Navbar>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

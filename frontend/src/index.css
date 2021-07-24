@@ -71,6 +71,12 @@ strong {
   color: red;
 }
 
+.danger-box {
+  padding: 5px 10px 5px 10px;
+  border: 1px solid #ff6666;
+  color: #ff6666;
+}
+
 .error-message-field {
   margin: 10px 0 10px 0;
   padding: 10px;
