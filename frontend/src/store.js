@@ -1,12 +1,12 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import * as productReducers from './reducers/productReducers.js';
-import * as cartReducers from './reducers/cartReducers.js';
-import * as userReducers from './reducers/userReducers';
-import * as orderReducers from './reducers/orderReducers';
-import * as adminReducers from './reducers/adminReducers';
-import { getCart } from './helpers/cartLCS.js';
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import * as productReducers from './reducers/productReducers.js'
+import * as cartReducers from './reducers/cartReducers.js'
+import * as userReducers from './reducers/userReducers'
+import * as orderReducers from './reducers/orderReducers'
+import * as adminReducers from './reducers/adminReducers'
+import { getCart } from './helpers/cartLCS.js'
 
 //this is the root reducer that includes all reducers
 const reducer = combineReducers({
@@ -21,13 +21,14 @@ const reducer = combineReducers({
   adminUserDelete: adminReducers.adminUserDeleteReducer,
   adminUserUpdate: adminReducers.adminUserUpdateReducer,
   imgUploadStore: adminReducers.imgUploadReducer,
+  ordersListStore: orderReducers.ordersListReducer,
   orderReducers: orderReducers.orderCreateReducer,
   orderDetails: orderReducers.orderDetailsReducer,
   myOrders: orderReducers.myOrdersReducer,
-});
+})
 
 //getting existing items from the LC
-const paymentMethod = JSON.parse(localStorage.getItem('paymentMethod'));
+const paymentMethod = JSON.parse(localStorage.getItem('paymentMethod'))
 
 //this is the preloader that gets loaded in the build time
 const initialState = {
@@ -36,16 +37,16 @@ const initialState = {
     paymentMethod: paymentMethod || {},
   },
   userLogin: { userInfo: null },
-};
+}
 
 //this is the list of middleware that are fired when an action is dispatched
-const middleware = [thunk];
+const middleware = [thunk]
 //thunk is a middleware that contacts with the server
 
 const store = createStore(
   reducer,
   initialState,
   composeWithDevTools(applyMiddleware(...middleware))
-);
+)
 
-export default store;
+export default store

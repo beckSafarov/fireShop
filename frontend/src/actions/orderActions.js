@@ -1,74 +1,95 @@
-import * as constants from '../constants.js';
-import axios from 'axios';
+import * as cs from '../constants.js'
+import axios from 'axios'
 const minConfig = {
   cancelToken: axios.CancelToken.source().token,
-};
+}
 const config = {
   headers: { 'Content-Type': 'application/json' },
   ...minConfig,
-};
+}
 
 export const createOrder = (order) => async (dispatch) => {
   try {
-    dispatch({ type: constants.ORDER_CREATE_REQUEST });
+    dispatch({ type: cs.ORDER_CREATE_REQUEST })
 
-    const data = await axios.post('/api/orders/addorder', order, config);
+    const data = await axios.post('/api/orders/addorder', order, config)
 
     dispatch({
-      type: constants.ORDER_CREATE_SUCCESS,
+      type: cs.ORDER_CREATE_SUCCESS,
       payload: data.data.createdOrder,
-    });
+    })
   } catch (err) {
     dispatch({
-      type: constants.ORDER_CREATE_FAIL,
+      type: cs.ORDER_CREATE_FAIL,
       payload:
         err.response && err.response.data.message
           ? err.response.data.message
           : err.message,
-    });
+    })
   }
-};
+}
 
 export const getOrderDetails = (id) => async (dispatch) => {
   try {
-    dispatch({ type: constants.ORDER_DETAILS_REQUEST });
+    dispatch({ type: cs.ORDER_DETAILS_REQUEST })
 
-    const { data } = await axios.get(`/api/orders/${id}`, minConfig);
+    const { data } = await axios.get(`/api/orders/${id}`, minConfig)
 
     dispatch({
-      type: constants.ORDER_DETAILS_SUCCESS,
+      type: cs.ORDER_DETAILS_SUCCESS,
       payload: data.order,
-    });
+    })
   } catch (err) {
     dispatch({
-      type: constants.ORDER_DETAILS_FAIL,
+      type: cs.ORDER_DETAILS_FAIL,
       payload:
         err.response && err.response.data.message
           ? err.response.data.message
           : err.message,
-    });
+    })
   }
-};
+}
 
 export const getMyOrders = () => async (dispatch) => {
   try {
-    dispatch({ type: constants.MY_ORDERS_REQUEST });
+    dispatch({ type: cs.MY_ORDERS_REQUEST })
 
-    const { data } = await axios.get(`/api/orders/myorders`, minConfig);
+    const { data } = await axios.get(`/api/orders/myorders`, minConfig)
 
-    const orders = data.orders.length > 0 ? data.orders : null;
+    const orders = data.orders.length > 0 ? data.orders : null
 
     dispatch({
-      type: constants.MY_ORDERS_SUCCESS,
+      type: cs.MY_ORDERS_SUCCESS,
       payload: orders,
-    });
+    })
   } catch (err) {
     dispatch({
-      type: constants.MY_ORDERS_FAIL,
+      type: cs.MY_ORDERS_FAIL,
       payload:
         err.response && err.response.data.message
           ? err.response.data.message
           : err.message,
-    });
+    })
   }
-};
+}
+
+export const getAllOrders = () => async (dispatch) => {
+  try {
+    dispatch({ type: cs.ORDERS_LIST_REQUEST })
+
+    const { data } = await axios.get(`/api/orders`, minConfig)
+
+    dispatch({
+      type: cs.ORDERS_LIST_SUCCESS,
+      payload: data.orders,
+    })
+  } catch (err) {
+    dispatch({
+      type: cs.ORDERS_LIST_FAILURE,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    })
+  }
+}

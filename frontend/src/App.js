@@ -33,6 +33,7 @@ import { addToCart } from './actions/cartActions'
 import UserListScreen from './screens/admin/UserListScreen'
 import ProductListScreen from './screens/admin/ProductListScreen'
 import ProductEditScreen from './screens/admin/ProductEditScreen'
+import OrdersListScreen from './screens/admin/OrdersListScreen'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -96,6 +97,10 @@ const App = () => {
             <Route
               path='/admin/productedit/:id'
               component={ProductEditScreen}
+            ></Route>
+            <Route
+              path='/admin/orderslist'
+              component={OrdersListScreen}
             ></Route>
 
             {/*test route */}
