@@ -58,6 +58,30 @@ export const getOrder = asyncHandler(async (req, res) => {
   res.status(200).json({ order })
 })
 
+//@desc  Update order delivery status
+//@route PUT /api/orders/:id
+//@desc  Private && Admin only
+export const updateOrderDeliveryStatus = asyncHandler(async (req, res) => {
+  // req.body = {deliveryStatus: 'Packed||Shipped||Delivered' }
+  const deliveryStatus = req.body.deliveryStatus || 'Received'
+  const isDelievered = deliveryStatus === 'Delivered'
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    { deliveryStatus, isDelievered },
+    {
+      new: true,
+      runValidators: true,
+    }
+  )
+
+  if (!order) {
+    res.status(404)
+    throw new Error('Order not found with the provided id')
+  }
+
+  res.status(200).json({ order })
+})
+
 //@desc  Get all orders for admin
 //@route GET /api/orders
 //@desc  Private && Admin only

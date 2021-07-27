@@ -1,6 +1,15 @@
 import { STATES } from 'mongoose'
 import * as constants from '../constants.js'
 
+const Loading = (type, state = {}) => ({ ...state, loading: true, type })
+const Success = (order, type) => ({
+  loading: false,
+  success: true,
+  order,
+  type,
+})
+const Error = (error, state = {}) => ({ ...state, loading: false, error })
+
 export const orderCreateReducer = (state = { order: {} }, action) => {
   switch (action.type) {
     case constants.ORDER_CREATE_REQUEST:
@@ -14,17 +23,24 @@ export const orderCreateReducer = (state = { order: {} }, action) => {
   }
 }
 
-export const orderDetailsReducer = (
-  state = { loading: true, order: {} },
-  action
-) => {
+export const orderDetailsReducer = (state = { order: {} }, action) => {
   switch (action.type) {
     case constants.ORDER_DETAILS_REQUEST:
-      return { ...state, loading: true }
+      return Loading('request', state)
     case constants.ORDER_DETAILS_SUCCESS:
-      return { loading: false, success: true, order: action.payload }
+      return Success(action.payload, 'request')
     case constants.ORDER_DETAILS_FAIL:
-      return { loading: false, error: action.payload }
+      return Error(action.payload, state)
+    case constants.ORDER_UPDATE_REQUEST:
+      return Loading('update', state)
+    case constants.ORDER_UPDATE_SUCCESS:
+      return Success(action.payload, 'update')
+    case constants.ORDER_UPDATE_FAIL:
+      return Error(action.payload, state)
+    case constants.ORDER_UPDATE_RESET:
+      let newState = { ...state }
+      newState[action.payload] = null
+      return newState
     default:
       return state
   }
@@ -51,8 +67,28 @@ export const ordersListReducer = (state = { orders: [] }, action) => {
       return { loading: false, success: true, orders: action.payload }
     case constants.ORDERS_LIST_FAILURE:
       return { loading: false, error: action.payload }
+    case constants.ORDERS_LIST_UPDATE_SUCCESS:
+      const updatedOrder = action.payload
+      let newOrders = [...state.orders]
+      for (let i = 0; i < newOrders.length; i++) {
+        if (newOrders[i]._id === updatedOrder._id) {
+          newOrders[i].isDelivered = updatedOrder.isDelivered
+          newOrders[i].deliveryStatus = updatedOrder.deliveryStatus
+          break
+        }
+      }
+      return {
+        loading: false,
+        success: true,
+        type: 'update',
+        orders: newOrders,
+      }
     case constants.ORDERS_LIST_RESET:
       return {}
+    case constants.ORDERS_LIST_PROPERTY_RESET:
+      const newState = { ...state }
+      newState[action.payload] = null
+      return newState
     default:
       return state
   }

@@ -93,3 +93,29 @@ export const getAllOrders = () => async (dispatch) => {
     })
   }
 }
+
+export const updateDeliveryStatus = (id, body) => async (dispatch) => {
+  try {
+    dispatch({ type: cs.ORDER_UPDATE_REQUEST })
+
+    const { data } = await axios.put(`/api/orders/${id}`, body, config)
+
+    dispatch({
+      type: cs.ORDER_UPDATE_SUCCESS,
+      payload: data.order,
+    })
+
+    dispatch({
+      type: cs.ORDERS_LIST_UPDATE_SUCCESS,
+      payload: data.order,
+    })
+  } catch (err) {
+    dispatch({
+      type: cs.ORDER_UPDATE_FAIL,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    })
+  }
+}

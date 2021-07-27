@@ -77,7 +77,7 @@ const App = () => {
             <Route path='/profile' component={ProfileScreen}></Route>
             <Route path='/address' component={ShaddressScreen}></Route>
             <Route path='/myorders' component={UserOrdersScreen} exact></Route>
-            <Route path='/myorders/:id' component={OrderInfoScreen}></Route>
+            <Route path='/orders/:id' component={OrderInfoScreen}></Route>
 
             {/* place order related */}
             <Route path='/placeorder' component={PlaceOrderScreen}></Route>

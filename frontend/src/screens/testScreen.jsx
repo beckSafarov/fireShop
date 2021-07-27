@@ -1,36 +1,42 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
-import { Row, Col, Nav, Form } from 'react-bootstrap';
-import { Button } from 'react-bootstrap';
-import * as lcs from '../helpers/cartLCS';
-import { LinkContainer } from 'react-router-bootstrap';
-import { DropMenu, DropLink } from '../components/Dropdown';
-import { Auth, Message, Spinner, Loader, ConfirmModal } from '../components';
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useLocation } from 'react-router-dom'
+import { Row, Col, Nav, Form } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
+import * as lcs from '../helpers/cartLCS'
+import { LinkContainer } from 'react-router-bootstrap'
+import { DropMenu, DropLink } from '../components/Dropdown'
+import { Auth, Message, Spinner, Loader, ConfirmModal } from '../components'
+import DeliveryProgress from '../components/Product/DeliveryProgress'
 
 const TestScreen = ({ location, history, match }) => {
-  const people = ['Beck', 'Tom'];
-  const [status, setStatus] = useState(10);
-  const [positive, setPositive] = useState(false);
-  const [msg, setMsg] = useState({});
+  const people = ['Beck', 'Tom']
+  const [status, setStatus] = useState(10)
+  const [positive, setPositive] = useState(false)
+  const [msg, setMsg] = useState({})
+  const [modal, setModal] = useState({
+    display: false,
+    info: {
+      isDelivered: false,
+      deliveryStatus: 'Packed',
+    },
+  })
 
   useEffect(() => {
     // window.addEventListener('click', dropMenuHandler);
     // return () => window.removeEventListener('click', dropMenuHandler);
-  }, []);
+  }, [])
 
-  const changeStatus = (value) => setStatus(value * 3);
+  const changeStatus = (value) => setStatus(value * 3)
 
   const clickMe = () => {
-    // history.push('/');
-    msgHandler();
-    // setPositive(!positive);
-  };
+    setModal({ ...modal, display: true })
+  }
 
   const msgHandler = () => {
-    setMsg({ display: true, msg: 'Awesome', variant: 'success' });
-    setTimeout(() => setMsg({}), 3000);
-  };
+    setMsg({ display: true, msg: 'Awesome', variant: 'success' })
+    setTimeout(() => setMsg({}), 3000)
+  }
 
   return (
     <>
@@ -67,8 +73,9 @@ const TestScreen = ({ location, history, match }) => {
           <h2>Status: {status}</h2>
         </Row>
       </Col>
+      <DeliveryProgress height={100} width={520} progress={3} />
     </>
-  );
-};
+  )
+}
 
-export default TestScreen;
+export default TestScreen

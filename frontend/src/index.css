@@ -49,6 +49,12 @@ h1 {
 .link {
   color: #1a82ae;
 }
+.simple-link {
+  cursor: pointer;
+}
+.simple-link:hover {
+  text-decoration: underline;
+}
 
 .rounded-btn {
   border-radius: 10px;
@@ -228,3 +234,26 @@ strong {
 /* .row-flex-end .btn-container{
   margin-right: 20px;
 } */
+
+/* svg line style */
+/* .svg {
+  border: 1px solid green;
+} */
+
+.line {
+  stroke: #bfbfbf;
+  stroke-width: 2;
+  z-index: 5;
+}
+
+.delivery-progress-container {
+  text-align: center;
+  padding-bottom: 30px;
+}
+
+.centered-text i {
+  cursor: pointer;
+}
+.centered-text i:hover {
+  color: green;
+}

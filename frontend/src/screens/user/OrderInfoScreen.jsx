@@ -1,30 +1,37 @@
 // methods
-import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 
 // methods
-import { Calculations } from '../../helpers/Calculations';
+import { Calculations } from '../../helpers/Calculations'
 
 // UI components
-import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap';
-import { Auth, Message, Loader } from '../../components';
+import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap'
+import { Auth, Message, Loader, DeliveryProgress } from '../../components'
 
 //Redux actions
-import { getOrderDetails } from '../../actions/orderActions';
+import { getOrderDetails } from '../../actions/orderActions'
+
+const deliverySteps = {
+  Received: 1,
+  Packed: 2,
+  Shipped: 3,
+  Delivered: 4,
+}
 
 const OrderInfoScreen = ({ match, history }) => {
-  const dispatch = useDispatch();
-  const { loading, order, error } = useSelector((state) => state.orderDetails);
-  const { userInfo } = useSelector((state) => state.userLogin);
-  const calcs = Calculations(order.orderItems || []);
+  const dispatch = useDispatch()
+  const { loading, order, error, success, type } = useSelector(
+    (state) => state.orderDetails
+  )
+  const calcs = Calculations(order.orderItems || [])
 
   useEffect(() => {
-    if (userInfo) dispatch(getOrderDetails(match.params.id));
-
-    return () => axios.CancelToken.source().cancel();
-  }, [dispatch, match, userInfo]);
+    order._id !== match.params.id && dispatch(getOrderDetails(match.params.id))
+    return () => axios.CancelToken.source().cancel()
+  }, [dispatch, match])
 
   return (
     <Auth history={history}>
@@ -33,7 +40,7 @@ const OrderInfoScreen = ({ match, history }) => {
           <Loader />
         ) : error ? (
           <Message variant='danger'>{error}</Message>
-        ) : order ? (
+        ) : order.user ? (
           <Row>
             <Col md={6}>
               <>
@@ -117,6 +124,13 @@ const OrderInfoScreen = ({ match, history }) => {
             </Col>
             <Col md={6}>
               <h3 className='mb-4'>Order Status</h3>
+              <div className='delivery-progress-container'>
+                <DeliveryProgress
+                  width={500}
+                  height={100}
+                  progress={deliverySteps[order.deliveryStatus]}
+                />
+              </div>
               <ListGroup variant='flush'>
                 {order.isDelivered ? (
                   <>
@@ -153,12 +167,6 @@ const OrderInfoScreen = ({ match, history }) => {
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <Row>
-                        <Col>Delivery Progress</Col>
-                        <Col>Packed, on the way</Col>
-                      </Row>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      <Row>
                         <Col>Expected Delivery Date</Col>
                         <Col>some day</Col>
                       </Row>
@@ -175,7 +183,7 @@ const OrderInfoScreen = ({ match, history }) => {
         )}
       </Container>
     </Auth>
-  );
-};
+  )
+}
 
-export default OrderInfoScreen;
+export default OrderInfoScreen
