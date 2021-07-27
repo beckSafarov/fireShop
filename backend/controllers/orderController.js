@@ -64,10 +64,10 @@ export const getOrder = asyncHandler(async (req, res) => {
 export const updateOrderDeliveryStatus = asyncHandler(async (req, res) => {
   // req.body = {deliveryStatus: 'Packed||Shipped||Delivered' }
   const deliveryStatus = req.body.deliveryStatus || 'Received'
-  const isDelievered = deliveryStatus === 'Delivered'
+  const isDelivered = deliveryStatus === 'Delivered'
   const order = await Order.findByIdAndUpdate(
     req.params.id,
-    { deliveryStatus, isDelievered },
+    { deliveryStatus, isDelivered },
     {
       new: true,
       runValidators: true,

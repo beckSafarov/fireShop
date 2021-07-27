@@ -66,7 +66,7 @@ const orderSchema = mongoose.Schema(
       type: 'String',
       default: 'Received',
     },
-    isDelievered: {
+    isDelivered: {
       type: Boolean,
       default: false,
     },

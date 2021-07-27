@@ -136,7 +136,7 @@ const OrderInfoScreen = ({ match, history }) => {
                   <>
                     <ListGroup.Item>
                       <Row>
-                        <Col>Delievered</Col>
+                        <Col>Delivered</Col>
                         <Col>
                           <i
                             style={{ color: 'green' }}
