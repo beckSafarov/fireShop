@@ -1,24 +1,29 @@
 // Methods
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 
 // UI components
-import { Message, Loader, Auth } from '../../components';
-import { Table, Container, Button } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import { Message, Loader, Auth } from '../../components'
+import { Table, Container, Button } from 'react-bootstrap'
+import { LinkContainer } from 'react-router-bootstrap'
 // Redux related imports
-import { getMyOrders } from '../../actions/orderActions';
+import { getMyOrders } from '../../actions/orderActions'
 
 const UserOrdersScreen = ({ history }) => {
   // -- redux stores --
-  const dispatch = useDispatch();
-  const { loading, orders, error } = useSelector((state) => state.myOrders);
+  const dispatch = useDispatch()
+  const { loading, orders, error } = useSelector((state) => state.myOrders)
 
   useEffect(() => {
-    if (orders && orders.length === 0) dispatch(getMyOrders());
-    return () => axios.CancelToken.source().cancel();
-  }, [dispatch, orders]);
+    if (orders && orders.length === 0) dispatch(getMyOrders())
+    return () => axios.CancelToken.source().cancel()
+  }, [dispatch, orders])
+
+  const LocaleDate = (d) => {
+    const date = new Date(d)
+    return date.toLocaleDateString()
+  }
 
   return (
     <Auth history={history}>
@@ -39,12 +44,17 @@ const UserOrdersScreen = ({ history }) => {
                   <th>DATE</th>
                   <th>PAID</th>
                   <th>DELIVERED</th>
+                  <th>DELIVERY DATE</th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order, index) => (
+                {orders.map((order) => (
                   <tr key={order._id}>
-                    <td>{order._id}</td>
+                    <td>
+                      <LinkContainer to={`/orders/${order._id}`}>
+                        <Button variant='link'>{order._id}</Button>
+                      </LinkContainer>
+                    </td>
                     <td>
                       {order.paidAt
                         ? order.paidAt.substring(0, 10)
@@ -54,12 +64,13 @@ const UserOrdersScreen = ({ history }) => {
                     <td>
                       {
                         /*if order delievered, put delivery date, if no delivery date than undefined */
-                        order.isDelievered ? (
-                          order.deliveredAt ? (
-                            order.deliveredAt.substring(0, 10)
-                          ) : (
-                            'undefined'
-                          )
+                        order.isDelivered ? (
+                          <div className='text-center'>
+                            <i
+                              className='fas fa-check'
+                              style={{ color: 'green' }}
+                            ></i>
+                          </div>
                         ) : (
                           /* if order not delivered */
                           <div className='text-center'>
@@ -72,11 +83,11 @@ const UserOrdersScreen = ({ history }) => {
                       }
                     </td>
                     <td>
-                      <LinkContainer to={`/myorders/${order._id}`}>
-                        <Button className='btn-sm' variant='light'>
-                          Details
-                        </Button>
-                      </LinkContainer>
+                      {order.deliveredAt ? (
+                        <p>{LocaleDate(order.deliveredAt)}</p>
+                      ) : (
+                        <p>N/A</p>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -86,7 +97,7 @@ const UserOrdersScreen = ({ history }) => {
         )}
       </Container>
     </Auth>
-  );
-};
+  )
+}
 
-export default UserOrdersScreen;
+export default UserOrdersScreen

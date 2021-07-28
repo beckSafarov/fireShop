@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler'
+import { addDateFormats, formatDate } from '../helpers/helpers.js'
 import Order from '../models/orderModel.js'
 
 //@desc  Create new order
@@ -62,12 +63,13 @@ export const getOrder = asyncHandler(async (req, res) => {
 //@route PUT /api/orders/:id
 //@desc  Private && Admin only
 export const updateOrderDeliveryStatus = asyncHandler(async (req, res) => {
-  // req.body = {deliveryStatus: 'Packed||Shipped||Delivered' }
   const deliveryStatus = req.body.deliveryStatus || 'Received'
   const isDelivered = deliveryStatus === 'Delivered'
+
+  const deliveredAt = isDelivered ? new Date() : undefined
   const order = await Order.findByIdAndUpdate(
     req.params.id,
-    { deliveryStatus, isDelivered },
+    { deliveryStatus, isDelivered, deliveredAt },
     {
       new: true,
       runValidators: true,

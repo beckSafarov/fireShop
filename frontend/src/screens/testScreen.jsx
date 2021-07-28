@@ -23,6 +23,7 @@ const TestScreen = ({ location, history, match }) => {
   })
 
   useEffect(() => {
+    console.log(playGroundFunc())
     // window.addEventListener('click', dropMenuHandler);
     // return () => window.removeEventListener('click', dropMenuHandler);
   }, [])
@@ -31,6 +32,11 @@ const TestScreen = ({ location, history, match }) => {
 
   const clickMe = () => {
     setModal({ ...modal, display: true })
+  }
+
+  const playGroundFunc = () => {
+    const date = new Date()
+    return date.getFullYear()
   }
 
   const msgHandler = () => {

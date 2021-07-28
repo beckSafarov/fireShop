@@ -1,10 +1,10 @@
 // -- CORE LIBRARIES --
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 // -- Helpers
-import * as lcs from '../helpers/cartLCS';
+import * as lcs from '../helpers/cartLCS'
 // -- UI COMPONENTS --
 import {
   Row,
@@ -14,44 +14,44 @@ import {
   Button,
   Form,
   Alert,
-} from 'react-bootstrap';
-import { Rating, Loader, CountOptions, Exceptional } from '../components';
+} from 'react-bootstrap'
+import { Rating, Loader, CountOptions, Exceptional } from '../components'
 
 // -- REDUX ACTIONS
-import { listProductDetails } from '../actions/productActions';
-import { addToCart, buyNowAction } from '../actions/cartActions';
-import { CART_PROPERTY_RESET } from '../constants';
+import { listProductDetails } from '../actions/productActions'
+import { addToCart, buyNowAction } from '../actions/cartActions'
+import { CART_PROPERTY_RESET } from '../constants'
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState(1)
   const [flashMsg, setFlashMsg] = useState({
     display: false,
     msg: null,
     variant: 'danger',
-  });
+  })
 
   // -- bringing redux stores --
-  const dispatch = useDispatch();
-  const productDetails = useSelector((state) => state.productDetails);
-  const { loading, error, product } = productDetails;
-  const { userInfo } = useSelector((state) => state.userLogin);
+  const dispatch = useDispatch()
+  const productDetails = useSelector((state) => state.productDetails)
+  const { loading, error, product } = productDetails
+  const { userInfo } = useSelector((state) => state.userLogin)
   const {
     successType,
     error: cartError,
     message: cartMessage,
-  } = useSelector((state) => state.cart);
-  const logged = userInfo ? true : false;
-  const dataExists = product && product.name && product._id === match.params.id;
+  } = useSelector((state) => state.cart)
+  const logged = userInfo ? true : false
+  const dataExists = product && product.name && product._id === match.params.id
 
   useEffect(() => {
-    !dataExists && dispatch(listProductDetails(match.params.id));
+    !dataExists && dispatch(listProductDetails(match.params.id))
 
     if (successType) {
       switch (successType) {
         case 'add':
-          flashMessage(cartMessage, 'success');
-          break;
+          flashMessage(cartMessage, 'success')
+          break
         case 'buyNow':
           history.push(
             logged
@@ -59,41 +59,41 @@ const ProductScreen = ({ match, history }) => {
                 ? '/placeorder'
                 : '/shipping'
               : '/signin?redirect=shipping'
-          );
-          break;
+          )
+          break
       }
-      rxReset('successType');
+      rxReset('successType')
     } else if (cartError) {
-      flashMessage(cartError);
-      rxReset('error');
+      flashMessage(cartError)
+      rxReset('error')
     }
 
-    return () => axios.CancelToken.source().cancel();
-  }, [dispatch, match, successType, cartError]);
+    return () => axios.CancelToken.source().cancel()
+  }, [dispatch, match, successType, cartError])
 
   const addToCartHandler = () => {
-    const more = lcs.have(product) ? 'more' : '';
-    dispatch(addToCart(product, Number(qty), logged));
+    const more = lcs.have(product) ? 'more' : ''
+    dispatch(addToCart(product, Number(qty), logged))
 
     if (!logged) {
-      const text = `You added ${qty} ${more} ${product.name}(s) to your shopping cart`;
-      flashMessage(text, 'success');
+      const text = `You added ${qty} ${more} ${product.name}(s) to your shopping cart`
+      flashMessage(text, 'success')
     }
-  };
+  }
 
   const buyNowHandler = () => {
-    dispatch(buyNowAction(product, Number(qty), logged));
-  };
+    dispatch(buyNowAction(product, Number(qty), logged))
+  }
 
   const flashMessage = (msg, variant = 'danger', seconds = 3) => {
-    setFlashMsg({ display: true, msg, variant });
+    setFlashMsg({ display: true, msg, variant })
     setTimeout(() => {
-      setFlashMsg({ display: false });
-    }, seconds * 1000);
-  };
+      setFlashMsg({ display: false })
+    }, seconds * 1000)
+  }
 
   const rxReset = (property) =>
-    dispatch({ type: CART_PROPERTY_RESET, payload: property });
+    dispatch({ type: CART_PROPERTY_RESET, payload: property })
 
   return (
     <>
@@ -175,9 +175,10 @@ const ProductScreen = ({ match, history }) => {
                 <Row>
                   <Button
                     onClick={addToCartHandler}
-                    className='btn-block'
+                    variant='outline-primary'
                     type='button'
                     disabled={product.countInStock === 0}
+                    block
                   >
                     Add to cart
                   </Button>
@@ -185,9 +186,10 @@ const ProductScreen = ({ match, history }) => {
                 <Row className='my-1'>
                   <Button
                     onClick={buyNowHandler}
-                    className='btn-block'
+                    variant='primary'
                     type='button'
                     disabled={product.countInStock === 0}
+                    block
                   >
                     Buy Now
                   </Button>
@@ -198,7 +200,7 @@ const ProductScreen = ({ match, history }) => {
         </Row>
       )}
     </>
-  );
-};
+  )
+}
 
-export default ProductScreen;
+export default ProductScreen

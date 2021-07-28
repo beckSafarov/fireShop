@@ -28,14 +28,17 @@ const UpdateDeliveryModal = ({ modal, setModal }) => {
   const [change, setChange] = useState(false)
   const [flashMsg, setFlashMsg] = useState({})
 
-  const { success, type, error } = useSelector((state) => state.orderDetails)
+  const { loading, success, type, error } = useSelector(
+    (state) => state.orderDetails
+  )
   // const [success, setSuccess] = useState(false)
   // const type = 'update'
+  const updateLoading = loading && type === 'update'
 
   useEffect(() => {
-    if ((success || error) && type === 'update') {
-      success ? hide() : setMsgHandler(error) && setChange(false)
-      dispatch({ type: updateReset, payload: success ? 'success' : 'error' })
+    if (error && type === 'update') {
+      setMsgHandler(error) && setChange(false)
+      dispatch({ type: updateReset, payload: 'error' })
     }
 
     if (!_id || modal._id === _id) {
@@ -74,6 +77,7 @@ const UpdateDeliveryModal = ({ modal, setModal }) => {
       <Modal.Header closeButton>
         <Modal.Title id='example-custom-modal-styling-title'>{_id}</Modal.Title>
       </Modal.Header>
+      {updateLoading && <Spinner />}
       {flashMsg.display && (
         <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
       )}

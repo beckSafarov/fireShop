@@ -1,5 +1,5 @@
 // methods
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
@@ -8,11 +8,22 @@ import axios from 'axios'
 import { Calculations } from '../../helpers/Calculations'
 
 // UI components
-import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap'
-import { Auth, Message, Loader, DeliveryProgress } from '../../components'
+import { Row, Col, ListGroup, Image, Container, Button } from 'react-bootstrap'
+import {
+  Auth,
+  Message,
+  Loader,
+  DeliveryProgress,
+  UpdateDeliveryModal,
+  Spinner,
+} from '../../components'
 
 //Redux actions
 import { getOrderDetails } from '../../actions/orderActions'
+import {
+  ORDERS_LIST_PROPERTY_RESET as listReset,
+  ORDER_UPDATE_RESET as detailsReset,
+} from '../../constants'
 
 const deliverySteps = {
   Received: 1,
@@ -23,25 +34,67 @@ const deliverySteps = {
 
 const OrderInfoScreen = ({ match, history }) => {
   const dispatch = useDispatch()
+
+  // redux stores
   const { loading, order, error, success, type } = useSelector(
     (state) => state.orderDetails
   )
   const calcs = Calculations(order.orderItems || [])
+  const { userInfo } = useSelector((state) => state.userLogin)
+
+  // hooks
+  const [modal, setModal] = useState({})
+  const [flashMsg, setFlashMsg] = useState({})
+
+  // variables
+  const requestLoading = loading && type === 'request'
 
   useEffect(() => {
     order._id !== match.params.id && dispatch(getOrderDetails(match.params.id))
+
+    if (success && type === 'update') {
+      setMsgHandler('Updated successfully')
+      setModal({ ...modal, display: false })
+      dispatch({ type: detailsReset, payload: 'success' })
+      dispatch({ type: listReset, payload: 'success' })
+    }
+
     return () => axios.CancelToken.source().cancel()
-  }, [dispatch, match])
+  }, [dispatch, match, success, type])
+
+  const UTCDate = (d) => {
+    const date = new Date(d)
+    return date.toUTCString()
+  }
+
+  const setMsgHandler = (message, variant = 'success') => {
+    setFlashMsg({ display: true, message, variant })
+    setTimeout(() => setFlashMsg({}), 3000)
+  }
+
+  const updateHandler = () => {
+    setModal({
+      display: true,
+      _id: order._id,
+      deliveryStatus: order.deliveryStatus,
+    })
+  }
 
   return (
     <Auth history={history}>
       <Container>
-        {loading ? (
+        {flashMsg.display && (
+          <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+        )}
+        {requestLoading ? (
           <Loader />
         ) : error ? (
           <Message variant='danger'>{error}</Message>
         ) : order.user ? (
           <Row>
+            {modal.display && (
+              <UpdateDeliveryModal modal={modal} setModal={setModal} />
+            )}
             <Col md={6}>
               <>
                 <h3 className='mb-4'>Order Info</h3>
@@ -147,8 +200,8 @@ const OrderInfoScreen = ({ match, history }) => {
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <Row>
-                        <Col>Delivered Date</Col>
-                        <Col>some day</Col>
+                        <Col>Delivery Date</Col>
+                        <Col>{UTCDate(order.deliveredAt)}</Col>
                       </Row>
                     </ListGroup.Item>
                   </>
@@ -172,6 +225,19 @@ const OrderInfoScreen = ({ match, history }) => {
                       </Row>
                     </ListGroup.Item>
                   </>
+                )}
+                {userInfo.isAdmin && (
+                  <ListGroup.Item>
+                    <Button
+                      title='Update Delivery Status'
+                      variant='info'
+                      size='sm'
+                      onClick={updateHandler}
+                      block
+                    >
+                      <i className='fas fa-edit'></i>
+                    </Button>
+                  </ListGroup.Item>
                 )}
               </ListGroup>
             </Col>

@@ -30,9 +30,8 @@ const OrdersListScreen = ({ history }) => {
     error,
   } = useSelector((state) => state.ordersListStore)
   const [flashMsg, setFlashMsg] = useState({})
-
+  const [textAlign, setTextAlign] = useState('center')
   const updated = success && type === 'update'
-
   const { loading: updateLoading } = useSelector((state) => state.orderDetails)
 
   useEffect(() => {
@@ -40,6 +39,7 @@ const OrdersListScreen = ({ history }) => {
 
     if (updated) {
       setMsgHandler('Updated successfully')
+      setModal({})
       dispatch({ type: updateReset, payload: 'type' })
     }
 
@@ -51,14 +51,17 @@ const OrdersListScreen = ({ history }) => {
     setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
-  const sendToOrderInfo = (id) => history.push(`/orders/${id}`)
-
   const updateHandler = (order) => {
     setModal({
       display: true,
       _id: order._id,
       deliveryStatus: order.deliveryStatus,
     })
+  }
+
+  const LocaleDate = (d) => {
+    const date = new Date(d)
+    return date.toLocaleString()
   }
 
   return (
@@ -71,6 +74,7 @@ const OrdersListScreen = ({ history }) => {
         ) : (
           <>
             <h3 className='mb-5'>All Orders</h3>
+            {/* <i className='fas fa-align-center'></i> */}
             {updateLoading && <Spinner />}
             {modal.display && (
               <UpdateDeliveryModal modal={modal} setModal={setModal} />
@@ -86,19 +90,16 @@ const OrdersListScreen = ({ history }) => {
                   <th>DATE</th>
                   <th>PAID</th>
                   <th>DELIVERY STATUS</th>
+                  <th>DELIVERY DATE</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody style={{ textAlign }}>
                 {orders.map((order) => (
                   <tr key={order._id}>
                     <td>
-                      <p
-                        onClick={() => sendToOrderInfo(order._id)}
-                        className='simple-link'
-                        title='Go to Page'
-                      >
-                        {order._id}
-                      </p>
+                      <LinkContainer to={`/orders/${order._id}`}>
+                        <Button variant='link'>{order._id}</Button>
+                      </LinkContainer>
                     </td>
                     <td>{order.user.name}</td>
                     <td>
@@ -108,21 +109,19 @@ const OrdersListScreen = ({ history }) => {
                     </td>
                     <td>${order.totalPrice}</td>
                     <td>
-                      {order.isDelieverd ? (
-                        <p
-                          className='simple-link'
-                          style={{ color: 'green', textAlign: 'center' }}
-                        >
-                          Delivered
-                        </p>
+                      <p
+                        title='update status'
+                        onClick={() => updateHandler(order)}
+                        className='simple-link'
+                      >
+                        {order.deliveryStatus}
+                      </p>
+                    </td>
+                    <td>
+                      {order.deliveredAt ? (
+                        <p>{LocaleDate(order.deliveredAt)}</p>
                       ) : (
-                        <p
-                          title='update status'
-                          onClick={() => updateHandler(order)}
-                          className='centered-text simple-link'
-                        >
-                          {order.deliveryStatus}
-                        </p>
+                        <p>N/A</p>
                       )}
                     </td>
                   </tr>
