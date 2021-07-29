@@ -60,7 +60,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
   res.status(200).json({ product })
 })
 
-//@desc  Create new review
+//@desc  Add new review
 //@route POST /api/products/:id/reviews
 //@desc  Private
 export const addProductReview = asyncHandler(async (req, res) => {
@@ -113,6 +113,43 @@ export const addProductReview = asyncHandler(async (req, res) => {
   await product.save()
 
   res.status(200).json({ message: 'Review added successfully' })
+})
+
+//@desc  Update a review
+//@route PUT /api/products/:id/reviews
+//@desc  Private
+export const updateReview = asyncHandler(async (req, res) => {
+  // req.body = {rating, comment}
+  const { rating, comment } = req.body
+  const valuesSent = rating && comment
+
+  const product = valuesSent ? await Product.findById(req.params.id) : null
+  const revs = product ? [...product.reviews] : []
+
+  if (valuesSent) {
+    for (let i = 0; i < revs.length; i++) {
+      if (revs[i].user.toString() === req.user._id.toString()) {
+        revs[i].comment = req.body.comment
+        revs[i].rating = req.body.rating
+        break
+      }
+    }
+  }
+
+  const error = !valuesSent
+    ? 'Insufficient details'
+    : !product
+    ? 'No such product found'
+    : null
+  if (error) {
+    res.status(404)
+    throw new Error(error)
+  }
+
+  product.reviews = revs
+  await product.save()
+
+  res.status(200).json({ reviews: product.reviews })
 })
 
 //@desc  Delete product
