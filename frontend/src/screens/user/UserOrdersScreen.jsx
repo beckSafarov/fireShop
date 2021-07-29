@@ -37,13 +37,20 @@ const UserOrdersScreen = ({ history }) => {
         ) : (
           <>
             <h3 className='mb-5'>Your orders</h3>
-            <Table striped bordered hover responsive className='table-sm'>
+            <Table
+              striped
+              bordered
+              hover
+              responsive
+              className='table-sm'
+              style={{ textAlign: 'center' }}
+            >
               <thead>
                 <tr>
                   <th>NAME</th>
                   <th>DATE</th>
                   <th>PAID</th>
-                  <th>DELIVERED</th>
+                  <th>DELIVERY STATUS</th>
                   <th>DELIVERY DATE</th>
                 </tr>
               </thead>
@@ -62,25 +69,13 @@ const UserOrdersScreen = ({ history }) => {
                     </td>
                     <td>{order.totalPrice}</td>
                     <td>
-                      {
-                        /*if order delievered, put delivery date, if no delivery date than undefined */
-                        order.isDelivered ? (
-                          <div className='text-center'>
-                            <i
-                              className='fas fa-check'
-                              style={{ color: 'green' }}
-                            ></i>
-                          </div>
-                        ) : (
-                          /* if order not delivered */
-                          <div className='text-center'>
-                            <i
-                              className='fas fa-times'
-                              style={{ color: 'red' }}
-                            ></i>
-                          </div>
-                        )
-                      }
+                      <p
+                        style={{
+                          color: order.isDelivered ? 'green' : '#636669',
+                        }}
+                      >
+                        {order.deliveryStatus}
+                      </p>
                     </td>
                     <td>
                       {order.deliveredAt ? (

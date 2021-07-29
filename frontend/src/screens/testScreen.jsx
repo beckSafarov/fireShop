@@ -31,7 +31,8 @@ const TestScreen = ({ location, history, match }) => {
   const changeStatus = (value) => setStatus(value * 3)
 
   const clickMe = () => {
-    setModal({ ...modal, display: true })
+    // setModal({ ...modal, display: true })
+    setPositive(true)
   }
 
   const playGroundFunc = () => {
@@ -48,6 +49,7 @@ const TestScreen = ({ location, history, match }) => {
     <>
       <h1>Welcome to test page</h1>
       <p>playground for testing stuff</p>
+
       {msg.display && <Message variant={msg.variant}>{msg.msg}</Message>}
       {positive && <Spinner />}
       <Col>
