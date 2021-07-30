@@ -16,7 +16,6 @@ const orderSchema = mongoose.Schema(
         _id: {
           type: String,
           required: true,
-          required: true,
           ref: 'Product',
         },
       },
@@ -31,9 +30,7 @@ const orderSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    category: {
-      type: String,
-    },
+    category: { type: String },
     paymentResult: {
       id: { type: String, required: true },
       Status: { type: String, required: true },
@@ -59,9 +56,7 @@ const orderSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    paidAt: {
-      type: Date,
-    },
+    paidAt: { type: Date },
     deliveryStatus: {
       type: 'String',
       default: 'Received',
@@ -70,9 +65,7 @@ const orderSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    deliveredAt: {
-      type: Date,
-    },
+    deliveredAt: { type: Date },
   },
   {
     timeStamps: true,

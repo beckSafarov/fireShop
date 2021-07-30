@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import { addDateFormats, formatDate } from '../helpers/helpers.js'
 import Order from '../models/orderModel.js'
+import User from '../models/userModel.js'
 
 //@desc  Create new order
 //@route post /api/orders/addorder
@@ -32,6 +33,11 @@ export const addOrderItems = asyncHandler(async (req, res) => {
     isPaid: true,
     paidAt,
   })
+
+  // adding the items as purchased items to the user
+  req.user.cartItems.forEach((i) =>
+    req.user.purchased.push({ _id: i._id, date: paidAt })
+  )
 
   // removing the purchased item from the cart of the user
   req.user.cartItems = []
@@ -76,6 +82,17 @@ export const updateOrderDeliveryStatus = asyncHandler(async (req, res) => {
     }
   )
 
+  if (isDelivered) {
+    const user = await User.findById(order.user)
+    user.purchased.forEach((i) => {
+      if (i.date.toString() === order.paidAt.toString()) {
+        i.isDelivered = true
+      }
+    })
+    console.log(user.purchased)
+    await user.save()
+  }
+
   if (!order) {
     res.status(404)
     throw new Error('Order not found with the provided id')
@@ -99,4 +116,35 @@ export const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id })
 
   res.status(200).json({ orders })
+})
+
+//@desc  Add order to purchased items
+//@route POST /api/orders/movetopurchased
+//@desc  Private && Admin only
+export const ordersToPurchased = asyncHandler(async (req, res) => {
+  const allOrders = await Order.find({ isDelivered: false })
+
+  try {
+    allOrders.forEach(async (order) => {
+      const user = await User.findById(order.user)
+      if (!user.purchased) user.purchased = []
+      order.orderItems.forEach((item) => {
+        user.purchased.push({
+          _id: item._id,
+          date: order.paidAt,
+        })
+      })
+      user.save()
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'check out the compass, purchased items should have been added',
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error,
+    })
+  }
 })

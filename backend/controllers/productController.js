@@ -103,6 +103,7 @@ export const addProductReview = asyncHandler(async (req, res) => {
     rating: Number(rating),
     comment: comment,
     user: req.user._id,
+    createdAt: new Date(),
   })
 
   product.numReviews = product.reviews.length
@@ -124,16 +125,13 @@ export const updateReview = asyncHandler(async (req, res) => {
   const valuesSent = rating && comment
 
   const product = valuesSent ? await Product.findById(req.params.id) : null
-  const revs = product ? [...product.reviews] : []
+  const revs = product ? product.reviews : []
 
   if (valuesSent) {
-    for (let i = 0; i < revs.length; i++) {
-      if (revs[i].user.toString() === req.user._id.toString()) {
-        revs[i].comment = req.body.comment
-        revs[i].rating = req.body.rating
-        break
-      }
-    }
+    const rev = revs.find((r) => r.user.toString() === req.user._id.toString())
+    rev.comment = req.body.comment
+    rev.rating = req.body.rating
+    rev.updatedAt = new Date()
   }
 
   const error = !valuesSent
@@ -146,7 +144,6 @@ export const updateReview = asyncHandler(async (req, res) => {
     throw new Error(error)
   }
 
-  product.reviews = revs
   await product.save()
 
   res.status(200).json({ reviews: product.reviews })

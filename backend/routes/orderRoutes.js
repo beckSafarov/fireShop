@@ -5,6 +5,7 @@ import {
   getAllOrders,
   getMyOrders,
   getOrder,
+  ordersToPurchased,
   updateOrderDeliveryStatus,
 } from '../controllers/orderController.js'
 import { isAdmin, protect } from '../middleware/auth.js'
@@ -16,5 +17,8 @@ router
   .route('/:id')
   .get(getOrder)
   .put(protect, isAdmin, updateOrderDeliveryStatus)
+
+// router.post('/api/orders/movetopurchased', ordersToPurchased)
+router.route('/movetopurchased').post(ordersToPurchased)
 
 export default router
