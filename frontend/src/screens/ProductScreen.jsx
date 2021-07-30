@@ -15,21 +15,18 @@ import {
   Form,
   Alert,
 } from 'react-bootstrap'
-import { Rating, Loader, CountOptions, Exceptional } from '../components'
+import { Rating, Loader, CountOptions } from '../components'
 
 // -- REDUX ACTIONS
 import { listProductDetails } from '../actions/productActions'
 import { addToCart, buyNowAction } from '../actions/cartActions'
-import { CART_PROPERTY_RESET } from '../constants'
+import { CART_PROPERTY_RESET as cartReset } from '../constants'
+import timeSince from '../helpers/timeSince'
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
   const [qty, setQty] = useState(1)
-  const [flashMsg, setFlashMsg] = useState({
-    display: false,
-    msg: null,
-    variant: 'danger',
-  })
+  const [flashMsg, setFlashMsg] = useState({})
 
   // -- bringing redux stores --
   const dispatch = useDispatch()
@@ -63,10 +60,9 @@ const ProductScreen = ({ match, history }) => {
           break
       }
       rxReset('successType')
-    } else if (cartError) {
-      flashMessage(cartError)
-      rxReset('error')
     }
+
+    cartError && flashMessage(cartError) && rxReset('error')
 
     return () => axios.CancelToken.source().cancel()
   }, [dispatch, match, successType, cartError])
@@ -85,15 +81,16 @@ const ProductScreen = ({ match, history }) => {
     dispatch(buyNowAction(product, Number(qty), logged))
   }
 
-  const flashMessage = (msg, variant = 'danger', seconds = 3) => {
+  const flashMessage = (msg, variant = 'danger', s = 3) => {
     setFlashMsg({ display: true, msg, variant })
-    setTimeout(() => {
-      setFlashMsg({ display: false })
-    }, seconds * 1000)
+    setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
-  const rxReset = (property) =>
-    dispatch({ type: CART_PROPERTY_RESET, payload: property })
+  const rxReset = (payload) => dispatch({ type: cartReset, payload })
+
+  // const canReview = ()=>{
+  //   if(product.reviews)
+  // }
 
   return (
     <>
@@ -108,96 +105,120 @@ const ProductScreen = ({ match, history }) => {
       ) : error ? (
         <Alert variant='danger'>{error}</Alert>
       ) : (
-        <Row>
-          <Col md={6}>
-            <Image src={product.image} alt={product.name} fluid />
-          </Col>
-          <Col md={3}>
-            <ListGroup variant='flush'>
-              <ListGroup.Item>
-                <h3>{product.name}</h3>
-              </ListGroup.Item>
+        <>
+          <Row>
+            <Col md={6}>
+              <Image src={product.image} alt={product.name} fluid />
+            </Col>
+            <Col md={3}>
+              <ListGroup variant='flush'>
+                <ListGroup.Item>
+                  <h3>{product.name}</h3>
+                </ListGroup.Item>
 
-              <ListGroup.Item>
-                <Rating
-                  value={product.rating}
-                  text={`${product.numReviews} reviews`}
-                />
-              </ListGroup.Item>
+                <ListGroup.Item>
+                  <Rating
+                    value={product.rating}
+                    text={`${product.numReviews} reviews`}
+                  />
+                </ListGroup.Item>
 
-              <ListGroup.Item>
-                <strong>Price:</strong> ${product.price}
-              </ListGroup.Item>
-
-              <ListGroup.Item>
-                <h5>Description</h5>
-                {product.description}
-              </ListGroup.Item>
-            </ListGroup>
-          </Col>
-          <Col md={3}>
-            <ListGroup>
-              <ListGroup.Item>
-                <Row>
-                  <Col>Price:</Col>
-                  <Col>
-                    <strong>{product.price}</strong>
-                  </Col>
-                </Row>
-              </ListGroup.Item>
-              <ListGroup.Item>
-                <Row>
-                  <Col>Status:</Col>
-                  <Col>
-                    <strong>
-                      {product.countInStock > 0 ? 'In Stock' : 'Out of Stock'}
-                    </strong>
-                  </Col>
-                </Row>
-              </ListGroup.Item>
-              {product.countInStock > 0 && (
+                <ListGroup.Item>
+                  <h5>Description</h5>
+                  {product.description}
+                </ListGroup.Item>
+              </ListGroup>
+            </Col>
+            <Col md={3}>
+              <ListGroup>
                 <ListGroup.Item>
                   <Row>
-                    <Col>Qty</Col>
+                    <Col>Price:</Col>
                     <Col>
-                      <Form.Control
-                        as='select'
-                        value={qty}
-                        onChange={(e) => setQty(e.target.value)}
-                      >
-                        <CountOptions countInStock={product.countInStock} />
-                      </Form.Control>
+                      <strong>${product.price}</strong>
                     </Col>
                   </Row>
                 </ListGroup.Item>
-              )}
-              <ListGroup.Item>
-                <Row>
-                  <Button
-                    onClick={addToCartHandler}
-                    variant='outline-primary'
-                    type='button'
-                    disabled={product.countInStock === 0}
-                    block
-                  >
-                    Add to cart
-                  </Button>
-                </Row>
-                <Row className='my-1'>
-                  <Button
-                    onClick={buyNowHandler}
-                    variant='primary'
-                    type='button'
-                    disabled={product.countInStock === 0}
-                    block
-                  >
-                    Buy Now
-                  </Button>
-                </Row>
-              </ListGroup.Item>
-            </ListGroup>
-          </Col>
-        </Row>
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Status:</Col>
+                    <Col>
+                      <strong>
+                        {product.countInStock > 0 ? 'In Stock' : 'Out of Stock'}
+                      </strong>
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+                {product.countInStock > 0 && (
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Qty</Col>
+                      <Col>
+                        <Form.Control
+                          as='select'
+                          value={qty}
+                          onChange={(e) => setQty(e.target.value)}
+                        >
+                          <CountOptions countInStock={product.countInStock} />
+                        </Form.Control>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                )}
+                <ListGroup.Item>
+                  <Row>
+                    <Button
+                      onClick={addToCartHandler}
+                      variant='outline-primary'
+                      type='button'
+                      disabled={product.countInStock < 1}
+                      block
+                    >
+                      Add to cart
+                    </Button>
+                  </Row>
+                  <Row className='my-1'>
+                    <Button
+                      onClick={buyNowHandler}
+                      variant='primary'
+                      type='button'
+                      disabled={product.countInStock < 1}
+                      block
+                    >
+                      Buy Now
+                    </Button>
+                  </Row>
+                </ListGroup.Item>
+              </ListGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={6}>
+              <h2>Reviews</h2>
+              <div className='py-4'>
+                {product.reviews.length < 1 && (
+                  <ListGroup>
+                    {product.reviews.map((review) => (
+                      <ListGroup.Item key={review._id} className='rounded-btn'>
+                        <div className='comment-top-row'>
+                          <div>
+                            <strong>{review.name}</strong>
+                            <small style={{ display: 'block' }}>
+                              {timeSince(review.updatedAt || review.createdAt)}
+                            </small>
+                          </div>
+                          <Rating value={review.rating} />
+                        </div>
+
+                        <p className='mt-20'>{review.comment}</p>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                )}
+              </div>
+            </Col>
+          </Row>
+        </>
       )}
     </>
   )

@@ -1,5 +1,5 @@
 :root {
-  --background: whitesmoke;
+  --background: white;
   --red: tomato;
 }
 
@@ -243,4 +243,17 @@ strong {
 }
 .centered-text i:hover {
   color: green;
+}
+
+.comment-top-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* .comment-top-row-column {
+
+} */
+
+small {
+  color: #999999;
 }

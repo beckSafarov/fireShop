@@ -1,22 +1,16 @@
 import * as cs from '../constants.js'
 import axios from 'axios'
-const minConfig = {
-  cancelToken: axios.CancelToken.source().token,
-}
-const config = {
-  headers: { 'Content-Type': 'application/json' },
-  ...minConfig,
-}
+import { axiosConfig, config } from '../helpers/axiosConfigs'
 
 export const createOrder = (order) => async (dispatch) => {
   try {
     dispatch({ type: cs.ORDER_CREATE_REQUEST })
 
-    const data = await axios.post('/api/orders/addorder', order, config)
+    const { data } = await axios.post('/api/orders/addorder', order, config)
 
     dispatch({
       type: cs.ORDER_CREATE_SUCCESS,
-      payload: data.data.createdOrder,
+      payload: data.createdOrder,
     })
   } catch (err) {
     dispatch({
@@ -33,7 +27,7 @@ export const getOrderDetails = (id) => async (dispatch) => {
   try {
     dispatch({ type: cs.ORDER_DETAILS_REQUEST })
 
-    const { data } = await axios.get(`/api/orders/${id}`, minConfig)
+    const { data } = await axios.get(`/api/orders/${id}`, axiosConfig)
 
     dispatch({
       type: cs.ORDER_DETAILS_SUCCESS,
@@ -54,14 +48,11 @@ export const getMyOrders = () => async (dispatch) => {
   try {
     dispatch({ type: cs.MY_ORDERS_REQUEST })
 
-    const { data } = await axios.get(`/api/orders/myorders`, minConfig)
+    const { data } = await axios.get(`/api/orders/myorders`, axiosConfig)
 
     const orders = data.orders.length > 0 ? data.orders : null
 
-    dispatch({
-      type: cs.MY_ORDERS_SUCCESS,
-      payload: orders,
-    })
+    dispatch({ type: cs.MY_ORDERS_SUCCESS, payload: orders })
   } catch (err) {
     dispatch({
       type: cs.MY_ORDERS_FAIL,
@@ -77,7 +68,7 @@ export const getAllOrders = () => async (dispatch) => {
   try {
     dispatch({ type: cs.ORDERS_LIST_REQUEST })
 
-    const { data } = await axios.get(`/api/orders`, minConfig)
+    const { data } = await axios.get(`/api/orders`, axiosConfig)
 
     dispatch({
       type: cs.ORDERS_LIST_SUCCESS,

@@ -8,6 +8,8 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { DropMenu, DropLink } from '../components/Dropdown'
 import { Auth, Message, Spinner, Loader, ConfirmModal } from '../components'
 import DeliveryProgress from '../components/Product/DeliveryProgress'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 const TestScreen = ({ location, history, match }) => {
   const people = ['Beck', 'Tom']
@@ -23,7 +25,8 @@ const TestScreen = ({ location, history, match }) => {
   })
 
   useEffect(() => {
-    console.log(playGroundFunc())
+    console.log(everSince())
+    // console.log(playGroundFunc())
     // window.addEventListener('click', dropMenuHandler);
     // return () => window.removeEventListener('click', dropMenuHandler);
   }, [])
@@ -43,6 +46,13 @@ const TestScreen = ({ location, history, match }) => {
   const msgHandler = () => {
     setMsg({ display: true, msg: 'Awesome', variant: 'success' })
     setTimeout(() => setMsg({}), 3000)
+  }
+
+  const everSince = () => {
+    const then = new Date('2021')
+    const now = new Date()
+    dayjs.extend(relativeTime)
+    return dayjs(then).from(now)
   }
 
   return (
