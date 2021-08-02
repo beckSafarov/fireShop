@@ -5,7 +5,7 @@ import axios from 'axios'
 
 // UI components
 import { Message, Loader, Auth } from '../../components'
-import { Table, Container, Button } from 'react-bootstrap'
+import { Table, Container, Button, Badge } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 // Redux related imports
 import { getMyOrders } from '../../actions/orderActions'
@@ -37,6 +37,7 @@ const UserOrdersScreen = ({ history }) => {
         ) : (
           <>
             <h3 className='mb-5'>Your orders</h3>
+
             <Table
               striped
               bordered

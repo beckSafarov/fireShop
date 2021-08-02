@@ -88,9 +88,14 @@ const ProductScreen = ({ match, history }) => {
 
   const rxReset = (payload) => dispatch({ type: cartReset, payload })
 
-  // const canReview = ()=>{
-  //   if(product.reviews)
-  // }
+  const canReview = () => {
+    const delivered = userInfo.purchased.find(
+      (i) => i._id === product._id && i.isDelivered
+    )
+    const hasReviewed = product.reviews.find((r) => r._id === userInfo._id)
+
+    return delivered && !hasReviewed
+  }
 
   return (
     <>
@@ -196,25 +201,45 @@ const ProductScreen = ({ match, history }) => {
             <Col md={6}>
               <h2>Reviews</h2>
               <div className='py-4'>
-                {product.reviews.length < 1 && (
-                  <ListGroup>
-                    {product.reviews.map((review) => (
-                      <ListGroup.Item key={review._id} className='rounded-btn'>
-                        <div className='comment-top-row'>
-                          <div>
-                            <strong>{review.name}</strong>
-                            <small style={{ display: 'block' }}>
-                              {timeSince(review.updatedAt || review.createdAt)}
-                            </small>
-                          </div>
-                          <Rating value={review.rating} />
+                <Form>
+                  <Form.Group className='mb-3' controlId='rating'>
+                    <Form.Label>Rating</Form.Label>
+                    <Form.Control as='select' defaultValue={5} size='sm'>
+                      <option value={5}>Excellent</option>
+                      <option value={4}>Good</option>
+                      <option value={3}>Fair</option>
+                      <option value={2}>Bad</option>
+                      <option value={1}>Poor</option>
+                    </Form.Control>
+                  </Form.Group>
+                  <Form.Group controlId='comment'>
+                    <Form.Label>Comment</Form.Label>
+                    <Form.Control
+                      as='textarea'
+                      placeholder='Leave a comment here'
+                      style={{ height: '100px', resize: 'none' }}
+                    />
+                  </Form.Group>
+                </Form>
+              </div>
+              <div className='py-4'>
+                <ListGroup>
+                  {product.reviews.map((r) => (
+                    <ListGroup.Item key={r._id} className='rounded-btn'>
+                      <div className='comment-top-row'>
+                        <div>
+                          <strong>{r.name}</strong>
+                          <small style={{ display: 'block' }}>
+                            {timeSince(r.updatedAt || r.createdAt)}
+                          </small>
                         </div>
+                        <Rating value={r.rating} />
+                      </div>
 
-                        <p className='mt-20'>{review.comment}</p>
-                      </ListGroup.Item>
-                    ))}
-                  </ListGroup>
-                )}
+                      <p className='mt-20'>{r.comment}</p>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
               </div>
             </Col>
           </Row>
