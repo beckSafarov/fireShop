@@ -262,3 +262,11 @@ strong {
 small {
   color: #999999;
 }
+
+.admin-badge {
+  padding: 1px 3px 1px 3px;
+  border: 1px solid #00ccff;
+  border-radius: 5px;
+  color: #00ccff;
+  font-size: 0.5rem;
+}

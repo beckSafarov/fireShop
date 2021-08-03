@@ -1,10 +1,10 @@
 // libraries & methods
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 
 // UI components
-import { Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap'
 import {
   Auth,
   Message,
@@ -12,65 +12,65 @@ import {
   Spinner,
   Exceptional,
   UserEditPopup,
-} from '../../components';
+} from '../../components'
 
 // redux actions
-import { listUsers, deleteUser } from '../../actions/adminActions';
+import { listUsers, deleteUser } from '../../actions/adminActions'
 import {
   ADMIN_USER_DELETE_RESET,
   ADMIN_USER_UPDATE_RESET,
-} from '../../constants';
+} from '../../constants'
 
 const UserListScreen = ({ history }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const {
     loading: listLoading,
     error: listRequestError,
     users,
-  } = useSelector((state) => state.userList);
+  } = useSelector((state) => state.userList)
   const {
     loading: deleteLoading,
     success: deleted,
     error: deleteError,
     message,
-  } = useSelector((state) => state.adminUserDelete);
-  const { success: updated } = useSelector((state) => state.adminUserUpdate);
+  } = useSelector((state) => state.adminUserDelete)
+  const { success: updated } = useSelector((state) => state.adminUserUpdate)
 
-  const [flashMsg, setFlashMsg] = useState({});
+  const [flashMsg, setFlashMsg] = useState({})
   const [modal, setModal] = useState({
     display: false,
     userInfo: null,
-  });
+  })
 
   useEffect(() => {
-    (!users || users.length === 0) && dispatch(listUsers());
+    ;(!users || users.length === 0) && dispatch(listUsers())
 
     if (deleted || deleteError) {
-      deleted ? msgHandler(message) : msgHandler(deleteError, 'danger', 3);
-      dispatch({ type: ADMIN_USER_DELETE_RESET });
+      deleted ? msgHandler(message) : msgHandler(deleteError, 'danger', 3)
+      dispatch({ type: ADMIN_USER_DELETE_RESET })
     }
 
     if (updated) {
-      msgHandler('Updated successfully');
-      dispatch({ type: ADMIN_USER_UPDATE_RESET });
+      msgHandler('Updated successfully')
+      dispatch({ type: ADMIN_USER_UPDATE_RESET })
     }
 
-    return () => axios.CancelToken.source().cancel();
-  }, [dispatch, deleted, deleteError, updated]);
+    return () => axios.CancelToken.source().cancel()
+  }, [dispatch, deleted, deleteError, updated])
 
   const deleteHandler = (id, name = 'undefined') => {
-    const c = `Are you sure to delete ${name}?`;
-    window.confirm(c) && dispatch(deleteUser(id));
-  };
+    const c = `Are you sure to delete ${name}?`
+    window.confirm(c) && dispatch(deleteUser(id))
+  }
 
   const msgHandler = (msg, variant = 'success', s = 2) => {
-    setFlashMsg({ display: true, variant, msg });
-    setTimeout(() => setFlashMsg({}), s * 1000);
-  };
+    setFlashMsg({ display: true, variant, msg })
+    setTimeout(() => setFlashMsg({}), s * 1000)
+  }
 
   const modalHandler = (userInfo, display = true) => {
-    setModal({ display, userInfo });
-  };
+    setModal({ display, userInfo })
+  }
 
   return (
     <Auth history={history} adminOnly>
@@ -97,9 +97,17 @@ const UserListScreen = ({ history }) => {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user._id} className={user.isAdmin ? 'adminRow' : ''}>
+                <tr key={user._id}>
                   <td>{user._id}</td>
-                  <td>{user.name}</td>
+                  <td>
+                    {user.name}{' '}
+                    {user.isAdmin && (
+                      <i
+                        style={{ color: '#00cc66', fontSize: '10px' }}
+                        className='fas fa-check-circle'
+                      ></i>
+                    )}
+                  </td>
                   <td>{user.email}</td>
                   <td>
                     {user.shippingAddress ? (
@@ -139,7 +147,7 @@ const UserListScreen = ({ history }) => {
         <Exceptional />
       )}
     </Auth>
-  );
-};
+  )
+}
 
-export default UserListScreen;
+export default UserListScreen
