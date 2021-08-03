@@ -66,7 +66,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
 export const addProductReview = asyncHandler(async (req, res) => {
   // req.body = {rating, comment};
   const { rating, comment } = req.body
-
   const valuesSent = rating && comment
 
   const product = valuesSent && (await Product.findById(req.params.id))
@@ -123,7 +122,6 @@ export const updateReview = asyncHandler(async (req, res) => {
   // req.body = {rating, comment}
   const { rating, comment } = req.body
   const valuesSent = rating && comment
-
   const product = valuesSent ? await Product.findById(req.params.id) : null
   const revs = product ? product.reviews : []
 

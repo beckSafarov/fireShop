@@ -15,7 +15,7 @@ const Loading = (state) => ({ ...state, loading: true }),
   })
 
 export const productListReducer = (state = { products: [] }, action) => {
-  let newProducts, body
+  let newProducts, currProducts
   switch (action.type) {
     case cs.PRODUCT_LIST_REQUEST:
       return Loading(state)
@@ -34,15 +34,14 @@ export const productListReducer = (state = { products: [] }, action) => {
 
     case cs.PRODUCT_UPDATE:
       let newProduct = action.payload
-      let currProducts = [...state.products]
+      currProducts = [...state.products]
       for (let i = 0; i < currProducts.length; i++) {
         if (currProducts[i]._id === newProduct._id) {
-          currProducts[i] = newProduct
+          currProducts[i] = { ...currProducts[i], ...newProduct }
           break
         }
       }
       return Success(currProducts, 'update')
-
     case cs.PRODUCT_DELETE_REQUEST:
       return Loading(state)
     case cs.PRODUCT_DELETE_SUCCESS:
@@ -75,6 +74,13 @@ export const productDetailsReducer = (state = { reviews: [] }, action) => {
       return Success2(action.payload, 'update')
     case cs.PRODUCT_DETAILS_UPDATE_FAILURE:
       return Error(state, action.payload, 'update')
+    case cs.PRODUCT_REVIEW_UPDATE:
+      const { user, body } = action.payload
+      let reviews = [...state.product.reviews]
+      reviews.forEach((r) => (r = r.user === user ? { ...r, body } : r))
+      console.log(reviews)
+      console.log({ ...state.products, reviews })
+      return Success2({ ...state.product, reviews }, 'update')
     case cs.PRODUCT_DETAILS_RESET:
       let newState = { ...state }
       newState[action.payload] = null

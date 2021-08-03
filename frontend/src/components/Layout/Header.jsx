@@ -37,17 +37,22 @@ const Header = ({ history }) => {
                   </Badge>
                 </Nav.Link>
               </LinkContainer>
-              <LinkContainer to='/myorders'>
-                <Nav.Link>
-                  <i className='fas fa-gift'></i> Orders{' '}
-                </Nav.Link>
-              </LinkContainer>
+
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>
                   <LinkContainer to='/profile'>
                     <NavDropdown.Item key={1}>Profile</NavDropdown.Item>
                   </LinkContainer>
-                  <NavDropdown.Item key={2} onClick={logoutHandler}>
+                  <LinkContainer to='/myorders'>
+                    <NavDropdown.Item key={2}>My Orders</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to='/reviews'>
+                    <NavDropdown.Item key={3}>My Purchases</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to='/reviews'>
+                    <NavDropdown.Item key={4}>My Reviews</NavDropdown.Item>
+                  </LinkContainer>
+                  <NavDropdown.Item key={5} onClick={logoutHandler}>
                     Logout
                   </NavDropdown.Item>
                 </NavDropdown>

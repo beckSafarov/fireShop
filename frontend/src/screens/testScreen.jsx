@@ -10,6 +10,8 @@ import { Auth, Message, Spinner, Loader, ConfirmModal } from '../components'
 import DeliveryProgress from '../components/Product/DeliveryProgress'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import pluralize from '../helpers/pluralize'
+import Review from '../components/Modals/Review'
 
 const TestScreen = ({ location, history, match }) => {
   const people = ['Beck', 'Tom']
@@ -25,8 +27,9 @@ const TestScreen = ({ location, history, match }) => {
   })
 
   useEffect(() => {
-    console.log(everSince())
-    // console.log(playGroundFunc())
+    // console.log(everSince())
+
+    console.log(playGroundFunc())
     // window.addEventListener('click', dropMenuHandler);
     // return () => window.removeEventListener('click', dropMenuHandler);
   }, [])
@@ -39,8 +42,9 @@ const TestScreen = ({ location, history, match }) => {
   }
 
   const playGroundFunc = () => {
-    const date = new Date()
-    return date.getFullYear()
+    // const date = new Date()
+
+    return pluralize(10, 'review')
   }
 
   const msgHandler = () => {
@@ -61,7 +65,7 @@ const TestScreen = ({ location, history, match }) => {
       <p>playground for testing stuff</p>
 
       {msg.display && <Message variant={msg.variant}>{msg.msg}</Message>}
-      {positive && <Spinner />}
+      {positive && <Review />}
       <Col>
         <Row>
           <Form.Control
@@ -91,7 +95,7 @@ const TestScreen = ({ location, history, match }) => {
           <h2>Status: {status}</h2>
         </Row>
       </Col>
-      <DeliveryProgress height={100} width={520} progress={3} />
+      {/* <DeliveryProgress height={100} width={520} progress={3} /> */}
     </>
   )
 }

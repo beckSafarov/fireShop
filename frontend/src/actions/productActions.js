@@ -55,3 +55,26 @@ export const productReviewAction = (id, body) => async (dispatch) => {
     })
   }
 }
+
+export const productReviewUpdateAction =
+  (id, body, user) => async (dispatch) => {
+    try {
+      dispatch({ type: cs.PRODUCT_REVIEW_UPDATE_REQUEST })
+
+      await axios.put(`/api/products/${id}/reviews`, body, config)
+
+      dispatch({ type: cs.PRODUCT_REVIEW_UPDATE_SUCCESS })
+      dispatch({
+        type: cs.PRODUCT_REVIEW_UPDATE,
+        payload: { user, body },
+      })
+    } catch (err) {
+      dispatch({
+        type: cs.PRODUCT_REVIEW_UPDATE_FAILURE,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      })
+    }
+  }

@@ -24,6 +24,7 @@ import {
   ORDERS_LIST_PROPERTY_RESET as listReset,
   ORDER_UPDATE_RESET as detailsReset,
 } from '../../constants'
+import Review from '../../components/Modals/Review'
 
 const deliverySteps = {
   Received: 1,
@@ -43,7 +44,8 @@ const OrderInfoScreen = ({ match, history }) => {
   const { userInfo } = useSelector((state) => state.userLogin)
 
   // hooks
-  const [modal, setModal] = useState({})
+  const [updateModal, setUpdateModal] = useState({})
+  const [revModal, setRevModal] = useState({})
   const [flashMsg, setFlashMsg] = useState({})
 
   // variables
@@ -54,7 +56,7 @@ const OrderInfoScreen = ({ match, history }) => {
 
     if (success && type === 'update') {
       setMsgHandler('Updated successfully')
-      setModal({ ...modal, display: false })
+      setUpdateModal({ ...updateModal, display: false })
       dispatch({ type: detailsReset, payload: 'success' })
       dispatch({ type: listReset, payload: 'success' })
     }
@@ -73,12 +75,19 @@ const OrderInfoScreen = ({ match, history }) => {
   }
 
   const updateHandler = () => {
-    setModal({
+    setUpdateModal({
       display: true,
       _id: order._id,
       deliveryStatus: order.deliveryStatus,
     })
   }
+
+  const revModalHandler = (_id) => {
+    setRevModal({ display: true, _id, user: userInfo._id })
+  }
+
+  const canReview = (_id) =>
+    userInfo.purchased.find((i) => i._id === _id && i.isDelivered)
 
   return (
     <Auth history={history}>
@@ -92,8 +101,14 @@ const OrderInfoScreen = ({ match, history }) => {
           <Message variant='danger'>{error}</Message>
         ) : order.user ? (
           <Row>
-            {modal.display && (
-              <UpdateDeliveryModal modal={modal} setModal={setModal} />
+            {updateModal.display && (
+              <UpdateDeliveryModal
+                modal={updateModal}
+                setModal={setUpdateModal}
+              />
+            )}
+            {revModal.display && (
+              <Review modal={revModal} setModal={setRevModal} />
             )}
             <Col md={6}>
               <>
@@ -143,6 +158,18 @@ const OrderInfoScreen = ({ match, history }) => {
                         <Col md={4}>
                           {item.qty} x {item.price} = ${item.qty * item.price}
                         </Col>
+                        {canReview(item._id) && (
+                          <Col>
+                            <Button
+                              type='button'
+                              variant='outline-success'
+                              size='sm'
+                              onClick={() => revModalHandler(item._id)}
+                            >
+                              Review
+                            </Button>
+                          </Col>
+                        )}
                       </Row>
                     ))}
                   </ListGroup.Item>

@@ -18,10 +18,11 @@ import {
 import { Rating, Loader, CountOptions } from '../components'
 
 // -- REDUX ACTIONS
-import { listProductDetails } from '../actions/productActions'
+import { listProductDetails as getProduct } from '../actions/productActions'
 import { addToCart, buyNowAction } from '../actions/cartActions'
 import { CART_PROPERTY_RESET as cartReset } from '../constants'
 import timeSince from '../helpers/timeSince'
+import pluralize from '../helpers/pluralize'
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
@@ -42,12 +43,12 @@ const ProductScreen = ({ match, history }) => {
   const dataExists = product && product.name && product._id === match.params.id
 
   useEffect(() => {
-    !dataExists && dispatch(listProductDetails(match.params.id))
+    !dataExists && dispatch(getProduct(match.params.id))
 
     if (successType) {
       switch (successType) {
         case 'add':
-          flashMessage(cartMessage, 'success')
+          msgHandler(cartMessage, 'success')
           break
         case 'buyNow':
           history.push(
@@ -59,10 +60,13 @@ const ProductScreen = ({ match, history }) => {
           )
           break
       }
-      rxReset('successType')
+      dispatch({ type: cartReset, payload: 'successType' })
     }
 
-    cartError && flashMessage(cartError) && rxReset('error')
+    if (cartError) {
+      msgHandler(cartError)
+      dispatch({ type: cartReset, payload: 'error' })
+    }
 
     return () => axios.CancelToken.source().cancel()
   }, [dispatch, match, successType, cartError])
@@ -73,7 +77,7 @@ const ProductScreen = ({ match, history }) => {
 
     if (!logged) {
       const text = `You added ${qty} ${more} ${product.name}(s) to your shopping cart`
-      flashMessage(text, 'success')
+      msgHandler(text, 'success')
     }
   }
 
@@ -81,20 +85,9 @@ const ProductScreen = ({ match, history }) => {
     dispatch(buyNowAction(product, Number(qty), logged))
   }
 
-  const flashMessage = (msg, variant = 'danger', s = 3) => {
+  const msgHandler = (msg, variant = 'danger', s = 3) => {
     setFlashMsg({ display: true, msg, variant })
     setTimeout(() => setFlashMsg({}), s * 1000)
-  }
-
-  const rxReset = (payload) => dispatch({ type: cartReset, payload })
-
-  const canReview = () => {
-    const delivered = userInfo.purchased.find(
-      (i) => i._id === product._id && i.isDelivered
-    )
-    const hasReviewed = product.reviews.find((r) => r._id === userInfo._id)
-
-    return delivered && !hasReviewed
   }
 
   return (
@@ -124,7 +117,7 @@ const ProductScreen = ({ match, history }) => {
                 <ListGroup.Item>
                   <Rating
                     value={product.rating}
-                    text={`${product.numReviews} reviews`}
+                    text={pluralize(product.numReviews)}
                   />
                 </ListGroup.Item>
 
@@ -199,29 +192,7 @@ const ProductScreen = ({ match, history }) => {
           </Row>
           <Row>
             <Col md={6}>
-              <h2>Reviews</h2>
-              <div className='py-4'>
-                <Form>
-                  <Form.Group className='mb-3' controlId='rating'>
-                    <Form.Label>Rating</Form.Label>
-                    <Form.Control as='select' defaultValue={5} size='sm'>
-                      <option value={5}>Excellent</option>
-                      <option value={4}>Good</option>
-                      <option value={3}>Fair</option>
-                      <option value={2}>Bad</option>
-                      <option value={1}>Poor</option>
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group controlId='comment'>
-                    <Form.Label>Comment</Form.Label>
-                    <Form.Control
-                      as='textarea'
-                      placeholder='Leave a comment here'
-                      style={{ height: '100px', resize: 'none' }}
-                    />
-                  </Form.Group>
-                </Form>
-              </div>
+              <h2 className='mt-20'>Reviews</h2>
               <div className='py-4'>
                 <ListGroup>
                   {product.reviews.map((r) => (

@@ -48,7 +48,7 @@ const UserOrdersScreen = ({ history }) => {
             >
               <thead>
                 <tr>
-                  <th>NAME</th>
+                  <th>ID</th>
                   <th>DATE</th>
                   <th>PAID</th>
                   <th>DELIVERY STATUS</th>
