@@ -142,6 +142,9 @@ export const updateReview = asyncHandler(async (req, res) => {
     throw new Error(error)
   }
 
+  product.rating =
+    product.reviews.reduce((t, c) => c.rating + t, 0) / product.reviews.length
+
   await product.save()
 
   res.status(200).json({ reviews: product.reviews })
