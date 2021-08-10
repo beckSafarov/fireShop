@@ -2,23 +2,33 @@ import * as cs from '../constants.js'
 import axios from 'axios'
 import { axiosConfig, config } from '../helpers/axiosConfigs'
 
-export const listProducts = () => async (dispatch) => {
-  try {
-    dispatch({ type: cs.PRODUCT_LIST_REQUEST })
+export const listProducts =
+  (keyword = '') =>
+  async (dispatch) => {
+    try {
+      dispatch({
+        type: keyword ? cs.PRODUCT_SEARCH_REQUEST : cs.PRODUCT_LIST_REQUEST,
+      })
 
-    const { data } = await axios.get('/api/products', axiosConfig)
+      const { data } = await axios.get(
+        `/api/products?keyword=${keyword}`,
+        axiosConfig
+      )
 
-    dispatch({ type: cs.PRODUCT_LIST_SUCCESS, payload: data })
-  } catch (err) {
-    dispatch({
-      type: cs.PRODUCT_LIST_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    })
+      dispatch({
+        type: keyword ? cs.PRODUCT_SEARCH_SUCCESS : cs.PRODUCT_LIST_SUCCESS,
+        payload: data,
+      })
+    } catch (err) {
+      dispatch({
+        type: keyword ? cs.PRODUCT_SEARCH_FAILURE : cs.PRODUCT_LIST_FAILURE,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      })
+    }
   }
-}
 
 export const listProductDetails = (id) => async (dispatch) => {
   try {

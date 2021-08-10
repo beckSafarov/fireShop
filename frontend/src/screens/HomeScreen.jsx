@@ -1,25 +1,24 @@
 // -- LIBRARIES & METHODS
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 
 // -- UI COMPONENTS
-import { Message, Loader, Product } from '../components';
-import { Row, Col } from 'react-bootstrap';
+import { Message, Loader, Product } from '../components'
+import { Row, Col } from 'react-bootstrap'
 
 // -- REDUX RELATED IMPORTS
-import { listProducts } from '../actions/productActions.js';
+import { listProducts } from '../actions/productActions.js'
 
-const HomeScreen = () => {
-  const dispatch = useDispatch();
-
-  const productList = useSelector((state) => state.productList);
-  const { loading, error, products } = productList;
+const HomeScreen = ({}) => {
+  const dispatch = useDispatch()
+  const { loading, error, products } = useSelector((state) => state.productList)
 
   useEffect(() => {
-    if (products.length === 0) dispatch(listProducts());
-    return () => axios.CancelToken.source().cancel();
-  }, [dispatch]);
+    if (products.length < 1) dispatch(listProducts())
+
+    return () => axios.CancelToken.source().cancel()
+  }, [dispatch])
 
   return (
     <>
@@ -51,7 +50,7 @@ const HomeScreen = () => {
         </Row>
       )}
     </>
-  );
-};
+  )
+}
 
-export default HomeScreen;
+export default HomeScreen

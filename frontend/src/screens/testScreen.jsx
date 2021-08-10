@@ -13,7 +13,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import pluralize from '../helpers/pluralize'
 import Review from '../components/Modals/Review'
 
-const TestScreen = ({ location, history, match }) => {
+const TestScreen = ({ history, match }) => {
   const people = ['Beck', 'Tom']
   const [status, setStatus] = useState(10)
   const [positive, setPositive] = useState(false)
@@ -28,8 +28,7 @@ const TestScreen = ({ location, history, match }) => {
 
   useEffect(() => {
     // console.log(everSince())
-
-    console.log(playGroundFunc())
+    // console.log(playGroundFunc())
     // window.addEventListener('click', dropMenuHandler);
     // return () => window.removeEventListener('click', dropMenuHandler);
   }, [])

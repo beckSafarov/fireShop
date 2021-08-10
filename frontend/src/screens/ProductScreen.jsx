@@ -90,11 +90,13 @@ const ProductScreen = ({ match, history }) => {
     setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
+  const sendBack = () => history.goBack()
+
   return (
     <>
-      <Link className='btn btn-light my-3 rounded' to='/'>
+      <div className='btn btn-light my-3 rounded' onClick={sendBack}>
         <i className='fas fa-arrow-left fa-2x'></i>
-      </Link>
+      </div>
       {flashMsg.display && (
         <Alert variant={flashMsg.variant}>{flashMsg.msg}</Alert>
       )}

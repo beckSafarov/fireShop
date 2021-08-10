@@ -11,6 +11,7 @@ import { getCart } from './helpers/cartLCS.js'
 //this is the root reducer that includes all reducers
 const reducer = combineReducers({
   productList: productReducers.productListReducer,
+  productSearchStore: productReducers.productSearchReducer,
   productDetails: productReducers.productDetailsReducer,
   productReviewStore: productReducers.productReviewReducer,
   cart: cartReducers.cartReducer,

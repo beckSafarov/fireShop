@@ -1,5 +1,5 @@
 :root {
-  --background: whitesmoke;
+  --background: white;
   --red: tomato;
 }
 
@@ -39,6 +39,12 @@ h1 {
 
 .centered-text {
   text-align: center;
+}
+
+.vertically-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .form-field {

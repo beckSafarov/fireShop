@@ -15,7 +15,7 @@ import {
   Loader,
   DeliveryProgress,
   UpdateDeliveryModal,
-  Spinner,
+  Review,
 } from '../../components'
 
 //Redux actions
@@ -24,7 +24,6 @@ import {
   ORDERS_LIST_PROPERTY_RESET as listReset,
   ORDER_UPDATE_RESET as detailsReset,
 } from '../../constants'
-import Review from '../../components/Modals/Review'
 
 const deliverySteps = {
   Received: 1,

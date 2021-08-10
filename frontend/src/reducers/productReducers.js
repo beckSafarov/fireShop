@@ -50,11 +50,25 @@ export const productListReducer = (state = { products: [] }, action) => {
       return Success(newProducts, 'delete')
     case cs.PRODUCT_DELETE_FAILURE:
       return Error(state, action.payload, 'delete')
-
     case cs.PRODUCT_LIST_PROPERTY_RESET:
       let newState = { ...state }
       newState[action.payload] = null
       return newState
+    default:
+      return state
+  }
+}
+
+export const productSearchReducer = (state = {}, action) => {
+  switch (action.type) {
+    case cs.PRODUCT_SEARCH_REQUEST:
+      return Loading(state)
+    case cs.PRODUCT_SEARCH_SUCCESS:
+      return Success(action.payload)
+    case cs.PRODUCT_SEARCH_FAILURE:
+      return Error(state, action.payload)
+    case cs.PRODUCT_SEARCH_RESET:
+      return {}
     default:
       return state
   }

@@ -34,6 +34,7 @@ import UserListScreen from './screens/admin/UserListScreen'
 import ProductListScreen from './screens/admin/ProductListScreen'
 import ProductEditScreen from './screens/admin/ProductEditScreen'
 import OrdersListScreen from './screens/admin/OrdersListScreen'
+import SearchScreen from './screens/SearchScreen'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -66,6 +67,7 @@ const App = () => {
           <Container id='container'>
             {/* main routes */}
             <Route path='/' component={HomeScreen} exact />
+            <Route path='/search' component={SearchScreen} exact />
             <Route path='/product/:id' component={ProductScreen} />
             <Route path='/cart/:id?' component={CartScreen} />
 

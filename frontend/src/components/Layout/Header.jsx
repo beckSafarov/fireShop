@@ -3,24 +3,29 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../actions/userActions'
+import SearchBox from '../globals/SearchBox'
 
 const Header = ({ history }) => {
   const dispatch = useDispatch()
+  const [keyReset, setKeyReset] = useState(false)
   const { userInfo } = useSelector((state) => state.userLogin)
   const cart = useSelector((state) => state.cart)
   const cartItems = cart && cart.cartItems ? cart.cartItems : []
 
   const logoutHandler = () => dispatch(logout())
 
+  const searchKeyReset = () => setKeyReset(true)
+
   return (
     <header>
       <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
         <Container>
           <LinkContainer to='/'>
-            <Navbar.Brand>FireShop</Navbar.Brand>
+            <Navbar.Brand onClick={searchKeyReset}>FireShop</Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
+            <SearchBox reset={keyReset} setKeyReset={setKeyReset} />
             <Nav className='ml-auto'>
               {process.env.NODE_ENV === 'development' && (
                 <LinkContainer to='/test'>
