@@ -1,77 +1,71 @@
 // libraries
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 
 // methods
-import { Calculations } from '../../helpers/Calculations';
+import { Calculations } from '../../helpers/Calculations'
 
 // UI components
-import {
-  Auth,
-  Loader,
-  Message,
-  CheckOutSteps,
-  ListRow,
-} from '../../components';
-import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap';
-import { PayPalButton } from 'react-paypal-button-v2';
-import { Link } from 'react-router-dom';
+import { Auth, Loader, Message, CheckOutSteps, ListRow } from '../../components'
+import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap'
+import { PayPalButton } from 'react-paypal-button-v2'
+import { Link } from 'react-router-dom'
 
 // redux actions
-import { createOrder } from '../../actions/orderActions';
+import { createOrder } from '../../actions/orderActions'
 
 const PlaceOrderScreen = ({ history }) => {
   // bringing redux related things
-  const dispatch = useDispatch();
-  const orderCreated = useSelector((state) => state.orderReducers);
+  const dispatch = useDispatch()
+  const orderCreated = useSelector((state) => state.orderReducers)
 
   // variables
-  const { userInfo } = useSelector((state) => state.userLogin);
-  const { cartItems } = useSelector((state) => state.cart);
-  const calcs = Calculations(cartItems);
-  const loading = orderCreated.loading;
-  const error = orderCreated.error;
+  const { userInfo } = useSelector((state) => state.userLogin)
+  const { cartItems } = useSelector((state) => state.cart)
+  const calcs = Calculations(cartItems)
+  const loading = orderCreated.loading
+  const error = orderCreated.error
 
   // hooks states
-  const [sdkReady, setSdkReady] = useState(false);
-  const [paymentError, setPaymentError] = useState(false);
-  const [paymentErrorMessage, setPaymentErrorMessage] = useState('undefined');
+  const [sdkReady, setSdkReady] = useState(false)
+  const [paymentError, setPaymentError] = useState(false)
+  const [paymentErrorMessage, setPaymentErrorMessage] = useState('undefined')
 
   useEffect(
     () => {
       if (userInfo && !userInfo.shippingAddress) {
-        history.push('/');
+        history.push('/')
       }
 
       const addPaypalScript = async () => {
         try {
           const { data: clientId } = await axios.get('/api/config/paypal', {
             cancelToken: axios.CancelToken.source().token,
-          });
-          console.log('building paypal');
-          const script = document.createElement('script');
-          script.type = 'text/javascript';
-          script.async = true;
-          script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
-          script.onload = () => setSdkReady(true);
-          document.body.appendChild(script);
+          })
+          console.log('building paypal')
+          const script = document.createElement('script')
+          script.type = 'text/javascript'
+          script.async = true
+          script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
+          script.onload = () => setSdkReady(true)
+          document.body.appendChild(script)
         } catch (err) {
-          console.log(`Error happened while axios request: ${err.message}`);
+          console.log(`Error happened while axios request: ${err.message}`)
         }
-      };
-
-      if (userInfo && !orderCreated.success) {
-        !window.paypal ? addPaypalScript() : setSdkReady(true);
-      } else if (orderCreated.success) {
-        history.push(`/payment-success?id=${orderCreated.order._id}`);
       }
 
-      return () => axios.CancelToken.source().cancel();
+      if (userInfo && !orderCreated.success) {
+        !window.paypal ? addPaypalScript() : setSdkReady(true)
+      } else if (orderCreated.success) {
+        history.push(`/payment-success?id=${orderCreated.order._id}`)
+      }
+
+      return () => axios.CancelToken.source().cancel()
     },
     [userInfo, dispatch, orderCreated.success],
     history
-  );
+  )
 
   const successPaymentHandler = (paymentResult) => {
     const paymentInfo = {
@@ -79,7 +73,7 @@ const PlaceOrderScreen = ({ history }) => {
       Status: paymentResult.status,
       update_time: paymentResult.update_time,
       email_address: paymentResult.payer.email_address,
-    };
+    }
 
     dispatch(
       createOrder({
@@ -90,16 +84,16 @@ const PlaceOrderScreen = ({ history }) => {
         totalPrice: calcs.totalPrice,
         paidAt: paymentResult.create_time,
       })
-    );
-  };
+    )
+  }
 
   const paymentErrorHandler = (error = 'payment failed') => {
-    setPaymentError(true);
-    setPaymentErrorMessage(error);
-  };
+    setPaymentError(true)
+    setPaymentErrorMessage(error)
+  }
 
   // listrow values
-  const labels = ['Items price', 'Shipping', 'Tax', 'Total'];
+  const labels = ['Items price', 'Shipping', 'Tax', 'Total']
 
   return (
     <Auth history={history}>
@@ -113,7 +107,7 @@ const PlaceOrderScreen = ({ history }) => {
             {orderCreated.error && (
               <p className='mt-10'>
                 This seems like a server error so please contact us at{' '}
-                <a href='mailto:support@proshop.com'>support@proshop.com</a>{' '}
+                <a href='mailto:support@fireshop.com'>support@fireshop.com</a>{' '}
                 with screenshot
               </p>
             )}
@@ -217,7 +211,7 @@ const PlaceOrderScreen = ({ history }) => {
         <p>You should never see this!</p>
       )}
     </Auth>
-  );
-};
+  )
+}
 
-export default PlaceOrderScreen;
+export default PlaceOrderScreen

@@ -1,10 +1,10 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
-import Auth from '../../components/Auth';
+import React from 'react'
+import { useLocation } from 'react-router-dom'
+import { Container } from 'react-bootstrap'
+import Auth from '../../components/Auth'
 
 const PaymentFailure = ({ history }) => {
-  const error = new URLSearchParams(useLocation().search).get('error');
+  const error = new URLSearchParams(useLocation().search).get('error')
 
   return (
     <Auth history={history}>
@@ -17,12 +17,12 @@ const PaymentFailure = ({ history }) => {
           </div>
           <p>
             Please contact us with the screenshot at{' '}
-            <a href='mailto:support@proshop.com'>support@proshop.com</a>
+            <a href='mailto:support@fireshop.com'>support@fireshop.com</a>
           </p>
         </div>
       </Container>
     </Auth>
-  );
-};
+  )
+}
 
-export default PaymentFailure;
+export default PaymentFailure
