@@ -66,9 +66,13 @@ export const productSearchReducer = (state = {}, action) => {
     case cs.PRODUCT_SEARCH_SUCCESS:
       return Success(action.payload)
     case cs.PRODUCT_SEARCH_FAILURE:
-      return Error(state, action.payload)
+      return { loading: false, products: [], error: action.payload }
     case cs.PRODUCT_SEARCH_RESET:
       return {}
+    case cs.PRODUCT_SEARCH_PROPERTY_RESET:
+      let newState = state
+      newState[action.payload] = null
+      return newState
     default:
       return state
   }

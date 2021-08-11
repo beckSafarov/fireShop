@@ -12,6 +12,7 @@ import {
   Spinner,
   Exceptional,
   UserEditPopup,
+  SearchUser,
 } from '../../components'
 
 // redux actions
@@ -22,8 +23,7 @@ import {
   ADMIN_USER_DELETE_RESET,
   ADMIN_USER_UPDATE_RESET,
 } from '../../constants'
-import AdminSearch from '../../components/globals/AdminSearch'
-import { getQueries } from '../../helpers/urlHandler'
+// import SearchUser from '../../components'
 
 const UserListScreen = ({ history }) => {
   const dispatch = useDispatch()
@@ -54,7 +54,6 @@ const UserListScreen = ({ history }) => {
   const { success: updated } = useSelector((state) => state.adminUserUpdate)
 
   const [flashMsg, setFlashMsg] = useState({})
-  const [searchReset, setSearchReset] = useState(false)
 
   const [modal, setModal] = useState({
     display: false,
@@ -116,9 +115,7 @@ const UserListScreen = ({ history }) => {
   const searchHandler = (q) =>
     dispatch(searchUser(q.field, q.secondField, q.keyword))
 
-  const searchClear = () => {
-    dispatch({ type: ADMIN_SEARCH_USER_RESET })
-  }
+  const searchClear = () => dispatch({ type: ADMIN_SEARCH_USER_RESET })
 
   return (
     <Auth history={history} adminOnly>
@@ -133,11 +130,7 @@ const UserListScreen = ({ history }) => {
             <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
           )}
           <div className='py-4'>
-            <AdminSearch
-              page={'userslist'}
-              onSearch={searchHandler}
-              onClear={searchClear}
-            />
+            <SearchUser onSearch={searchHandler} onClear={searchClear} />
           </div>
 
           {deleteLoading || (searchLoading && <Spinner />)}

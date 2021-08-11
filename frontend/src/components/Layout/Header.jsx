@@ -3,7 +3,7 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../actions/userActions'
-import SearchBox from '../globals/SearchBox'
+import SearchBox from '../Search/SearchBox'
 
 const Header = ({ history }) => {
   const dispatch = useDispatch()

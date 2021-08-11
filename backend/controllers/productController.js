@@ -15,6 +15,15 @@ export const getProducts = asyncHandler(async (req, res) => {
       }
     : {}
   const products = await Product.find({ ...keyword })
+
+  if (!products || products.length < 1) {
+    if (req.query.keyword) {
+      res.status(400)
+      throw new Error(`No result found for ${req.query.keyword}`)
+    } else {
+      throw new Error('Could not get the products')
+    }
+  }
   res.json(products)
 })
 

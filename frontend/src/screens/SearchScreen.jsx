@@ -23,6 +23,7 @@ const SearchScreen = ({ history }) => {
     (state) => state.productSearchStore
   )
 
+  const notFound = error ? error.includes('No result') : null
   useEffect(() => {
     if (!products || keyword) {
       dispatch(listProducts(keyword))
@@ -38,10 +39,10 @@ const SearchScreen = ({ history }) => {
     <>
       {loading && <Spinner />}
       <Container>
-        {error && <Message variant='danger'>{error}</Message>}
+        {error && !notFound && <Message variant='danger'>{error}</Message>}
         {products && (
           <ListGroup>
-            {products.length < 1 && (
+            {notFound && (
               <>
                 <h3>Not found</h3>
                 <p className='py-3'>

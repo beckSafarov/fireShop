@@ -4,7 +4,6 @@ export { default as Loader } from './globals/Loader.jsx'
 export { default as Message } from './globals/Message.jsx'
 export { default as Exceptional } from './globals/Exceptional.jsx'
 export { default as Spinner } from './globals/Spinner.jsx'
-export { default as SearchBox } from './globals/SearchBox.jsx'
 
 // cart
 export { default as CartItem } from './Cart/CartItem.jsx'
@@ -27,6 +26,11 @@ export { default as Rate } from './Product/Rate.jsx'
 export { default as UserEditPopup } from './Modals/UserEditPopup.jsx'
 export { default as UpdateDeliveryModal } from './Modals/UpdateDeliveryModal.jsx'
 export { default as Review } from './Modals/Review.jsx'
+
+// search
+export { default as SearchUser } from './Search/SearchUser.jsx'
+export { default as SearchBox } from './Search/SearchBox.jsx'
+export { default as AdminSearchProduct } from './Search/AdminSearchProduct.jsx'
 
 // folderless
 export { default as AccountSideMenu } from './AccountSideMenu.jsx'

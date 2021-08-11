@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { withRouter } from 'react-router-dom'
 const defaults = {
@@ -7,7 +7,7 @@ const defaults = {
   secondField: 'city',
 }
 
-const AdminSearch = ({ onSearch, onClear, bordered, rounded }) => {
+const SearchUser = ({ onSearch, onClear, bordered, rounded }) => {
   const [queries, setQueries] = useState(defaults)
   const [showCancel, setShowCancel] = useState(false)
   let newQueries = {}
@@ -110,11 +110,11 @@ const AdminSearch = ({ onSearch, onClear, bordered, rounded }) => {
   )
 }
 
-AdminSearch.defaultProps = {
+SearchUser.defaultProps = {
   onSearch: () => false,
   onClear: () => false,
   bordered: true,
   rounded: true,
 }
 
-export default withRouter(AdminSearch)
+export default withRouter(SearchUser)

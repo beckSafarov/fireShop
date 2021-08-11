@@ -1,58 +1,98 @@
 // libraries & methods
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 
 // UI components
-import { Table, Row, Col, Button } from 'react-bootstrap';
-import { Auth, Message, ConfirmModal, Spinner } from '../../components';
+import { Table, Row, Col, Button } from 'react-bootstrap'
+import {
+  Auth,
+  Message,
+  ConfirmModal,
+  Spinner,
+  AdminSearchProduct,
+} from '../../components'
 
 // redux actions
-import { listProducts } from '../../actions/productActions';
-import { addProduct, deleteProduct } from '../../actions/adminActions';
-import { PRODUCT_LIST_PROPERTY_RESET as listReset } from '../../constants';
-import { Link } from 'react-router-dom';
+import { listProducts } from '../../actions/productActions'
+import { addProduct, deleteProduct } from '../../actions/adminActions'
+import {
+  PRODUCT_LIST_PROPERTY_RESET as listReset,
+  PRODUCT_SEARCH_PROPERTY_RESET,
+  PRODUCT_SEARCH_RESET as searchReset,
+} from '../../constants'
+import { Link } from 'react-router-dom'
 
 const ProductListScreen = ({ history }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const [confirmModal, setConfirmModal] = useState({});
-  const [flashMsg, setFlashMsg] = useState({});
-  const { loading, error, products, success, type } = useSelector(
-    (state) => state.productList
-  );
-  const requestError = error && type === 'request' ? error : null;
+  const [confirmModal, setConfirmModal] = useState({})
+  const [flashMsg, setFlashMsg] = useState({})
+  const [products, setProducts] = useState([])
+  const [lastSearched, setLastSearched] = useState('')
+  const [clearSearchField, setClearSearchField] = useState(false)
+
+  const {
+    loading: allProductsLoading,
+    error,
+    products: allProducts,
+    success,
+    type,
+  } = useSelector((state) => state.productList)
+  const {
+    loading: searchLoading,
+    products: searchedProducts,
+    error: searchFailed,
+  } = useSelector((state) => state.productSearchStore)
+
+  const requestError = error && type === 'request' ? error : null
+  const loading = allProductsLoading || searchLoading
 
   useEffect(() => {
-    products.length === 0 && dispatch(listProducts());
+    allProducts.length === 0
+      ? dispatch(listProducts())
+      : setProducts(allProducts)
 
     if (success) {
       switch (type) {
         case 'update':
-          msgHandler('Updated successfully');
-          break;
+          msgHandler('Updated successfully')
+          break
         case 'add':
-          const newProduct = products.find((p) => p.price == 0);
-          history.push(`/admin/productedit/${newProduct._id}`);
-          break;
+          const newProduct = products.find((p) => p.price == 0)
+          history.push(`/admin/productedit/${newProduct._id}`)
+          break
       }
-      rxReset(success ? 'success' : 'error');
+      rxReset(success ? 'success' : 'error')
     }
 
     if (error && type !== 'request') {
-      msgHandler(error, 'danger');
-      rxReset('error');
+      msgHandler(error, 'danger')
+      rxReset('error')
     }
 
-    return () => axios.CancelToken.source().cancel();
-  }, [dispatch, success, error]);
+    if (searchedProducts) setProducts(searchedProducts)
 
-  const createProductHandler = () => dispatch(addProduct());
+    return () => {
+      axios.CancelToken.source().cancel()
+      if (searchedProducts || searchFailed) {
+        searchClearHandler()
+      }
+    }
+  }, [dispatch, success, error, allProducts, searchedProducts])
+
+  const createProductHandler = () => {
+    searchClearHandler()
+    setClearSearchField(true)
+    dispatch(addProduct())
+  }
 
   const deleteHandler = () => {
-    dispatch(deleteProduct(confirmModal._id));
-    hideModalHandler();
-  };
+    searchClearHandler()
+    setClearSearchField(true)
+    dispatch(deleteProduct(confirmModal._id))
+    hideModalHandler()
+  }
 
   const confirmHandler = (_id, name) => {
     setConfirmModal({
@@ -62,17 +102,26 @@ const ProductListScreen = ({ history }) => {
       proceedText: 'Delete',
       primaryVariant: 'Danger',
       _id,
-    });
-  };
+    })
+  }
 
-  const hideModalHandler = () => setConfirmModal({ display: false });
+  const hideModalHandler = () => setConfirmModal({ display: false })
 
   const msgHandler = (msg, variant = 'success') => {
-    setFlashMsg({ display: true, message: msg, variant });
-    setTimeout(() => setFlashMsg({}), 3000);
-  };
+    setFlashMsg({ display: true, message: msg, variant })
+    setTimeout(() => setFlashMsg({}), 3000)
+  }
 
-  const rxReset = (payload) => dispatch({ type: listReset, payload });
+  const rxReset = (payload) => dispatch({ type: listReset, payload })
+
+  const searchHandler = (name) => {
+    dispatch(listProducts(name))
+    setLastSearched(name)
+  }
+
+  const searchClearHandler = () => {
+    dispatch({ type: searchReset })
+  }
 
   return (
     <Auth history={history} adminOnly>
@@ -94,6 +143,14 @@ const ProductListScreen = ({ history }) => {
       {flashMsg.display && (
         <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
       )}
+      <div className='py-3'>
+        <AdminSearchProduct
+          onSearch={searchHandler}
+          onClear={searchClearHandler}
+          reset={clearSearchField}
+          setReset={setClearSearchField}
+        />
+      </div>
       <ConfirmModal
         active={confirmModal.display}
         heading={confirmModal.heading}
@@ -105,6 +162,15 @@ const ProductListScreen = ({ history }) => {
       />
       {requestError ? (
         <Message variant='danger'>{requestError}</Message>
+      ) : searchFailed ? (
+        <>
+          <h3>Not found</h3>
+          <p className='py-3'>
+            No product found with the name{' '}
+            <span style={{ color: 'tomato' }}>{lastSearched}</span>. Try again
+            with a different keyword
+          </p>
+        </>
       ) : (
         <Table hover responsive className='tale-sm'>
           <thead>
@@ -152,7 +218,7 @@ const ProductListScreen = ({ history }) => {
         </Table>
       )}
     </Auth>
-  );
-};
+  )
+}
 
-export default ProductListScreen;
+export default ProductListScreen

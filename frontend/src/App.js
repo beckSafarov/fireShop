@@ -99,6 +99,12 @@ const App = () => {
             <Route
               path='/admin/productedit/:id'
               component={ProductEditScreen}
+              exact
+            ></Route>
+            <Route
+              path='/admin/jumanji/:id'
+              component={ProductEditScreen}
+              exact
             ></Route>
             <Route
               path='/admin/orderslist'
