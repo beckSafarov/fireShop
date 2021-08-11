@@ -12,6 +12,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import pluralize from '../helpers/pluralize'
 import Review from '../components/Modals/Review'
+import AdminSearch from '../components/globals/AdminSearch'
 
 const TestScreen = ({ history, match }) => {
   const people = ['Beck', 'Tom']
@@ -62,39 +63,13 @@ const TestScreen = ({ history, match }) => {
     <>
       <h1>Welcome to test page</h1>
       <p>playground for testing stuff</p>
+      {positive && <p>positive</p>}
 
-      {msg.display && <Message variant={msg.variant}>{msg.msg}</Message>}
-      {positive && <Review />}
-      <Col>
-        <Row>
-          <Form.Control
-            as='select'
-            defaultValue={status}
-            onChange={(e) => changeStatus(e.target.value)}
-          >
-            <option key={1} value={1}>
-              {1}
-            </option>
-            <option key={2} value={2}>
-              {2}{' '}
-            </option>
-            <option key={3} value={3}>
-              {3}
-            </option>
-          </Form.Control>
-
-          <Button variant='success' onClick={clickMe}>
-            Click me
-          </Button>
-        </Row>
-      </Col>
-      {/* <ConfirmModal active proceedText='Delete' primaryVariant='danger' /> */}
-      <Col>
-        <Row>
-          <h2>Status: {status}</h2>
-        </Row>
-      </Col>
-      {/* <DeliveryProgress height={100} width={520} progress={3} /> */}
+      <AdminSearch
+        page={'testscreen'}
+        reset={positive}
+        setKeyReset={setPositive}
+      />
     </>
   )
 }

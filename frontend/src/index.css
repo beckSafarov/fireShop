@@ -102,8 +102,12 @@ strong {
 }
 
 .bordered {
-  border: 1px solid #ccc;
+  border: 1px solid #e6e6e6;
 }
+
+/* .rounded {
+  border-radius: 10px;
+} */
 
 .flex-row {
   display: flex;

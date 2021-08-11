@@ -91,7 +91,7 @@ const App = () => {
             <Route path='/payment-failure' component={PaymentFailure}></Route>
 
             {/* admin routes */}
-            <Route path='/admin/userlist' component={UserListScreen}></Route>
+            <Route path='/admin/userslist' component={UserListScreen}></Route>
             <Route
               path='/admin/productlist'
               component={ProductListScreen}

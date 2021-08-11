@@ -15,35 +15,57 @@ import {
 } from '../../components'
 
 // redux actions
-import { listUsers, deleteUser } from '../../actions/adminActions'
+import { listUsers, deleteUser, searchUser } from '../../actions/adminActions'
 import {
+  ADMIN_SEARCH_PROPERTY_RESET,
+  ADMIN_SEARCH_USER_RESET,
   ADMIN_USER_DELETE_RESET,
   ADMIN_USER_UPDATE_RESET,
 } from '../../constants'
+import AdminSearch from '../../components/globals/AdminSearch'
+import { getQueries } from '../../helpers/urlHandler'
 
 const UserListScreen = ({ history }) => {
   const dispatch = useDispatch()
+
+  // all users store
   const {
     loading: listLoading,
     error: listRequestError,
-    users,
+    users: allUsers,
   } = useSelector((state) => state.userList)
+
+  // user delete store
   const {
     loading: deleteLoading,
     success: deleted,
     error: deleteError,
     message,
   } = useSelector((state) => state.adminUserDelete)
+
+  // search user store
+  const {
+    loading: searchLoading,
+    users: searchedUsers,
+    error: searchFailed,
+  } = useSelector((state) => state.adminSearchUserStore)
+  const [users, setUsers] = useState([])
+
   const { success: updated } = useSelector((state) => state.adminUserUpdate)
 
   const [flashMsg, setFlashMsg] = useState({})
+  const [searchReset, setSearchReset] = useState(false)
+
   const [modal, setModal] = useState({
     display: false,
     userInfo: null,
   })
 
+  // variables
+  const listAllUsers = (!allUsers || allUsers.length === 0) && !searchedUsers
+
   useEffect(() => {
-    ;(!users || users.length === 0) && dispatch(listUsers())
+    listAllUsers ? dispatch(listUsers()) : setUsers(allUsers)
 
     if (deleted || deleteError) {
       deleted ? msgHandler(message) : msgHandler(deleteError, 'danger', 3)
@@ -55,8 +77,28 @@ const UserListScreen = ({ history }) => {
       dispatch({ type: ADMIN_USER_UPDATE_RESET })
     }
 
-    return () => axios.CancelToken.source().cancel()
-  }, [dispatch, deleted, deleteError, updated])
+    searchedUsers && setUsers(searchedUsers)
+    if (searchFailed) {
+      msgHandler(searchFailed, 'danger', 3)
+      dispatch({
+        type: ADMIN_SEARCH_PROPERTY_RESET,
+        payload: 'error',
+      })
+    }
+
+    return () => {
+      axios.CancelToken.source().cancel()
+      searchedUsers && searchClear()
+    }
+  }, [
+    dispatch,
+    deleted,
+    deleteError,
+    updated,
+    allUsers,
+    searchedUsers,
+    searchFailed,
+  ])
 
   const deleteHandler = (id, name = 'undefined') => {
     const c = `Are you sure to delete ${name}?`
@@ -68,8 +110,14 @@ const UserListScreen = ({ history }) => {
     setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
-  const modalHandler = (userInfo, display = true) => {
+  const modalHandler = (userInfo, display = true) =>
     setModal({ display, userInfo })
+
+  const searchHandler = (q) =>
+    dispatch(searchUser(q.field, q.secondField, q.keyword))
+
+  const searchClear = () => {
+    dispatch({ type: ADMIN_SEARCH_USER_RESET })
   }
 
   return (
@@ -84,7 +132,15 @@ const UserListScreen = ({ history }) => {
           {flashMsg.display && (
             <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
           )}
-          {deleteLoading && <Spinner />}
+          <div className='py-4'>
+            <AdminSearch
+              page={'userslist'}
+              onSearch={searchHandler}
+              onClear={searchClear}
+            />
+          </div>
+
+          {deleteLoading || (searchLoading && <Spinner />)}
           <Table responsive className='tale-sm'>
             <thead>
               <tr>
