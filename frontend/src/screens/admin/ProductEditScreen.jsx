@@ -1,138 +1,138 @@
-// -- LIBRARIES --
-import { useState, useEffect } from 'react';
-import { Row, Col } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+// libraries & methods
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
+// UI components
+import { Auth, FormContainer, Message, Spinner } from '../../components'
+import { ProductUpdateForm } from '../../components/Forms'
+import { imgUpload, updateProduct } from '../../actions/adminActions'
+import { listProductDetails } from '../../actions/productActions'
+import { IMG_UPLOAD_RESET, PRODUCT_DETAILS_RESET } from '../../constants'
 
-// -- COMPONENTS --
-import { Auth, Message, Spinner } from '../../components';
-import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms';
-
-// -- REDUX RELATED IMPORTS --
-import { updateUserProfile as update } from '../../actions/userActions';
-import AccountSideMenu from '../../components/AccountSideMenu';
-import FieldsValidated from '../../helpers/FieldsValidated';
-import {
-  USER_DETAILS_PROPERTY_RESET as userInfoReset,
-  USER_INFO_UPDATE,
-} from '../../constants';
-
-const ProfileScreen = ({ history }) => {
-  // -- redux stores --
-  const dispatch = useDispatch();
+const ProductEditScreen = ({ history, match }) => {
+  // redux stuff
+  const dispatch = useDispatch()
   const {
-    loading,
-    success: updated,
-    error: updateError,
-  } = useSelector((state) => state.userDetailsUpdate);
+    loading: requestLoading,
+    success,
+    type,
+    product,
+    error,
+  } = useSelector((state) => state.productDetails)
+  const {
+    loading: uploadLoading,
+    success: uploaded,
+    data: uploadData,
+    error: uploadError,
+  } = useSelector((state) => state.imgUploadStore)
 
   // variables
-  const { userInfo } = useSelector((state) => state.userLogin);
-  let newFields;
+  const requestError = error && type === 'request' ? error : null
+  const loading = requestLoading || uploadLoading
+
+  const dataExists = product && product.name && product._id === match.params.id
+  let newProduct
 
   // hooks
-  const [fields, setFields] = useState({
-    ...userInfo,
-    password: '',
-    confirmPass: '',
-  });
-  const [editClicked, setEditClicked] = useState(false);
-  const [flashMsg, setFlashMsg] = useState({});
+  const [change, setChange] = useState(false)
+  const [flashMsg, setFlashMsg] = useState({})
+  const [uploadLabel, setUploadLabel] = useState('No File Chosen')
+  const [updatedProduct, setUpdatedProduct] = useState(
+    dataExists ? { ...product } : {}
+  )
+  const [came, setCame] = useState(false)
 
   useEffect(() => {
-    if (updated) {
+    if (!came) {
+      window.scrollTo(0, 0)
+      setCame(true)
+    }
+
+    dataExists
+      ? !updatedProduct.name && setUpdatedProduct({ ...product })
+      : dispatch(listProductDetails(match.params.id))
+
+    if ((success || error) && type === 'update') {
+      success
+        ? history.replace('/admin/productlist')
+        : msgHandler(error, 'danger')
       dispatch({
-        type: USER_INFO_UPDATE,
-        payload: fields,
-      });
-      setEditClicked(false);
-      setMsgHandler('Updated successfully');
-      rxReset('success');
+        type: PRODUCT_DETAILS_RESET,
+        payload: success ? 'success' : 'error',
+      })
     }
 
-    if (updateError) {
-      setMsgHandler(updateError, 'danger');
-      rxReset('error');
+    if (uploaded || uploadError) {
+      if (uploaded) {
+        setUpdatedProduct({ ...updatedProduct, image: uploadData })
+        setChange(true)
+      }
+      uploadError && msgHandler(uploadError, 'danger', 5)
+      dispatch({ type: IMG_UPLOAD_RESET })
     }
 
-    return () => axios.CancelToken.source().cancel();
-  }, [updated, updateError]);
-
-  const setMsgHandler = (message, variant = 'success') => {
-    setFlashMsg({ display: true, variant, message });
-    setTimeout(() => setFlashMsg({}), 3000);
-  };
-
-  const submitHandler = (e) => {
-    e.preventDefault();
-    const vld = FieldsValidated(
-      fields.name,
-      fields.email,
-      fields.password || null,
-      fields.confirmPass || null
-    );
-
-    vld.success
-      ? dispatch(
-          update({
-            ...fields,
-            password: fields.password || undefined,
-          })
-        )
-      : setMsgHandler(vld.message, 'danger');
-  };
+    return () => {
+      axios.CancelToken.source().cancel()
+      setCame(false)
+      setChange(false)
+    }
+  }, [dispatch, product, match, success, error, uploaded, uploadError])
 
   const changesHandler = (e) => {
-    e.persist();
-    newFields = { ...fields };
-    newFields[e.target.name] = e.target.value;
-    setFields(newFields);
-  };
+    setChange(true)
+    newProduct = { ...updatedProduct }
+    newProduct[e.target.name] = e.target.value
+    setUpdatedProduct(newProduct)
+  }
 
-  const cancelChanges = () => {
-    setFields({ ...userInfo });
-    setEditClicked(false);
-  };
+  const uploadImgHandler = (e) => {
+    const file = e.target.files[0]
+    const formData = new FormData()
+    formData.append('image', file)
+    setUploadLabel(file.name)
+    dispatch(imgUpload(formData))
+  }
 
-  const editBtnHandler = () => setEditClicked(true);
+  const submitHandler = (e) => {
+    e.preventDefault()
+    dispatch(updateProduct({ ...updatedProduct }))
+    setChange(false)
+  }
 
-  const rxReset = (payload) => dispatch({ type: userInfoReset, payload });
+  const msgHandler = (msg, variant = 'success', s = 3) => {
+    setFlashMsg({ display: true, message: msg, variant })
+    setTimeout(() => setFlashMsg({}), 3000)
+    setTimeout(() => setFlashMsg({}), s * 1000)
+  }
 
+  const cancelChanges = () => window.location.reload()
+
+  const values = { ...updatedProduct, change, uploadLabel }
   const functions = {
-    submitHandler,
     changesHandler,
+    uploadImgHandler,
+    submitHandler,
     cancelChanges,
-  };
+  }
 
   return (
-    <Auth history={history}>
-      <Row>
-        <>
-          {loading && <Spinner />}
-          <Col md={2} sm={2}>
-            <AccountSideMenu active={1} />
-          </Col>
-          <Col md={10} sm={10}>
-            <>
-              <h3>User Profile</h3>
-              {flashMsg.display && (
-                <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
-              )}
-              {editClicked ? (
-                <ProfileUpdateForm values={fields} functions={functions} />
-              ) : (
-                <ReadOnlyForm
-                  name={fields.name}
-                  email={fields.email}
-                  onClick={editBtnHandler}
-                />
-              )}
-            </>
-          </Col>
-        </>
-      </Row>
+    <Auth history={history} adminOnly>
+      <FormContainer>
+        <h2>{product && product.name}</h2>
+        {loading && <Spinner />}
+        {requestError && <Message variant='danger'>{requestError}</Message>}
+        {flashMsg.display && (
+          <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+        )}
+        <div className='py-4'>
+          <div className='centered-img'>
+            <img src={updatedProduct.image} alt='Product Image' />
+          </div>
+          <ProductUpdateForm values={values} functions={functions} />
+        </div>
+      </FormContainer>
     </Auth>
-  );
-};
+  )
+}
 
-export default ProfileScreen;
+export default ProductEditScreen

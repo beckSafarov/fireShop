@@ -27,7 +27,7 @@ export const productListReducer = (state = { products: [] }, action) => {
       return Loading(state)
     case cs.PRODUCT_ADD_SUCCESS:
       newProducts = [...state.products]
-      newProducts.push(action.payload)
+      newProducts.push({ ...action.payload, new: true })
       return Success(newProducts, 'add')
     case cs.PRODUCT_ADD_FAILURE:
       return Error(state, action.payload, 'add')
@@ -37,6 +37,7 @@ export const productListReducer = (state = { products: [] }, action) => {
       currProducts = [...state.products]
       for (let i = 0; i < currProducts.length; i++) {
         if (currProducts[i]._id === newProduct._id) {
+          newProduct.new && (newProduct.new = undefined)
           currProducts[i] = { ...currProducts[i], ...newProduct }
           break
         }

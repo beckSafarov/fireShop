@@ -47,6 +47,7 @@ const ProductListScreen = ({ history }) => {
 
   const requestError = error && type === 'request' ? error : null
   const loading = allProductsLoading || searchLoading
+  let newProduct
 
   useEffect(() => {
     allProducts.length === 0
@@ -59,11 +60,12 @@ const ProductListScreen = ({ history }) => {
           msgHandler('Updated successfully')
           break
         case 'add':
-          const newProduct = products.find((p) => p.price == 0)
+          setProducts(allProducts)
+          newProduct = allProducts.find((p) => p.new)
           history.push(`/admin/productedit/${newProduct._id}`)
           break
       }
-      rxReset(success ? 'success' : 'error')
+      rxReset('success')
     }
 
     if (error && type !== 'request') {
