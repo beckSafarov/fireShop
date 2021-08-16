@@ -10,32 +10,40 @@ import {
   Auth,
   UpdateDeliveryModal,
   Spinner,
+  AdminSearch,
 } from '../../components'
 import { Table, Container, Button } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 // Redux related imports
-import { getAllOrders } from '../../actions/orderActions'
+import { getAllOrders, getOrderDetails } from '../../actions/orderActions'
 import { ORDERS_LIST_PROPERTY_RESET as updateReset } from '../../constants'
 
 const OrdersListScreen = ({ history }) => {
   const [modal, setModal] = useState({})
-
+  const [flashMsg, setFlashMsg] = useState({})
+  const [textAlign, setTextAlign] = useState('center')
+  const [clearSearchField, setClearSearchField] = useState(false)
+  const [orders, setOrders] = useState([])
   // -- redux stores --
   const dispatch = useDispatch()
+
+  // all orders
   const {
     loading: listLoading,
-    orders,
+    orders: allOrders,
     success,
     type,
     error,
   } = useSelector((state) => state.ordersListStore)
-  const [flashMsg, setFlashMsg] = useState({})
-  const [textAlign, setTextAlign] = useState('center')
+
+  // one order
   const updated = success && type === 'update'
   const { loading: updateLoading } = useSelector((state) => state.orderDetails)
 
+  const noOrders = !allOrders || allOrders.length === 0
+
   useEffect(() => {
-    if (!orders || orders.length === 0) dispatch(getAllOrders())
+    noOrders ? dispatch(getAllOrders()) : setOrders(allOrders)
 
     if (updated) {
       setMsgHandler('Updated successfully')
@@ -44,7 +52,7 @@ const OrdersListScreen = ({ history }) => {
     }
 
     return () => axios.CancelToken.source().cancel()
-  }, [dispatch, updated])
+  }, [dispatch, updated, noOrders])
 
   const setMsgHandler = (message, variant = 'success', s = 3) => {
     setFlashMsg({ display: true, message, variant })
@@ -64,8 +72,16 @@ const OrdersListScreen = ({ history }) => {
     return date.toLocaleString()
   }
 
+  const searchHandler = (keyword) => {
+    dispatch(getOrderDetails(keyword))
+  }
+
+  const searchClearHandler = () => {
+    console.log('clean')
+  }
+
   return (
-    <Auth history={history}>
+    <Auth history={history} adminOnly>
       <Container>
         {listLoading ? (
           <Loader />
@@ -74,7 +90,6 @@ const OrdersListScreen = ({ history }) => {
         ) : (
           <>
             <h3 className='mb-5'>All Orders</h3>
-            {/* <i className='fas fa-align-center'></i> */}
             {updateLoading && <Spinner />}
             {modal.display && (
               <UpdateDeliveryModal modal={modal} setModal={setModal} />
@@ -82,6 +97,7 @@ const OrdersListScreen = ({ history }) => {
             {flashMsg.display && (
               <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
             )}
+            <div className='py-4'></div>
             <Table striped bordered hover responsive className='table-sm'>
               <thead>
                 <tr>
@@ -94,6 +110,7 @@ const OrdersListScreen = ({ history }) => {
                 </tr>
               </thead>
               <tbody style={{ textAlign }}>
+                {/* {console.log(orders)} */}
                 {orders.map((order) => (
                   <tr key={order._id}>
                     <td>

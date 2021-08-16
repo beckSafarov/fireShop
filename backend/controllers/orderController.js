@@ -1,7 +1,8 @@
 import asyncHandler from 'express-async-handler'
-import { addDateFormats, formatDate } from '../helpers/helpers.js'
+import { orderQueryHandler } from '../helpers/helpers.js'
 import Order from '../models/orderModel.js'
 import User from '../models/userModel.js'
+import mongoose from 'mongoose'
 
 //@desc  Create new order
 //@route post /api/orders/addorder
@@ -105,7 +106,19 @@ export const updateOrderDeliveryStatus = asyncHandler(async (req, res) => {
 //@route GET /api/orders
 //@desc  Private && Admin only
 export const getAllOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name')
+  const { filter, sort } = orderQueryHandler(req.query)
+  if (req.query.user) {
+    const user = await User.find({
+      name: {
+        $regex: req.query.user,
+        $options: 'i',
+      },
+    })
+    filter.user = user[0]._id
+  }
+  const orders = await Order.find({ ...filter })
+    .sort({ ...sort })
+    .populate('user', 'id name')
   res.status(200).json({ orders })
 })
 

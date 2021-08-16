@@ -10,7 +10,7 @@ import {
   Message,
   ConfirmModal,
   Spinner,
-  AdminSearchProduct,
+  AdminSearch,
 } from '../../components'
 
 // redux actions
@@ -18,7 +18,6 @@ import { listProducts } from '../../actions/productActions'
 import { addProduct, deleteProduct } from '../../actions/adminActions'
 import {
   PRODUCT_LIST_PROPERTY_RESET as listReset,
-  PRODUCT_SEARCH_PROPERTY_RESET,
   PRODUCT_SEARCH_RESET as searchReset,
 } from '../../constants'
 import { Link } from 'react-router-dom'
@@ -116,9 +115,9 @@ const ProductListScreen = ({ history }) => {
 
   const rxReset = (payload) => dispatch({ type: listReset, payload })
 
-  const searchHandler = (name) => {
-    dispatch(listProducts(name))
-    setLastSearched(name)
+  const searchHandler = (kword) => {
+    dispatch(listProducts(kword))
+    setLastSearched(kword)
   }
 
   const searchClearHandler = () => {
@@ -146,7 +145,7 @@ const ProductListScreen = ({ history }) => {
         <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
       )}
       <div className='py-3'>
-        <AdminSearchProduct
+        <AdminSearch
           onSearch={searchHandler}
           onClear={searchClearHandler}
           reset={clearSearchField}

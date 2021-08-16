@@ -64,26 +64,28 @@ export const getMyOrders = () => async (dispatch) => {
   }
 }
 
-export const getAllOrders = () => async (dispatch) => {
-  try {
-    dispatch({ type: cs.ORDERS_LIST_REQUEST })
+export const getAllOrders =
+  (query = '') =>
+  async (dispatch) => {
+    try {
+      dispatch({ type: cs.ORDERS_LIST_REQUEST })
 
-    const { data } = await axios.get(`/api/orders`, axiosConfig)
+      const { data } = await axios.get(`/api/orders${query}`, axiosConfig)
 
-    dispatch({
-      type: cs.ORDERS_LIST_SUCCESS,
-      payload: data.orders,
-    })
-  } catch (err) {
-    dispatch({
-      type: cs.ORDERS_LIST_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
-    })
+      dispatch({
+        type: cs.ORDERS_LIST_SUCCESS,
+        payload: data.orders,
+      })
+    } catch (err) {
+      dispatch({
+        type: cs.ORDERS_LIST_FAILURE,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      })
+    }
   }
-}
 
 export const updateDeliveryStatus = (id, body) => async (dispatch) => {
   try {

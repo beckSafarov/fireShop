@@ -31,6 +31,8 @@ export const orderDetailsReducer = (state = { order: {} }, action) => {
       return Success(action.payload, 'request')
     case constants.ORDER_DETAILS_FAIL:
       return Error(action.payload, state)
+    case constants.ORDER_DETAILS_RESET:
+      return {}
     case constants.ORDER_UPDATE_REQUEST:
       return Loading('update', state)
     case constants.ORDER_UPDATE_SUCCESS:

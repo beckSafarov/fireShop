@@ -22,6 +22,7 @@ import {
 import { getOrderDetails } from '../../actions/orderActions'
 import {
   ORDERS_LIST_PROPERTY_RESET as listReset,
+  ORDER_DETAILS_RESET,
   ORDER_UPDATE_RESET as detailsReset,
 } from '../../constants'
 

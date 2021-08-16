@@ -9,7 +9,7 @@ import {
   Spinner,
   Loader,
   ConfirmModal,
-  AdminSearchProduct,
+  AdminSearch,
 } from '../components'
 
 const TestScreen = ({ history, match }) => {
@@ -50,7 +50,7 @@ const TestScreen = ({ history, match }) => {
       <h1>Welcome to test page</h1>
       <p>playground for testing stuff</p>
       {positive && <p>positive</p>}
-      <AdminSearchProduct />
+      <AdminSearch />
     </>
   )
 }
