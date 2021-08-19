@@ -89,7 +89,12 @@ const SearchUser = ({ onSearch, onClear, bordered, rounded }) => {
           </Col>
         )}
         <Col md={1}>
-          <Button type='submit' variant='outline-info' className='p-2 rounded'>
+          <Button
+            type='submit'
+            variant='outline-info'
+            className='p-2 rounded'
+            block
+          >
             Search
           </Button>
         </Col>

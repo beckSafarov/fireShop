@@ -30,7 +30,10 @@ export { default as Review } from './Modals/Review.jsx'
 // search
 export { default as SearchUser } from './Search/SearchUser.jsx'
 export { default as SearchBox } from './Search/SearchBox.jsx'
-export { default as AdminSearch } from './Search/AdminSearch.jsx'
+export { default as AdminProductSearch } from './Search/AdminProductSearch.jsx'
+
+// filters
+export { default as OrdersFilter } from './Filters/OrdersFilter/index'
 
 // folderless
 export { default as AccountSideMenu } from './AccountSideMenu.jsx'

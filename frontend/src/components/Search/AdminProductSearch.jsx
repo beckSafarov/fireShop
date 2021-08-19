@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { withRouter } from 'react-router-dom'
 
-const AdminSearch = ({
+const AdminProductSearch = ({
   onSearch,
   onClear,
   bordered,
@@ -10,6 +10,7 @@ const AdminSearch = ({
   reset,
   setReset,
   placeholder,
+  buttonText,
 }) => {
   const [keyword, setKeyWord] = useState('')
   const [showCancel, setShowCancel] = useState(false)
@@ -40,27 +41,33 @@ const AdminSearch = ({
   return (
     <Form onSubmit={submitHandler}>
       <Row>
-        <Col md={10}>
+        <Col md={8}>
           <Form.Control
             type='text'
             onChange={changesHandler}
-            placeholder='Search Product...'
+            placeholder={placeholder}
             value={keyword}
             className={`${bordered && 'bordered'} ${rounded && 'rounded'}`}
           ></Form.Control>
         </Col>
-        <Col md={1}>
-          <Button type='submit' variant='outline-info' className='p-2 rounded'>
-            Search
+        <Col md={2}>
+          <Button
+            type='submit'
+            variant='outline-info'
+            className='p-2 rounded'
+            block
+          >
+            {buttonText}
           </Button>
         </Col>
         {showCancel && (
-          <Col md={1}>
+          <Col md={2}>
             <Button
               type='button'
               variant='outline-dark'
               className='p-2 rounded'
               onClick={clearHandler}
+              block
             >
               Clear
             </Button>
@@ -71,14 +78,15 @@ const AdminSearch = ({
   )
 }
 
-AdminSearch.defaultProps = {
+AdminProductSearch.defaultProps = {
   onSearch: () => false,
   onClear: () => false,
   reset: false,
   setReset: () => false,
   placeholder: 'Search Product...',
+  buttonText: 'Search',
   bordered: true,
   rounded: true,
 }
 
-export default withRouter(AdminSearch)
+export default withRouter(AdminProductSearch)

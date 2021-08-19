@@ -10,7 +10,7 @@ import {
   Message,
   ConfirmModal,
   Spinner,
-  AdminSearch,
+  AdminProductSearch,
 } from '../../components'
 
 // redux actions
@@ -145,7 +145,7 @@ const ProductListScreen = ({ history }) => {
         <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
       )}
       <div className='py-3'>
-        <AdminSearch
+        <AdminProductSearch
           onSearch={searchHandler}
           onClear={searchClearHandler}
           reset={clearSearchField}

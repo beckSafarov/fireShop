@@ -280,3 +280,33 @@ small {
   color: #00ccff;
   font-size: 0.5rem;
 }
+
+.single-line-row {
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+}
+
+button.light-btn-blue {
+  padding: 10px 25px 10px 25px;
+  width: 100%;
+  border: none;
+  color: rgb(31, 155, 207);
+  background-color: transparent;
+}
+
+button.light-btn-blue:hover {
+  color: #4eb7e4;
+}
+
+button.light-btn-red {
+  padding: 10px 25px 10px 25px;
+  width: 100%;
+  border: none;
+  color: #cc1f00;
+  background-color: transparent;
+}
+
+button.light-btn-red:hover {
+  color: tomato;
+}

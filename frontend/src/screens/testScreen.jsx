@@ -3,14 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 import { Row, Col, Nav, Form } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
-import {
-  Auth,
-  Message,
-  Spinner,
-  Loader,
-  ConfirmModal,
-  AdminSearch,
-} from '../components'
+import { OrdersFilter } from '../components'
 
 const TestScreen = ({ history, match }) => {
   const people = ['Beck', 'Tom']
@@ -40,17 +33,12 @@ const TestScreen = ({ history, match }) => {
     return true
   }
 
-  const msgHandler = () => {
-    setMsg({ display: true, msg: 'Awesome', variant: 'success' })
-    setTimeout(() => setMsg({}), 3000)
-  }
-
   return (
     <>
       <h1>Welcome to test page</h1>
       <p>playground for testing stuff</p>
       {positive && <p>positive</p>}
-      <AdminSearch />
+      <OrdersFilter />
     </>
   )
 }
