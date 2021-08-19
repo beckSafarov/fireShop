@@ -74,20 +74,18 @@ const FilterByPrice = ({ onSubmit }) => {
 
   const submitHandler = (e) => {
     e.preventDefault()
-    let fieldsFilled = true
     let validFilter = true
     let finalVals = [...vals]
     finalVals.forEach((val) => {
-      !val.value && (fieldsFilled = false)
       val.value = val.value < 0 || val.value.startsWith('0') ? 0 : val.value
     })
 
-    if (fieldsFilled && finalVals.length > 1) {
-      let eq = finalVals.find((val) => val.category === 'eq')
+    if (finalVals.length > 1) {
+      let eq = haveEqual()
       if (eq) finalVals = [eq]
       validFilter = filterValid()
     }
-    fieldsFilled && validFilter && onSubmit(finalVals)
+    validFilter && onSubmit(finalVals)
   }
 
   const addFilter = () => {
@@ -130,7 +128,7 @@ const FilterByPrice = ({ onSubmit }) => {
   }
 
   const valuesValid = () => {
-    if (vals.length > 1) {
+    if (vals.length > 1 && !haveEqual()) {
       if ('gt|gte'.includes(vals[0].category)) {
         if (Number(vals[0].value) >= Number(vals[1].value)) {
           return { both: true }
@@ -144,6 +142,8 @@ const FilterByPrice = ({ onSubmit }) => {
 
     return { success: true }
   }
+
+  const haveEqual = () => vals.find((v) => v.category === 'eq')
 
   return (
     <Form onSubmit={submitHandler}>

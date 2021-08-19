@@ -54,7 +54,7 @@ const FilterByDate = ({ onSubmit }) => {
         <Col md={2} lg={2} sm={12}>
           <Button
             type='submit'
-            variant='outline-info'
+            variant='outline-success'
             className='p-2 rounded btn-block'
           >
             Filter

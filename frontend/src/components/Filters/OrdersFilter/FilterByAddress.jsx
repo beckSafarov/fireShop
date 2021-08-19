@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Form, Row, Col, Button } from 'react-bootstrap'
 const placeholders = {
   city: 'e.g. Boston',
@@ -11,6 +11,11 @@ const FilterByAddress = ({ onSubmit }) => {
   const [category, setCategory] = useState('city')
   const [type, setType] = useState('text')
   const [placeholder, setPlaceholder] = useState('e.g. Boston')
+  const [submittable, setSubmittable] = useState(true)
+
+  useEffect(() => {
+    setSubmittable(keyword ? true : false)
+  }, [keyword])
 
   const submitHandler = (e) => {
     e.preventDefault()
@@ -64,8 +69,9 @@ const FilterByAddress = ({ onSubmit }) => {
         <Col md={2} sm={2} lg={2}>
           <Button
             className='p-2 rounded'
-            variant='outline-info'
+            variant='outline-success'
             type='submit'
+            disabled={!submittable}
             block
           >
             Filter

@@ -13,13 +13,11 @@ const checkBoxes = [
   'Price',
 ]
 
-const OrdersFilter = () => {
+const OrdersFilter = ({ onSubmit }) => {
   const [checked, setChecked] = useState(0)
-  const [clearFields, setClearFields] = useState(false)
+  // const [clearFields, setClearFields] = useState(false)
 
-  const checkHandler = (e) => {
-    setChecked(Number(e.target.id))
-  }
+  const checkHandler = (e) => setChecked(Number(e.target.id))
 
   const formDisplaySwitcher = () => {
     switch (checked) {
@@ -31,6 +29,7 @@ const OrdersFilter = () => {
             onSearch={customerFilterSubmit}
             placeholder={'e.g. John Doe'}
             buttonText='Filter'
+            buttonClass='outline-success'
           />
         )
       case 2:
@@ -39,6 +38,7 @@ const OrdersFilter = () => {
             onSearch={productFilterSubmit}
             placeholder={'e.g. iphone'}
             buttonText='Filter'
+            buttonClass='outline-success'
           />
         )
       case 3:
@@ -50,24 +50,28 @@ const OrdersFilter = () => {
     }
   }
 
-  const customerFilterSubmit = (keyword) => {
-    console.log(keyword)
-  }
+  const customerFilterSubmit = (keyword) =>
+    onSubmit(`?filter=user?user=${keyword}`)
 
   const productFilterSubmit = (keyword) => {
-    console.log(keyword)
+    onSubmit(`?filter=orderItems?orderItems=${keyword}`)
   }
 
-  const addressFilterSubmit = (keyword) => {
-    console.log(keyword)
+  const addressFilterSubmit = (query) => {
+    onSubmit(
+      `?filter=shippingAddress?shippingAddress=${query.category}.${query.keyword}`
+    )
   }
 
-  const dateFilterSubmit = (keyword) => {
-    console.log(keyword)
+  const dateFilterSubmit = (query) => {
+    onSubmit(`?filter=${query.category}?${query.category}=${query.time}`)
   }
 
-  const priceFilterSubmit = (keyword) => {
-    console.log(keyword)
+  const priceFilterSubmit = (query) => {
+    const firstParam = `${query[0].category}=${query[0].value}`
+    const secondParam =
+      query.length > 1 ? `&${query[1].category}=${query[0].value}` : ''
+    onSubmit(`?filter=price&${firstParam}${secondParam}`)
   }
 
   const onClear = () => {
@@ -95,6 +99,10 @@ const OrdersFilter = () => {
       <div className='pt-5'>{formDisplaySwitcher()}</div>
     </>
   )
+}
+
+OrdersFilter.defaultProps = {
+  onSubmit: (query) => console.log(query),
 }
 
 export default OrdersFilter

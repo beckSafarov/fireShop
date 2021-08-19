@@ -11,25 +11,26 @@ const AdminProductSearch = ({
   setReset,
   placeholder,
   buttonText,
+  buttonClass,
 }) => {
   const [keyword, setKeyWord] = useState('')
   const [showCancel, setShowCancel] = useState(false)
+  const [submittable, setSubmittable] = useState(true)
 
   useEffect(() => {
     if (reset) {
       clearHandler()
       setReset(false)
     }
-  }, [reset])
+    setSubmittable(keyword ? true : false)
+  }, [reset, keyword])
 
   const changesHandler = (e) => setKeyWord(e.target.value)
 
   const submitHandler = (e) => {
     e.preventDefault()
-    if (keyword) {
-      onSearch(keyword)
-      setShowCancel(true)
-    }
+    onSearch(keyword)
+    setShowCancel(true)
   }
 
   const clearHandler = () => {
@@ -53,8 +54,9 @@ const AdminProductSearch = ({
         <Col md={2}>
           <Button
             type='submit'
-            variant='outline-info'
+            variant={buttonClass}
             className='p-2 rounded'
+            disabled={!submittable}
             block
           >
             {buttonText}
@@ -85,6 +87,7 @@ AdminProductSearch.defaultProps = {
   setReset: () => false,
   placeholder: 'Search Product...',
   buttonText: 'Search',
+  buttonClass: 'outline-info',
   bordered: true,
   rounded: true,
 }
