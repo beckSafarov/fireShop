@@ -11,11 +11,12 @@ import {
   UpdateDeliveryModal,
   Spinner,
   AdminSearch,
+  OrdersFilter,
 } from '../../components'
-import { Table, Container, Button } from 'react-bootstrap'
+import { Table, Container, Button, ButtonGroup } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 // Redux related imports
-import { getAllOrders, getOrderDetails } from '../../actions/orderActions'
+import { getAllOrders } from '../../actions/orderActions'
 import { ORDERS_LIST_PROPERTY_RESET as updateReset } from '../../constants'
 
 const OrdersListScreen = ({ history }) => {
@@ -24,6 +25,8 @@ const OrdersListScreen = ({ history }) => {
   const [textAlign, setTextAlign] = useState('center')
   const [clearSearchField, setClearSearchField] = useState(false)
   const [orders, setOrders] = useState([])
+  const [selectedBtn, setSelectedBtn] = useState(1)
+  const [show, setShow] = useState({})
   // -- redux stores --
   const dispatch = useDispatch()
 
@@ -46,7 +49,7 @@ const OrdersListScreen = ({ history }) => {
     noOrders ? dispatch(getAllOrders()) : setOrders(allOrders)
 
     if (updated) {
-      setMsgHandler('Updated successfully')
+      msgHandler('Updated successfully')
       setModal({})
       dispatch({ type: updateReset, payload: 'type' })
     }
@@ -54,7 +57,7 @@ const OrdersListScreen = ({ history }) => {
     return () => axios.CancelToken.source().cancel()
   }, [dispatch, updated, noOrders])
 
-  const setMsgHandler = (message, variant = 'success', s = 3) => {
+  const msgHandler = (message, variant = 'success', s = 3) => {
     setFlashMsg({ display: true, message, variant })
     setTimeout(() => setFlashMsg({}), s * 1000)
   }
@@ -72,12 +75,35 @@ const OrdersListScreen = ({ history }) => {
     return date.toLocaleString()
   }
 
-  const searchHandler = (keyword) => {
-    dispatch(getOrderDetails(keyword))
+  const filterHandler = (query) => {
+    dispatch(getAllOrders(query))
   }
 
-  const searchClearHandler = () => {
+  const filterClearHandler = () => {
     console.log('clean')
+  }
+
+  const menuClickHandler = (e) => {
+    if (selectedBtn !== Number(e.target.id)) {
+      switch (Number(e.target.id)) {
+        case 1:
+          // dispatch(getAllOrders())
+          setShow({})
+          setSelectedBtn(1)
+          // console.log('all orders')
+          break
+        case 2:
+          setShow({ filter: true })
+          setSelectedBtn(2)
+          // console.log('filter')
+          break
+        case 3:
+          setShow({ sort: true })
+          setSelectedBtn(3)
+          // console.log('sort')
+          break
+      }
+    }
   }
 
   return (
@@ -89,7 +115,7 @@ const OrdersListScreen = ({ history }) => {
           <Message variant='danger'>{error}</Message>
         ) : (
           <>
-            <h3 className='mb-5'>All Orders</h3>
+            <h3 className='mb-3'>All Orders</h3>
             {updateLoading && <Spinner />}
             {modal.display && (
               <UpdateDeliveryModal modal={modal} setModal={setModal} />
@@ -97,7 +123,28 @@ const OrdersListScreen = ({ history }) => {
             {flashMsg.display && (
               <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
             )}
-            <div className='py-4'></div>
+            <ButtonGroup>
+              {['all orders', 'filter', 'sort'].map((btn, i) => (
+                <Button
+                  variant='info'
+                  id={i + 1}
+                  key={i}
+                  disabled={selectedBtn === i + 1}
+                  onClick={menuClickHandler}
+                >
+                  {btn}
+                </Button>
+              ))}
+            </ButtonGroup>
+            {show.filter ? (
+              <div className='py-2'>
+                <OrdersFilter />
+              </div>
+            ) : show.sort ? (
+              <p>This feature is inshaallah coming soon!</p>
+            ) : (
+              <p></p>
+            )}
             <Table striped bordered hover responsive className='table-sm'>
               <thead>
                 <tr>

@@ -1,29 +1,23 @@
 import { useState } from 'react'
-import { Form, Row, Col, Button } from 'react-bootstrap'
+import { Form, Row, Col, ButtonGroup, Button } from 'react-bootstrap'
 import AdminProductSearch from '../../Search/AdminProductSearch'
 import FilterByAddress from './FilterByAddress'
 import FilterByDate from './FilterByDate'
 import FilterByPrice from './FilterByPrice'
-const checkBoxes = [
-  'No Filter',
-  'Customer',
-  'Product',
-  'Address',
-  'Date',
-  'Price',
-]
+const checkBoxes = ['Customer', 'Product', 'Address', 'Date', 'Price']
 
 const OrdersFilter = ({ onSubmit }) => {
   const [checked, setChecked] = useState(0)
   // const [clearFields, setClearFields] = useState(false)
 
-  const checkHandler = (e) => setChecked(Number(e.target.id))
+  const checkHandler = (e) => {
+    e.preventDefault()
+    setChecked(Number(e.target.id))
+  }
 
   const formDisplaySwitcher = () => {
     switch (checked) {
       case 0:
-        return <p></p>
-      case 1:
         return (
           <AdminProductSearch
             onSearch={customerFilterSubmit}
@@ -32,7 +26,7 @@ const OrdersFilter = ({ onSubmit }) => {
             buttonClass='outline-success'
           />
         )
-      case 2:
+      case 1:
         return (
           <AdminProductSearch
             onSearch={productFilterSubmit}
@@ -41,11 +35,11 @@ const OrdersFilter = ({ onSubmit }) => {
             buttonClass='outline-success'
           />
         )
-      case 3:
+      case 2:
         return <FilterByAddress onSubmit={addressFilterSubmit} />
-      case 4:
+      case 3:
         return <FilterByDate onSubmit={dateFilterSubmit} />
-      case 5:
+      case 4:
         return <FilterByPrice onSubmit={priceFilterSubmit} />
     }
   }
@@ -80,23 +74,20 @@ const OrdersFilter = ({ onSubmit }) => {
 
   return (
     <>
-      <Form>
-        <Row>
-          {checkBoxes.map((name, index) => (
-            <Col md={2} lg={2} key={index}>
-              <Form.Check
-                inline
-                label={name}
-                type='radio'
-                id={`${index}`}
-                checked={checked === index}
-                onChange={checkHandler}
-              />
-            </Col>
-          ))}
-        </Row>
-      </Form>
-      <div className='pt-5'>{formDisplaySwitcher()}</div>
+      <ButtonGroup>
+        {checkBoxes.map((name, index) => (
+          <Button
+            variant='secondary'
+            id={index}
+            key={index}
+            disabled={checked === index}
+            onClick={checkHandler}
+          >
+            {name}
+          </Button>
+        ))}
+      </ButtonGroup>
+      <div className='py-4'>{formDisplaySwitcher()}</div>
     </>
   )
 }

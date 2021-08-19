@@ -148,7 +148,7 @@ const FilterByPrice = ({ onSubmit }) => {
   return (
     <Form onSubmit={submitHandler}>
       {visible[0] && (
-        <Row>
+        <Row className='fully-centered'>
           <Col md={5} lg={5} sm={5}>
             <Form.Control
               as='select'
@@ -190,7 +190,7 @@ const FilterByPrice = ({ onSubmit }) => {
         </Row>
       )}
       {visible[1] && (
-        <Row className='pt-3'>
+        <Row className='pt-3 fully-centered'>
           <Col md={5} lg={5} sm={5}>
             <Form.Control
               as='select'
@@ -231,7 +231,7 @@ const FilterByPrice = ({ onSubmit }) => {
           )}
         </Row>
       )}
-      <Row className='pt-4'>
+      <Row className='pt-4 fully-centered'>
         <Col md={2} lg={2} sm={6}>
           {!(visible[0] && visible[1]) ? (
             <button

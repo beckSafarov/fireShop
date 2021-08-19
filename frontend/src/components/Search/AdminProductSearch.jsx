@@ -41,7 +41,7 @@ const AdminProductSearch = ({
 
   return (
     <Form onSubmit={submitHandler}>
-      <Row>
+      <Row className='fully-centered'>
         <Col md={8}>
           <Form.Control
             type='text'
