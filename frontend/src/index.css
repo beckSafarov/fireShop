@@ -288,26 +288,13 @@ small {
   /* align-items: center; */
 }
 
-button.light-btn-blue {
-  padding: 10px 25px 10px 25px;
-  width: 100%;
+button.light-btn-small {
+  padding: 0;
   border: none;
-  color: rgb(31, 155, 207);
+  color: #999999;
   background-color: transparent;
 }
 
-button.light-btn-blue:hover {
-  color: #4eb7e4;
-}
-
-button.light-btn-red {
-  padding: 10px 25px 10px 25px;
-  width: 100%;
-  border: none;
-  color: #cc1f00;
-  background-color: transparent;
-}
-
-button.light-btn-red:hover {
-  color: tomato;
+button.light-btn-small:hover {
+  color: #333333;
 }

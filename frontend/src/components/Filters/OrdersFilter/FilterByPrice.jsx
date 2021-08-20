@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Form, Row, Col, Button, Container } from 'react-bootstrap'
+import { Form, Row, Col, Button } from 'react-bootstrap'
 const filterOptions = {
   gt: {
     id: 2,
@@ -25,8 +25,7 @@ const filterOptions = {
 
 const FilterByPrice = ({ onSubmit }) => {
   const [vals, setVals] = useState([{ category: 'gt' }])
-  const [visible, setVisible] = useState([true, false])
-  const [showRemove, setShowRemove] = useState(false)
+  const [secondFilter, setSecondFilter] = useState(false)
   const [submittable, setSubmittable] = useState(false)
   const [fieldDisabled, setFieldDisabled] = useState(null)
   const [invalidFilter, setInvalidFilter] = useState(false)
@@ -83,26 +82,20 @@ const FilterByPrice = ({ onSubmit }) => {
     if (finalVals.length > 1) {
       let eq = haveEqual()
       if (eq) finalVals = [eq]
-      validFilter = filterValid()
     }
     validFilter && onSubmit(finalVals)
   }
 
   const addFilter = () => {
-    setVisible([true, true])
     setVals([...vals, { category: complementFilter(vals[0].category) }])
+    setSecondFilter(true)
   }
 
-  const removeFilter = (toRemove) => {
+  const removeFilter = () => {
     currVals = [...vals]
-    currVals.forEach((v, i) => {
-      i === toRemove && currVals.splice(i, 1)
-    })
+    currVals.pop()
     setVals(currVals)
-    const currVisible = [...visible]
-    currVisible[toRemove] = false
-    setShowRemove(false)
-    setVisible(currVisible)
+    setSecondFilter(false)
   }
 
   const complementFilter = (category) => {
@@ -123,7 +116,10 @@ const FilterByPrice = ({ onSubmit }) => {
 
   const fieldsFilled = () => {
     let filled = true
-    vals.forEach((val) => !val.value && (filled = false))
+    let eq = haveEqual()
+    eq
+      ? (filled = eq.value ? filled : false)
+      : vals.forEach((val) => !val.value && (filled = false))
     return filled
   }
 
@@ -147,117 +143,92 @@ const FilterByPrice = ({ onSubmit }) => {
 
   return (
     <Form onSubmit={submitHandler}>
-      {visible[0] && (
-        <Row className='fully-centered'>
-          <Col md={5} lg={5} sm={5}>
-            <Form.Control
-              as='select'
-              id='category_0'
-              defaultValue={vals[0] ? vals[0].category : 'gt'}
-              className={'bordered rounded'}
-              disabled={fieldDisabled === 0}
-              onChange={changesHandler}
-              isInvalid={invalidFilter}
-            >
-              {Object.keys(filterOptions).map((o, i) => (
-                <option key={i} value={o}>
-                  {filterOptions[o].text}
-                </option>
-              ))}
-            </Form.Control>
-          </Col>
-          <Col md={5} lg={5} sm={5}>
-            <Form.Control
-              type='number'
-              id='value_0'
-              onChange={changesHandler}
-              disabled={fieldDisabled === 0}
-              className='bordered rounded'
-              isInvalid={invalidValues[0]}
-              required
-            ></Form.Control>
-          </Col>
-          {showRemove && (
-            <Col md={2} lg={2} sm={2}>
-              <span
-                onClick={() => removeFilter(0)}
-                style={{ cursor: 'pointer', color: 'tomato' }}
-              >
-                <i className='fas fa-times'></i>
-              </span>
-            </Col>
-          )}
-        </Row>
-      )}
-      {visible[1] && (
-        <Row className='pt-3 fully-centered'>
-          <Col md={5} lg={5} sm={5}>
-            <Form.Control
-              as='select'
-              id='category_1'
-              className={'bordered rounded'}
-              defaultValue={vals[1] ? vals[1].category : 'gt'}
-              disabled={fieldDisabled === 1}
-              onChange={changesHandler}
-              isInvalid={invalidFilter}
-            >
-              {Object.keys(filterOptions).map((v, i) => (
-                <option key={i} value={v}>
-                  {filterOptions[v].text}
-                </option>
-              ))}
-            </Form.Control>
-          </Col>
-          <Col md={5} lg={5} sm={5}>
-            <Form.Control
-              type='number'
-              id='value_1'
-              onChange={changesHandler}
-              className='bordered rounded'
-              disabled={fieldDisabled === 1}
-              isInvalid={invalidValues[1]}
-              required
-            ></Form.Control>
-          </Col>
-          {showRemove && (
-            <Col md={2} lg={2} sm={2}>
-              <span
-                onClick={() => removeFilter(1)}
-                style={{ cursor: 'pointer', color: 'tomato' }}
-              >
-                <i className='fas fa-times'></i>
-              </span>
-            </Col>
-          )}
-        </Row>
-      )}
-      <Row className='pt-4 fully-centered'>
-        <Col md={2} lg={2} sm={6}>
-          {!(visible[0] && visible[1]) ? (
-            <button
-              type='button'
-              className='light-btn-blue'
-              onClick={addFilter}
-            >
-              + Add Filter
-            </button>
-          ) : (
-            <button
-              type='button'
-              className='light-btn-red'
-              onClick={() => setShowRemove(!showRemove)}
-            >
-              <i className='fas fa-times'></i> Remove Filter
-            </button>
-          )}
+      <Row className='fully-centered'>
+        <Col md={3} lg={3} sm={5}>
+          <Form.Control
+            as='select'
+            id='category_0'
+            defaultValue={vals[0] ? vals[0].category : 'gt'}
+            className={'bordered rounded'}
+            disabled={fieldDisabled === 0}
+            onChange={changesHandler}
+            isInvalid={invalidFilter}
+          >
+            {Object.keys(filterOptions).map((o, i) => (
+              <option key={i} value={o}>
+                {filterOptions[o].text}
+              </option>
+            ))}
+          </Form.Control>
         </Col>
-        <Col md={2} lg={2} sm={6}>
+        <Col md={2} lg={2} sm={5}>
+          <Form.Control
+            type='number'
+            id='value_0'
+            onChange={changesHandler}
+            disabled={fieldDisabled === 0}
+            className='bordered rounded'
+            isInvalid={invalidValues[0]}
+            required
+          ></Form.Control>
+        </Col>
+        {secondFilter ? (
+          <>
+            <Col md={3} lg={3} sm={3}>
+              <Form.Control
+                as='select'
+                id='category_1'
+                className={'bordered rounded'}
+                defaultValue={vals[1] ? vals[1].category : 'gt'}
+                disabled={fieldDisabled === 1}
+                onChange={changesHandler}
+                isInvalid={invalidFilter}
+              >
+                {Object.keys(filterOptions).map((v, i) => (
+                  <option key={i} value={v}>
+                    {filterOptions[v].text}
+                  </option>
+                ))}
+              </Form.Control>
+            </Col>
+            <Col md={2} lg={2} sm={2}>
+              <Form.Control
+                type='number'
+                id='value_1'
+                onChange={changesHandler}
+                className='bordered rounded'
+                disabled={fieldDisabled === 1}
+                isInvalid={invalidValues[1]}
+                required
+              ></Form.Control>
+            </Col>
+            <span
+              onClick={removeFilter}
+              style={{ cursor: 'pointer', color: '#999999' }}
+            >
+              <i className='fas fa-times'></i>
+            </span>
+          </>
+        ) : !haveEqual() ? (
+          <Col md={1} lg={1} sm={1}>
+            <button
+              type='button'
+              className='light-btn-small'
+              onClick={addFilter}
+              title='Add Another Filter'
+            >
+              <i className='fas fa-plus'></i>
+            </button>
+          </Col>
+        ) : (
+          <></>
+        )}
+        <Col md={1} lg={1} sm={1}>
           <Button
             type='submit'
-            variant='outline-success'
+            variant='outline-info'
             className='p-2 rounded'
             disabled={!submittable}
-            block
           >
             Filter
           </Button>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Form, Row, Col, ButtonGroup, Button } from 'react-bootstrap'
+import { ButtonGroup, Button } from 'react-bootstrap'
 import AdminProductSearch from '../../Search/AdminProductSearch'
 import FilterByAddress from './FilterByAddress'
 import FilterByDate from './FilterByDate'
@@ -8,19 +8,18 @@ const checkBoxes = ['Customer', 'Product', 'Address', 'Date', 'Price']
 
 const OrdersFilter = ({ onSubmit }) => {
   const [checked, setChecked] = useState(0)
-  // const [clearFields, setClearFields] = useState(false)
 
   const checkHandler = (e) => {
     e.preventDefault()
     setChecked(Number(e.target.id))
   }
 
-  const formDisplaySwitcher = () => {
+  const formSwitcher = () => {
     switch (checked) {
       case 0:
         return (
           <AdminProductSearch
-            onSearch={customerFilterSubmit}
+            onSearch={(o) => formSubmitHandler('user', o)}
             placeholder={'e.g. John Doe'}
             buttonText='Filter'
             buttonClass='outline-success'
@@ -29,65 +28,62 @@ const OrdersFilter = ({ onSubmit }) => {
       case 1:
         return (
           <AdminProductSearch
-            onSearch={productFilterSubmit}
+            onSearch={(o) => formSubmitHandler('orderItems', o)}
             placeholder={'e.g. iphone'}
             buttonText='Filter'
             buttonClass='outline-success'
           />
         )
       case 2:
-        return <FilterByAddress onSubmit={addressFilterSubmit} />
+        return (
+          <FilterByAddress onSubmit={(o) => formSubmitHandler('address', o)} />
+        )
       case 3:
-        return <FilterByDate onSubmit={dateFilterSubmit} />
+        return <FilterByDate onSubmit={(o) => formSubmitHandler('date', o)} />
       case 4:
-        return <FilterByPrice onSubmit={priceFilterSubmit} />
+        return <FilterByPrice onSubmit={(o) => formSubmitHandler('price', o)} />
     }
   }
 
-  const customerFilterSubmit = (keyword) =>
-    onSubmit(`?filter=user?user=${keyword}`)
-
-  const productFilterSubmit = (keyword) => {
-    onSubmit(`?filter=orderItems?orderItems=${keyword}`)
-  }
-
-  const addressFilterSubmit = (query) => {
-    onSubmit(
-      `?filter=shippingAddress?shippingAddress=${query.category}.${query.keyword}`
-    )
-  }
-
-  const dateFilterSubmit = (query) => {
-    onSubmit(`?filter=${query.category}?${query.category}=${query.time}`)
-  }
-
-  const priceFilterSubmit = (query) => {
-    const firstParam = `${query[0].category}=${query[0].value}`
-    const secondParam =
-      query.length > 1 ? `&${query[1].category}=${query[0].value}` : ''
-    onSubmit(`?filter=price&${firstParam}${secondParam}`)
-  }
-
-  const onClear = () => {
-    console.log('you cleared it')
+  const formSubmitHandler = (type, output) => {
+    switch (type) {
+      case 'user':
+      case 'orderItems':
+        onSubmit(`?filter=${type}?${type}=${output}`)
+        break
+      case 'address':
+        onSubmit(
+          `?filter=shippingAddress?shippingAddress=${output.category}.${output.keyword}`
+        )
+        break
+      case 'date':
+        onSubmit(`?filter=${output.category}?${output.category}=${output.time}`)
+        break
+      case 'price':
+        const firstParam = `${output[0].category}=${output[0].value}`
+        const secondParam =
+          output.length > 1 ? `&${output[1].category}=${output[1].value}` : ''
+        onSubmit(`?filter=price&${firstParam}${secondParam}`)
+        break
+    }
   }
 
   return (
     <>
       <ButtonGroup>
-        {checkBoxes.map((name, index) => (
+        {checkBoxes.map((label, i) => (
           <Button
             variant='secondary'
-            id={index}
-            key={index}
-            disabled={checked === index}
+            id={i}
+            key={i}
+            disabled={checked === i}
             onClick={checkHandler}
           >
-            {name}
+            {label}
           </Button>
         ))}
       </ButtonGroup>
-      <div className='py-4'>{formDisplaySwitcher()}</div>
+      <div className='py-4'>{formSwitcher()}</div>
     </>
   )
 }
