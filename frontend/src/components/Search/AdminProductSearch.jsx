@@ -12,6 +12,7 @@ const AdminProductSearch = ({
   placeholder,
   buttonText,
   buttonClass,
+  cancelButton,
 }) => {
   const [keyword, setKeyWord] = useState('')
   const [showCancel, setShowCancel] = useState(false)
@@ -62,7 +63,7 @@ const AdminProductSearch = ({
             {buttonText}
           </Button>
         </Col>
-        {showCancel && (
+        {showCancel && cancelButton && (
           <Col md={2}>
             <Button
               type='button'
@@ -88,6 +89,7 @@ AdminProductSearch.defaultProps = {
   placeholder: 'Search Product...',
   buttonText: 'Search',
   buttonClass: 'outline-info',
+  cancelButton: true,
   bordered: true,
   rounded: true,
 }

@@ -1,7 +1,7 @@
 import { Card } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import Rating from './Rating'
-import pluralize from '../../helpers/pluralize'
+import { pluralize } from '../../helpers/utilities'
 
 const Product = ({ product }) => {
   const { _id, image, name, rating, numReviews: revs, price } = product

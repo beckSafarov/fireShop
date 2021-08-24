@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Form, Row, Col, Button } from 'react-bootstrap'
+const timeOptions = ['day', 'week', 'month', 'year']
 
 const FilterByDate = ({ onSubmit }) => {
   const [category, setCategory] = useState('ordered')
@@ -37,24 +38,15 @@ const FilterByDate = ({ onSubmit }) => {
             className={'bordered rounded'}
             onChange={(e) => setTime(e.target.value)}
           >
-            <option key={1} value={'day'}>
-              a day ago
-            </option>
-            <option key={2} value={'week'}>
-              a week ago
-            </option>
-            <option key={3} value={'month'}>
-              a month ago
-            </option>
-            <option key={4} value={'year'}>
-              a year ago
-            </option>
+            {timeOptions.map((time, i) => (
+              <option key={i} value={time}>{`a ${time} ago`}</option>
+            ))}
           </Form.Control>
         </Col>
         <Col md={2} lg={2} sm={12}>
           <Button
             type='submit'
-            variant='outline-success'
+            variant='outline-info'
             className='p-2 rounded btn-block'
           >
             Filter

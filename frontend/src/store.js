@@ -25,6 +25,7 @@ const reducer = combineReducers({
   adminSearchUserStore: adminReducers.searchUserReducer,
   imgUploadStore: adminReducers.imgUploadReducer,
   ordersListStore: orderReducers.ordersListReducer,
+  ordersFilterStore: orderReducers.ordersFilterReducer,
   orderReducers: orderReducers.orderCreateReducer,
   orderDetails: orderReducers.orderDetailsReducer,
   myOrders: orderReducers.myOrdersReducer,

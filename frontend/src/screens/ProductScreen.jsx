@@ -22,7 +22,7 @@ import { listProductDetails as getProduct } from '../actions/productActions'
 import { addToCart, buyNowAction } from '../actions/cartActions'
 import { CART_PROPERTY_RESET as cartReset } from '../constants'
 import timeSince from '../helpers/timeSince'
-import pluralize from '../helpers/pluralize'
+import { pluralize } from '../helpers/utilities'
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --

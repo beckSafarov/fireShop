@@ -35,6 +35,9 @@ export { default as AdminProductSearch } from './Search/AdminProductSearch.jsx'
 // filters
 export { default as OrdersFilter } from './Filters/OrdersFilter/index'
 
+// sorts
+export { default as OrdersSort } from './Sorts/OrdersSort'
+
 // folderless
 export { default as AccountSideMenu } from './AccountSideMenu.jsx'
 export { default as Auth } from './Auth.jsx'

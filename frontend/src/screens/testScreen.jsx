@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 import { Row, Col, Nav, Form } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
-import { OrdersFilter } from '../components'
+import { OrdersFilter, OrdersSort } from '../components'
 
 const TestScreen = ({ history, match }) => {
   const people = ['Beck', 'Tom']
@@ -38,7 +38,7 @@ const TestScreen = ({ history, match }) => {
       <h1>Welcome to test page</h1>
       <p>playground for testing stuff</p>
       {positive && <p>positive</p>}
-      <OrdersFilter />
+      <OrdersSort />
     </>
   )
 }

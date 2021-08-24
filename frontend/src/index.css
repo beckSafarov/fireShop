@@ -48,6 +48,10 @@ h1 {
   width: 100%;
 }
 
+.fully-centered .element {
+  margin-right: 30px;
+}
+
 .form-field {
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -116,11 +120,33 @@ strong {
   justify-content: center;
 }
 
+.full-width {
+  width: 100%;
+}
+
 .hollow-btn {
   background-color: #fff;
   border: 1px solid #333;
   color: #333;
   width: 100%;
+}
+
+.menu-row {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.menu-row .menu-row-left {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.menu-row .menu-row-right {
+  flex: 4;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .hollow-btn:hover {

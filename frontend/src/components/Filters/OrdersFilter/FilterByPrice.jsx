@@ -76,7 +76,10 @@ const FilterByPrice = ({ onSubmit }) => {
     let validFilter = true
     let finalVals = [...vals]
     finalVals.forEach((val) => {
-      val.value = val.value < 0 || val.value.startsWith('0') ? 0 : val.value
+      val.value =
+        val.value && (val.value < 0 || val.value.startsWith('0'))
+          ? 0
+          : val.value
     })
 
     if (finalVals.length > 1) {

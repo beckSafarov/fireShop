@@ -6,56 +6,98 @@ import axios from 'axios'
 // UI components
 import {
   Message,
-  Loader,
   Auth,
   UpdateDeliveryModal,
   Spinner,
-  AdminSearch,
   OrdersFilter,
+  OrdersSort,
 } from '../../components'
-import { Table, Container, Button, ButtonGroup } from 'react-bootstrap'
+import {
+  Table,
+  Container,
+  Button,
+  ButtonGroup,
+  Collapse,
+  Fade,
+} from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 // Redux related imports
-import { getAllOrders } from '../../actions/orderActions'
-import { ORDERS_LIST_PROPERTY_RESET as updateReset } from '../../constants'
+import {
+  getAllOrders,
+  getFilteredOrders as filter,
+} from '../../actions/orderActions'
+import {
+  ORDERS_FILTER_RESET,
+  ORDERS_LIST_PROPERTY_RESET as orderPropReset,
+} from '../../constants'
+import { initSortVals } from '../../helpers/sortLCS'
+
+const querify = (sortVals) => {
+  let query = '?sort=true&'
+  sortVals.forEach((val, i) => {
+    query += `${val.sort}=${val.type}${i < sortVals.length - 1 ? '&' : ''}`
+  })
+  return query
+}
 
 const OrdersListScreen = ({ history }) => {
-  const [modal, setModal] = useState({})
-  const [flashMsg, setFlashMsg] = useState({})
-  const [textAlign, setTextAlign] = useState('center')
-  const [clearSearchField, setClearSearchField] = useState(false)
-  const [orders, setOrders] = useState([])
-  const [selectedBtn, setSelectedBtn] = useState(1)
-  const [show, setShow] = useState({})
-  // -- redux stores --
   const dispatch = useDispatch()
 
+  const [modal, setModal] = useState({})
+  const [flashMsg, setFlashMsg] = useState({})
+  const [selectedBtn, setSelectedBtn] = useState(1)
+  const [show, setShow] = useState({ sort: true })
+  const [orders, setOrders] = useState([])
+
+  // -- redux stores --
   // all orders
   const {
     loading: listLoading,
     orders: allOrders,
-    success,
+    success: allOrdersLoaded,
     type,
     error,
   } = useSelector((state) => state.ordersListStore)
 
-  // one order
-  const updated = success && type === 'update'
-  const { loading: updateLoading } = useSelector((state) => state.orderDetails)
+  // filtered orders
+  const {
+    loading: filterLoading,
+    orders: filteredOrders,
+    error: filterFailed,
+  } = useSelector((state) => state.ordersFilterStore)
 
-  const noOrders = !allOrders || allOrders.length === 0
+  // one order
+  const updated = allOrdersLoaded && type === 'update'
+  const { loading: updateLoading } = useSelector((state) => state.orderDetails)
+  const loading = listLoading || updateLoading || filterLoading
+  const sortQuery = initSortVals(0) ? querify(initSortVals()) : ''
+
+  // const noOrders = !allOrders || allOrders.length === 0
+  const filterOn = filteredOrders && filteredOrders.length > 0
 
   useEffect(() => {
-    noOrders ? dispatch(getAllOrders()) : setOrders(allOrders)
+    if (allOrdersLoaded) {
+      setOrders(allOrders)
+      dispatch({ type: orderPropReset, payload: 'success' })
+    }
+
+    if (orders.length < 1) dispatch(getAllOrders(sortQuery))
 
     if (updated) {
       msgHandler('Updated successfully')
       setModal({})
-      dispatch({ type: updateReset, payload: 'type' })
+      dispatch({ type: orderPropReset, payload: 'type' })
+    }
+
+    if (filterOn) setOrders(filteredOrders)
+
+    if (filterFailed) {
+      msgHandler(filterFailed, 'danger')
+      dispatch({ type: ORDERS_FILTER_RESET })
     }
 
     return () => axios.CancelToken.source().cancel()
-  }, [dispatch, updated, noOrders])
+  }, [dispatch, updated, orders, allOrdersLoaded, filterOn, filterFailed])
 
   const msgHandler = (message, variant = 'success', s = 3) => {
     setFlashMsg({ display: true, message, variant })
@@ -75,60 +117,48 @@ const OrdersListScreen = ({ history }) => {
     return date.toLocaleString()
   }
 
-  const filterHandler = (query) => {
-    dispatch(getAllOrders(query))
-  }
+  const filterHandler = (q) => dispatch(filter(q))
 
   const filterClearHandler = () => {
-    console.log('clean')
+    allOrders ? setOrders(allOrders) : dispatch(getAllOrders())
+    setShow({ sort: true })
+    dispatch({ type: ORDERS_FILTER_RESET })
+  }
+
+  const sortHandler = (sortVals) => {
+    // let query = ''
+    // sortVals.forEach((val, i) => {
+    //   query += `${val.sort}=${val.type}${i < sortVals.length - 1 ? '&' : ''}`
+    // })
+    // console.log(querify(sortVals))
+    dispatch(getAllOrders(querify(sortVals)))
   }
 
   const menuClickHandler = (e) => {
-    if (selectedBtn !== Number(e.target.id)) {
-      switch (Number(e.target.id)) {
-        case 1:
-          // dispatch(getAllOrders())
-          setShow({})
-          setSelectedBtn(1)
-          // console.log('all orders')
-          break
-        case 2:
-          setShow({ filter: true })
-          setSelectedBtn(2)
-          // console.log('filter')
-          break
-        case 3:
-          setShow({ sort: true })
-          setSelectedBtn(3)
-          // console.log('sort')
-          break
-      }
-    }
+    const { id } = e.target
+    const [sort, filter] = [true, true]
+    setShow(id == 1 ? { sort } : { filter })
+    setSelectedBtn(id)
   }
 
   return (
     <Auth history={history} adminOnly>
       <Container>
-        {listLoading ? (
-          <Loader />
-        ) : error ? (
-          <Message variant='danger'>{error}</Message>
-        ) : (
-          <>
-            <h3 className='mb-3'>All Orders</h3>
-            {updateLoading && <Spinner />}
-            {modal.display && (
-              <UpdateDeliveryModal modal={modal} setModal={setModal} />
-            )}
-            {flashMsg.display && (
-              <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
-            )}
-            <ButtonGroup>
-              {['all orders', 'filter', 'sort'].map((btn, i) => (
+        <>
+          <h3 className='mb-3'>All Orders</h3>
+          {loading && <Spinner />}
+          {modal.display && (
+            <UpdateDeliveryModal modal={modal} setModal={setModal} />
+          )}
+
+          <div className='menu-row'>
+            <ButtonGroup className='menu-row-left'>
+              {['sort', 'filter'].map((btn, i) => (
                 <Button
-                  variant='info'
+                  variant='dark'
                   id={i + 1}
                   key={i}
+                  // className='mb-4'
                   disabled={selectedBtn === i + 1}
                   onClick={menuClickHandler}
                 >
@@ -136,29 +166,53 @@ const OrdersListScreen = ({ history }) => {
                 </Button>
               ))}
             </ButtonGroup>
-            {show.filter ? (
-              <div className='py-2'>
-                <OrdersFilter />
-              </div>
-            ) : show.sort ? (
-              <p>This feature is inshaallah coming soon!</p>
-            ) : (
-              <p></p>
-            )}
-            <Table striped bordered hover responsive className='table-sm'>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>USER</th>
-                  <th>DATE</th>
-                  <th>PAID</th>
-                  <th>DELIVERY STATUS</th>
-                  <th>DELIVERY DATE</th>
-                </tr>
-              </thead>
-              <tbody style={{ textAlign }}>
-                {/* {console.log(orders)} */}
-                {orders.map((order) => (
+            <div className='menu-row-right'>
+              <Fade in={filterOn}>
+                <Button
+                  type='button'
+                  variant='light'
+                  className='rounded'
+                  onClick={filterClearHandler}
+                >
+                  {/* <i className='fas fa-undo'></i> */}
+                  <i
+                    style={{ fontSize: '20px', color: '#808080' }}
+                    className='fas fa-times'
+                  ></i>
+                </Button>
+              </Fade>
+            </div>
+          </div>
+          <Collapse in={show.sort}>
+            <div className='py-2'>
+              <OrdersSort onSubmit={sortHandler} />
+            </div>
+          </Collapse>
+
+          <Collapse in={show.filter}>
+            <div className='py-2'>
+              <OrdersFilter onSubmit={filterHandler} />
+            </div>
+          </Collapse>
+          {error && <Message variant='danger'>{error}</Message>}
+          {flashMsg.display && (
+            <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+          )}
+          <Table striped bordered hover responsive className='table-sm'>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>USER</th>
+                <th>DATE</th>
+                <th>PAID</th>
+                <th>DELIVERY STATUS</th>
+                <th>DELIVERY DATE</th>
+              </tr>
+            </thead>
+            <tbody style={{ textAlign: 'center' }}>
+              {/* {console.log(orders)} */}
+              {orders &&
+                orders.map((order) => (
                   <tr key={order._id}>
                     <td>
                       <LinkContainer to={`/orders/${order._id}`}>
@@ -190,10 +244,9 @@ const OrdersListScreen = ({ history }) => {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </Table>
-          </>
-        )}
+            </tbody>
+          </Table>
+        </>
       </Container>
     </Auth>
   )

@@ -22,7 +22,8 @@ const OrdersFilter = ({ onSubmit }) => {
             onSearch={(o) => formSubmitHandler('user', o)}
             placeholder={'e.g. John Doe'}
             buttonText='Filter'
-            buttonClass='outline-success'
+            buttonClass='outline-info'
+            cancelButton={false}
           />
         )
       case 1:
@@ -31,7 +32,8 @@ const OrdersFilter = ({ onSubmit }) => {
             onSearch={(o) => formSubmitHandler('orderItems', o)}
             placeholder={'e.g. iphone'}
             buttonText='Filter'
-            buttonClass='outline-success'
+            buttonClass='outline-info'
+            cancelButton={false}
           />
         )
       case 2:
@@ -49,15 +51,15 @@ const OrdersFilter = ({ onSubmit }) => {
     switch (type) {
       case 'user':
       case 'orderItems':
-        onSubmit(`?filter=${type}?${type}=${output}`)
+        onSubmit(`?filter=${type}&${type}=${output}`)
         break
       case 'address':
         onSubmit(
-          `?filter=shippingAddress?shippingAddress=${output.category}.${output.keyword}`
+          `?filter=shippingAddress&shippingAddress=${output.category}.${output.keyword}`
         )
         break
       case 'date':
-        onSubmit(`?filter=${output.category}?${output.category}=${output.time}`)
+        onSubmit(`?filter=${output.category}&${output.category}=${output.time}`)
         break
       case 'price':
         const firstParam = `${output[0].category}=${output[0].value}`
@@ -70,7 +72,7 @@ const OrdersFilter = ({ onSubmit }) => {
 
   return (
     <>
-      <ButtonGroup>
+      <ButtonGroup size='sm'>
         {checkBoxes.map((label, i) => (
           <Button
             variant='secondary'

@@ -11,7 +11,7 @@ import { listProducts } from '../actions/productActions.js'
 import { Link } from 'react-router-dom'
 import { getQueries } from '../helpers/urlHandler'
 import { PRODUCT_SEARCH_RESET } from '../constants'
-import pluralize from '../helpers/pluralize'
+import { pluralize } from '../helpers/utilities'
 
 // page/search?p=home&keyword=something
 const SearchScreen = ({ history }) => {

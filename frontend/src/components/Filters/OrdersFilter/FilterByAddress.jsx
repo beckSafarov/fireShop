@@ -69,7 +69,7 @@ const FilterByAddress = ({ onSubmit }) => {
         <Col md={2} sm={2} lg={2}>
           <Button
             className='p-2 rounded'
-            variant='outline-success'
+            variant='outline-info'
             type='submit'
             disabled={!submittable}
             block

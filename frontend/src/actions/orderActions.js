@@ -72,6 +72,8 @@ export const getAllOrders =
 
       const { data } = await axios.get(`/api/orders${query}`, axiosConfig)
 
+      if (query) console.log(data.orders.map((val) => val.totalPrice))
+
       dispatch({
         type: cs.ORDERS_LIST_SUCCESS,
         payload: data.orders,
@@ -79,6 +81,29 @@ export const getAllOrders =
     } catch (err) {
       dispatch({
         type: cs.ORDERS_LIST_FAILURE,
+        payload:
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message,
+      })
+    }
+  }
+
+export const getFilteredOrders =
+  (query = '') =>
+  async (dispatch) => {
+    try {
+      dispatch({ type: cs.ORDERS_FILTER_REQUEST })
+
+      const { data } = await axios.get(`/api/orders${query}`, axiosConfig)
+
+      dispatch({
+        type: cs.ORDERS_FILTER_SUCCESS,
+        payload: data.orders,
+      })
+    } catch (err) {
+      dispatch({
+        type: cs.ORDERS_FILTER_FAILURE,
         payload:
           err.response && err.response.data.message
             ? err.response.data.message

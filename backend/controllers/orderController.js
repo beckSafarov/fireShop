@@ -90,7 +90,6 @@ export const updateOrderDeliveryStatus = asyncHandler(async (req, res) => {
         i.isDelivered = true
       }
     })
-    console.log(user.purchased)
     await user.save()
   }
 
@@ -116,6 +115,10 @@ export const getAllOrders = asyncHandler(async (req, res) => {
     })
     filter.user = user[0]._id
   }
+
+  // console.log({ ...sort })
+  console.log(req.query)
+
   const orders = await Order.find({ ...filter })
     .sort({ ...sort })
     .populate('user', 'id name')
