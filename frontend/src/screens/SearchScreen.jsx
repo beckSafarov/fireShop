@@ -37,7 +37,7 @@ const SearchScreen = ({ history }) => {
 
   return (
     <>
-      {loading && <Spinner />}
+      <Spinner hidden={!loading} />
       <Container>
         {error && !notFound && <Message variant='danger'>{error}</Message>}
         {products && (

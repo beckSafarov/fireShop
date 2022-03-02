@@ -1,159 +1,211 @@
 // -- LIBRARIES --
-import { useState, useEffect } from 'react';
-import { Row, Col } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 
 // -- COMPONENTS --
-import { Auth, Message, Loader } from '../../components';
-import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms';
+import { Auth, Message, Loader, Spinner } from '../../components'
+import { Row, Col, Form, Button } from 'react-bootstrap'
+import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms'
 
 // -- REDUX RELATED IMPORTS --
-import { updateUserProfile } from '../../actions/userActions';
-import AccountSideMenu from '../../components/AccountSideMenu';
-import FieldsValidated from '../../helpers/FieldsValidated';
-import { USER_DETAILS_PROPERTY_RESET, USER_INFO_UPDATE } from '../../constants';
+import { updateUserProfile } from '../../actions/userActions'
+import AccountSideMenu from '../../components/AccountSideMenu'
+import FieldsValidated from '../../helpers/FieldsValidated'
+import { USER_DETAILS_PROPERTY_RESET, USER_INFO_UPDATE } from '../../constants'
+import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
+import { MAX_NAME_CHARS, PASSWORD_LENGTH } from '../../config'
+
+const formFields = [
+  { name: 'name', label: 'Name', required: true, type: 'text' },
+  { name: 'email', label: 'Email', required: true, type: 'email' },
+  { name: 'password', label: 'New Password', type: 'password', editOnly: true },
+  {
+    name: 'confirmPass',
+    label: 'Confirm Password',
+    type: 'password',
+    editOnly: true,
+  },
+]
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, 'Too Short!')
+    .max(MAX_NAME_CHARS, 'Too Long!')
+    .required('Please enter your name!'),
+  email: Yup.string()
+    .email('Please enter a valid email')
+    .required('Please enter your email'),
+  password: Yup.string()
+    .min(PASSWORD_LENGTH, 'Too Short!')
+    .max(32, 'Too Long!'),
+  confirmPass: Yup.string().min(6, 'Too Short!').max(32, 'Too Long!'),
+})
 
 const ProfileScreen = ({ history }) => {
   // hooks
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPass, setConfirmPass] = useState('');
-  const [editBtnClicked, setEditBtnClicked] = useState(false);
-  const [flashMsg, setFlashMsg] = useState({});
+  const [updatedVals, setUpdatedVals] = useState({})
+  const [editMode, setEditMode] = useState(false)
+  const [flashMsg, setFlashMsg] = useState({})
 
   // -- redux stores --
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const {
     loading: updateLoading,
     success: updateSuccess,
     error: updateError,
-  } = useSelector((state) => state.userDetailsUpdate);
+  } = useSelector((state) => state.userDetailsUpdate)
 
   // variables
-  const { userInfo } = useSelector((state) => state.userLogin);
-  const loading = updateLoading;
+  const { userInfo } = useSelector((state) => state.userLogin)
+  const loading = updateLoading
 
   useEffect(() => {
-    userInfo && resetValues();
-
     if (updateSuccess) {
       dispatch({
         type: USER_INFO_UPDATE,
-        payload: { name, email },
-      });
-      setEditBtnClicked(false);
-      setMsgHandler('Updated successfully', 'success');
-      rxReset('success');
-      updateValues();
+        payload: updatedVals,
+      })
+      setEditMode(false)
+      setMsgHandler('Updated successfully', 'success')
+      rxReset('success')
     }
 
     if (updateError) {
-      setMsgHandler(updateError, 'danger');
-      rxReset('success');
+      setMsgHandler(updateError, 'danger')
+      rxReset('success')
     }
 
-    return () => axios.CancelToken.source().cancel();
-  }, [updateSuccess, updateError, userInfo]);
-
-  const setMsgHandler = (msg, variant) => {
-    setFlashMsg({ display: true, variant, message: msg });
-    setTimeout(() => {
-      setFlashMsg({ display: false });
-    }, 3000);
-  };
-
-  const resetValues = () => {
-    setName(userInfo.name);
-    setEmail(userInfo.email);
-    setPassword('');
-    setConfirmPass('');
-  };
-
-  const updateValues = () => {
-    setName(name);
-    setEmail(email);
-  };
-
-  const submitHandler = (e) => {
-    e.preventDefault();
-    const validation = password
-      ? FieldsValidated(name, email)
-      : FieldsValidated(name, email, password, confirmPass);
-
-    validation.success
-      ? dispatch(
-          updateUserProfile({
-            name: name || undefined,
-            email: email || undefined,
-            password: password || undefined,
-          })
-        )
-      : setMsgHandler(validation.message, 'danger');
-  };
-
-  const cancelChanges = () => {
-    resetValues();
-    setEditBtnClicked(false);
-  };
-
-  const editBtnHandler = () => setEditBtnClicked(true);
+    return () => axios.CancelToken.source().cancel()
+  }, [updateSuccess, updateError])
 
   const rxReset = (payload) => {
     dispatch({
       type: USER_DETAILS_PROPERTY_RESET,
       payload,
-    });
-  };
+    })
+  }
 
   //preparing props to pass to profile update form
-  const values = { name, email };
-  const functions = {
-    submitHandler,
-    setName,
-    setEmail,
-    setPassword,
-    setConfirmPass,
-    cancelChanges,
-  };
+  const initialValues = {
+    name: userInfo?.name || '',
+    email: userInfo?.email || '',
+    password: '',
+    confirmPass: '',
+  }
+
+  const handleSubmit = ({ name, email, password, confirmPass }) => {
+    if (password !== confirmPass || (!password && confirmPass)) {
+      setMsgHandler('Passwords do not match', 'danger')
+      return
+    }
+    if (name === userInfo.name && email === userInfo.email && !password) {
+      setEditMode(false)
+      return
+    }
+    setUpdatedVals({ name, email })
+    dispatch(
+      updateUserProfile({
+        name,
+        email,
+        password: password || undefined,
+      })
+    )
+  }
+
+  const isInvalid = (f, p) => f.touched[p] && f.errors[p]
+
+  const setMsgHandler = (msg, variant) => {
+    setFlashMsg({ display: true, variant, message: msg })
+    setTimeout(() => {
+      setFlashMsg({ display: false })
+    }, 3000)
+  }
 
   return (
     <Auth history={history}>
       <Row>
-        {loading ? (
-          <Loader />
-        ) : (
-          <>
-            <Col md={2} sm={2}>
-              <AccountSideMenu active={1} />
-            </Col>
-            <Col md={10} sm={10}>
-              {userInfo && (
-                <>
-                  <h3>User Profile</h3>
-                  {flashMsg.display && (
-                    <Message variant={flashMsg.variant}>
-                      {flashMsg.message}
-                    </Message>
-                  )}
-                  {!editBtnClicked ? (
-                    <ReadOnlyForm
-                      name={name}
-                      email={email}
-                      onClick={editBtnHandler}
-                    />
-                  ) : (
-                    <ProfileUpdateForm values={values} functions={functions} />
-                  )}
-                </>
-              )}
-            </Col>
-          </>
-        )}
+        <Spinner hidden={!loading} />
+        <Col md={2} sm={2}>
+          <AccountSideMenu active={1} />
+        </Col>
+        <Col md={10} sm={10} hidden={!userInfo}>
+          <h3>User Profile</h3>
+          <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            <FormikForm>
+              {formFields.map((f, i) => (
+                <Form.Group
+                  key={i}
+                  controlId={f.name}
+                  hidden={!editMode && f.editOnly}
+                >
+                  <Field name={f.name}>
+                    {({ field, form }) => (
+                      <>
+                        <Form.Label>
+                          {f.label}
+                          <span
+                            className={f.required ? 'danger-text' : 'hidden'}
+                          >
+                            *
+                          </span>
+                        </Form.Label>
+                        <Form.Control
+                          type={f.type}
+                          readOnly={!editMode}
+                          isInvalid={isInvalid(form, f.name)}
+                          {...field}
+                        ></Form.Control>
+                      </>
+                    )}
+                  </Field>
+                  <ErrorMessage name={f.name}>
+                    {(msg) => (
+                      <Form.Control.Feedback type='invalid'>
+                        {msg}
+                      </Form.Control.Feedback>
+                    )}
+                  </ErrorMessage>
+                </Form.Group>
+              ))}
+              <Button
+                hidden={editMode}
+                type='button'
+                className='btn-block'
+                variant='info'
+                onClick={() => setEditMode(true)}
+              >
+                Edit
+              </Button>
+              <Row hidden={!editMode}>
+                <Col mb={2}>
+                  <Button
+                    type='reset'
+                    className='btn-block'
+                    variant='secondary'
+                    onClick={() => setEditMode(false)}
+                  >
+                    Cancel
+                  </Button>
+                </Col>
+                <Col mb={2}>
+                  <Button type='submit' className='btn-block' variant='success'>
+                    Save
+                  </Button>
+                </Col>
+              </Row>
+            </FormikForm>
+          </Formik>
+        </Col>
       </Row>
     </Auth>
-  );
-};
+  )
+}
 
-export default ProfileScreen;
+export default ProfileScreen

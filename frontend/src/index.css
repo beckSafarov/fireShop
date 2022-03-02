@@ -118,6 +118,10 @@ strong {
   border-radius: 10px;
 } */
 
+.hidden {
+  display: none !important;
+}
+
 .flex-row {
   display: flex;
   align-items: flex-start;
