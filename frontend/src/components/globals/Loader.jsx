@@ -1,8 +1,8 @@
-import React from 'react';
-import { Spinner } from 'react-bootstrap';
+import React from 'react'
+import { Spinner } from 'react-bootstrap'
 
-const Loader = () => {
-  return (
+const Loader = ({ hidden }) => {
+  return !hidden ? (
     <Spinner
       animation='border'
       role='status'
@@ -15,7 +15,13 @@ const Loader = () => {
     >
       <span className='sr-only'></span>
     </Spinner>
-  );
-};
+  ) : (
+    <></>
+  )
+}
 
-export default Loader;
+Loader.defaultProps = {
+  hidden: false,
+}
+
+export default Loader

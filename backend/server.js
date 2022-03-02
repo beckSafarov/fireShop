@@ -56,7 +56,6 @@ const server = app.listen(
 //handle unhandled rejections
 process.on('unhandledRejection', (err, promise) => {
   console.log('unhandledRejection: ', err.message)
-  //close server & exit process
   server.close()
 })
 
@@ -66,7 +65,6 @@ process.on('uncaughtException', (err, promise) => {
     'Stupid Error that happens when the address is being used'.red.underline
       .bold
   )
-  //close server & exit process
   app.removeAllListeners()
   process.exit(1)
 })
@@ -74,6 +72,10 @@ process.on('uncaughtException', (err, promise) => {
 //killing server
 process.on('SIGTERM', (err, promise) => {
   console.log('SIGTERM', err.message)
-  //close server & exit process
+  server.close()
+})
+
+process.on('error', (err, promise) => {
+  console.log('random error: ', err.message)
   server.close()
 })

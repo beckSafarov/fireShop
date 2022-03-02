@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Row, Col, Nav, Form } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
 import { OrdersFilter, OrdersSort } from '../components'
+import MyForm from '../components/MyForm'
 
 const TestScreen = ({ history, match }) => {
   const people = ['Beck', 'Tom']
@@ -38,7 +39,8 @@ const TestScreen = ({ history, match }) => {
       <h1>Welcome to test page</h1>
       <p>playground for testing stuff</p>
       {positive && <p>positive</p>}
-      <OrdersSort />
+      {/* <OrdersSort /> */}
+      <MyForm />
     </>
   )
 }

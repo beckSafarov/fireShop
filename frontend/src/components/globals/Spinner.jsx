@@ -1,14 +1,19 @@
-import React from 'react';
-import Spinner from 'react-bootstrap/Spinner';
+import React from 'react'
+import Spinner from 'react-bootstrap/Spinner'
 
-const Loader2 = () => {
-  return (
+const MySpinner = ({ hidden }) => {
+  return !hidden ? (
     <div className='loader-container'>
       <Spinner variant='info' animation='border' role='status'>
         <span className='sr-only'>Loading...</span>
       </Spinner>
     </div>
-  );
-};
+  ) : (
+    <></>
+  )
+}
+MySpinner.defaultProps = {
+  hidden: false,
+}
 
-export default Loader2;
+export default MySpinner

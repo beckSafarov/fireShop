@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^12.7.0",
     "axios": "^0.21.1",
     "dayjs": "^1.10.6",
+    "formik": "^2.2.9",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",
     "react-dom": "^17.0.1",
@@ -21,7 +22,8 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
-    "web-vitals": "^1.1.0"
+    "web-vitals": "^1.1.0",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "react-scripts start",

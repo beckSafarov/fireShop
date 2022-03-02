@@ -58,6 +58,10 @@ h1 {
   outline: none;
 }
 
+.form-field .error {
+  border: 1px solid red;
+}
+
 .dark-blue-btn {
   background-color: #343a40;
 }
