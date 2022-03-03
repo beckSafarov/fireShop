@@ -48,3 +48,11 @@ export const ObjectsCompare = (obj1, obj2) => {
   })
   return ch
 }
+
+export const areSameObjects = (obj1, obj2) => {
+  const str1 = Object.values(obj1).join(', ')
+  const str2 = Object.values(obj2).join(', ')
+  return str1 === str2
+}
+
+export const isInvalid = (f, p) => f.touched[p] && f.errors[p]

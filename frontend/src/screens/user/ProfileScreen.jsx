@@ -4,14 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // -- COMPONENTS --
-import { Auth, Message, Loader, Spinner } from '../../components'
+import { Auth, Message, Spinner } from '../../components'
 import { Row, Col, Form, Button } from 'react-bootstrap'
-import { ReadOnlyForm, ProfileUpdateForm } from '../../components/Forms'
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile } from '../../actions/userActions'
 import AccountSideMenu from '../../components/AccountSideMenu'
-import FieldsValidated from '../../helpers/FieldsValidated'
 import { USER_DETAILS_PROPERTY_RESET, USER_INFO_UPDATE } from '../../constants'
 import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
@@ -151,7 +149,9 @@ const ProfileScreen = ({ history }) => {
                         <Form.Label>
                           {f.label}
                           <span
-                            className={f.required ? 'danger-text' : 'hidden'}
+                            className={
+                              editMode && f.required ? 'danger-text' : 'hidden'
+                            }
                           >
                             *
                           </span>
