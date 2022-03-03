@@ -15,6 +15,7 @@ import { USER_DETAILS_PROPERTY_RESET as userInfoReset } from '../../constants'
 import { USER_INFO_UPDATE } from '../../constants'
 import { areSameObjects } from '../../helpers/utilities'
 import { isInvalid } from '../../helpers/utilities'
+import FormikFieldGroup from '../../components/FormikFieldGroup'
 
 const formFields = [
   { name: 'address', type: 'text', label: 'Address' },
@@ -119,28 +120,11 @@ const ShaddressScreen = ({ history }) => {
             >
               <FormikForm>
                 {formFields.map((f, i) => (
-                  <Form.Group key={i} controlId={f.name}>
-                    <Field name={f.name}>
-                      {({ field, form }) => (
-                        <>
-                          <Form.Label>{f.label}</Form.Label>
-                          <Form.Control
-                            type={f.type}
-                            readOnly={!editMode}
-                            isInvalid={isInvalid(form, f.name)}
-                            {...field}
-                          ></Form.Control>
-                        </>
-                      )}
-                    </Field>
-                    <ErrorMessage name={f.name}>
-                      {(msg) => (
-                        <Form.Control.Feedback type='invalid'>
-                          {msg}
-                        </Form.Control.Feedback>
-                      )}
-                    </ErrorMessage>
-                  </Form.Group>
+                  <FormikFieldGroup
+                    key={i}
+                    formField={f}
+                    readOnly={!editMode}
+                  />
                 ))}
                 <Button
                   hidden={editMode}

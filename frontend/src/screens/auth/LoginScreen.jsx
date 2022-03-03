@@ -1,12 +1,13 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Form, Button, Row, Col } from 'react-bootstrap'
+import { Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik'
+import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 // internal components
 import { Auth, FormContainer, Message, Spinner } from '../../components'
 // redux actions
 import { login } from '../../actions/userActions'
+import FormikFieldGroup from '../../components/FormikFieldGroup'
 const initialValues = { email: '', password: '' }
 
 const formFields = [
@@ -39,8 +40,6 @@ const LoginScreen = ({ history }) => {
     dispatch(login(vals.email, vals.password))
   }
 
-  const isInvalid = (f, p) => f.touched[p] && f.errors[p]
-
   return (
     <Auth history={history} reverse>
       <FormContainer>
@@ -55,27 +54,7 @@ const LoginScreen = ({ history }) => {
           >
             <FormikForm>
               {formFields.map((f, i) => (
-                <Form.Group key={i} controlId={f.name}>
-                  <Field name={f.name}>
-                    {({ field, form }) => (
-                      <>
-                        <Form.Label>{f.label}</Form.Label>
-                        <Form.Control
-                          type={f.type}
-                          isInvalid={isInvalid(form, f.name)}
-                          {...field}
-                        ></Form.Control>
-                      </>
-                    )}
-                  </Field>
-                  <ErrorMessage name={f.name}>
-                    {(msg) => (
-                      <Form.Control.Feedback type='invalid'>
-                        {msg}
-                      </Form.Control.Feedback>
-                    )}
-                  </ErrorMessage>
-                </Form.Group>
+                <FormikFieldGroup key={i} formField={f} />
               ))}
               <Button type='submit' className='btn-block' variant='info'>
                 Sign in

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik'
+import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 // UI components
 
@@ -12,6 +12,7 @@ import { Auth, Message, Loader, FormContainer } from '../../components'
 // redux actions
 import { register } from '../../actions/userActions'
 import { MAX_NAME_CHARS, PASSWORD_LENGTH } from '../../config'
+import FormikFieldGroup from '../../components/FormikFieldGroup'
 
 const initialValues = { name: '', email: '', password: '', confirmPass: '' }
 
@@ -62,7 +63,6 @@ const RegisterScreen = ({ history }) => {
     onSubmitProps.setSubmitting(false)
     onSubmitProps.resetForm()
   }
-  const isInvalid = (f, p) => f.touched[p] && f.errors[p]
 
   return (
     <Auth history={history} reverse>
@@ -77,27 +77,7 @@ const RegisterScreen = ({ history }) => {
         >
           <FormikForm>
             {formFields.map((f, i) => (
-              <Form.Group key={i} controlId={f.name}>
-                <Field name={f.name}>
-                  {({ field, form }) => (
-                    <>
-                      <Form.Label>{f.label}</Form.Label>
-                      <Form.Control
-                        type={f.type}
-                        isInvalid={isInvalid(form, f.name)}
-                        {...field}
-                      ></Form.Control>
-                    </>
-                  )}
-                </Field>
-                <ErrorMessage name={f.name}>
-                  {(msg) => (
-                    <Form.Control.Feedback type='invalid'>
-                      {msg}
-                    </Form.Control.Feedback>
-                  )}
-                </ErrorMessage>
-              </Form.Group>
+              <FormikFieldGroup key={i} formField={f} />
             ))}
             <Button type='submit' className='btn-block' variant='info'>
               Register

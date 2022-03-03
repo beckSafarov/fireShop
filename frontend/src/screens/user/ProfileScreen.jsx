@@ -14,6 +14,7 @@ import { USER_DETAILS_PROPERTY_RESET, USER_INFO_UPDATE } from '../../constants'
 import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { MAX_NAME_CHARS, PASSWORD_LENGTH } from '../../config'
+import FormikFieldGroup from '../../components/FormikFieldGroup'
 
 const formFields = [
   { name: 'name', label: 'Name', required: true, type: 'text' },
@@ -112,8 +113,6 @@ const ProfileScreen = ({ history }) => {
     )
   }
 
-  const isInvalid = (f, p) => f.touched[p] && f.errors[p]
-
   const setMsgHandler = (msg, variant) => {
     setFlashMsg({ display: true, variant, message: msg })
     setTimeout(() => {
@@ -138,41 +137,13 @@ const ProfileScreen = ({ history }) => {
           >
             <FormikForm>
               {formFields.map((f, i) => (
-                <Form.Group
+                <FormikFieldGroup
                   key={i}
-                  controlId={f.name}
+                  formField={f}
                   hidden={!editMode && f.editOnly}
-                >
-                  <Field name={f.name}>
-                    {({ field, form }) => (
-                      <>
-                        <Form.Label>
-                          {f.label}
-                          <span
-                            className={
-                              editMode && f.required ? 'danger-text' : 'hidden'
-                            }
-                          >
-                            *
-                          </span>
-                        </Form.Label>
-                        <Form.Control
-                          type={f.type}
-                          readOnly={!editMode}
-                          isInvalid={isInvalid(form, f.name)}
-                          {...field}
-                        ></Form.Control>
-                      </>
-                    )}
-                  </Field>
-                  <ErrorMessage name={f.name}>
-                    {(msg) => (
-                      <Form.Control.Feedback type='invalid'>
-                        {msg}
-                      </Form.Control.Feedback>
-                    )}
-                  </ErrorMessage>
-                </Form.Group>
+                  isMandatoryField={editMode && f.required}
+                  readOnly={!editMode}
+                />
               ))}
               <Button
                 hidden={editMode}
