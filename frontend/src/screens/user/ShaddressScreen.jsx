@@ -1,9 +1,9 @@
 // -- LIBRARIES/METHODS --
 import { useState, useEffect } from 'react'
-import { Row, Col, Form, Button } from 'react-bootstrap'
+import { Row, Col, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
-import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik'
+import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 
 // -- COMPONENTS --
@@ -14,7 +14,6 @@ import { updateUserProfile as update } from '../../actions/userActions'
 import { USER_DETAILS_PROPERTY_RESET as userInfoReset } from '../../constants'
 import { USER_INFO_UPDATE } from '../../constants'
 import { areSameObjects } from '../../helpers/utilities'
-import { isInvalid } from '../../helpers/utilities'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
 
 const formFields = [
@@ -102,6 +101,16 @@ const ShaddressScreen = ({ history }) => {
     country: shaddress?.country || '',
   }
 
+  const editModeBtns = [
+    {
+      type: 'reset',
+      variant: 'secondary',
+      onClick: () => setEditMode(false),
+      label: 'Cancel',
+    },
+    { type: 'submit', variant: 'success', onClick: void 0, label: 'Save' },
+  ]
+
   return (
     <Auth history={history}>
       <Row>
@@ -136,25 +145,18 @@ const ShaddressScreen = ({ history }) => {
                   Edit
                 </Button>
                 <Row hidden={!editMode}>
-                  <Col mb={2}>
-                    <Button
-                      type='reset'
-                      className='btn-block'
-                      variant='secondary'
-                      onClick={() => setEditMode(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </Col>
-                  <Col mb={2}>
-                    <Button
-                      type='submit'
-                      className='btn-block'
-                      variant='success'
-                    >
-                      Save
-                    </Button>
-                  </Col>
+                  {editModeBtns.map((btn) => (
+                    <Col mb={2}>
+                      <Button
+                        type={btn.type}
+                        className='btn-block'
+                        variant={btn.variant}
+                        onClick={btn.onClick}
+                      >
+                        {btn.label}
+                      </Button>
+                    </Col>
+                  ))}
                 </Row>
               </FormikForm>
             </Formik>

@@ -4,113 +4,135 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 // ui components
 import {
-  Loader,
   Message,
   CheckOutSteps,
   FormContainer,
-  Exceptional,
   Spinner,
 } from '../../components'
-import { ShaddressReadForm, ShaddressUpdateForm } from '../../components/Forms'
+import { Row, Col, Button } from 'react-bootstrap'
+import { Formik, Form as FormikForm } from 'formik'
+import * as Yup from 'yup'
 
 // redux related
-import { createShaddress } from '../../actions/userActions'
+import { updateUserProfile as update } from '../../actions/userActions'
 import Auth from '../../components/Auth'
-import {
-  SHADDRESS_PROPERTY_RESET as shaddresReset,
-  USER_INFO_UPDATE,
-} from '../../constants'
+import { USER_INFO_UPDATE } from '../../constants'
+import FormikFieldGroup from '../../components/FormikFieldGroup'
+import { areSameObjects } from '../../helpers/utilities'
+import { USER_DETAILS_PROPERTY_RESET as userInfoReset } from '../../constants'
 
-const defaultFields = {
-  address: '',
-  city: '',
-  postalCode: '',
-  country: '',
-}
+const formFields = [
+  { name: 'address', type: 'text', label: 'Address' },
+  { name: 'city', type: 'text', label: 'City' },
+  { name: 'postalCode', type: 'number', label: 'Postal Code' },
+  { name: 'country', type: 'text', label: 'Country' },
+]
 
-const ShippingScreen = ({ history, location, match }) => {
+const validationSchema = Yup.object().shape({
+  address: Yup.string()
+    .min(4, 'Too Short!')
+    .max(32, 'Too Long!')
+    .required('Please enter your address!'),
+  city: Yup.string()
+    .min(2, 'Too Short!')
+    .max(20, 'Too Long!')
+    .required('Please enter your city name!'),
+  postalCode: Yup.number()
+    .min(0, 'Invalid PostCode!')
+    .required('Please enter your postal code!'),
+  country: Yup.string()
+    .min(3, 'Too Short!')
+    .max(32, 'Too Long!')
+    .required('Please enter your country name!'),
+})
+
+const ShippingScreen = ({ history }) => {
   // redux related
   const dispatch = useDispatch()
   const {
     loading,
-    success: updated,
+    success: updateSuccess,
     error: updateError,
-  } = useSelector((state) => state.shaddress)
+  } = useSelector((state) => state.userDetailsUpdate)
   const { userInfo } = useSelector((state) => state.userLogin)
-  const shaddress =
-    userInfo && userInfo.shippingAddress ? userInfo.shippingAddress : null
+  const shaddress = userInfo?.shippingAddress || {}
   const { cartItems } = useSelector((state) => state.cart)
 
   // variables
-  const basicFields = shaddress || defaultFields
   const emptyCart =
     userInfo && userInfo.cartItems.length === 0 && cartItems.length === 0
-  const hasAddress = userInfo && userInfo.shippingAddress ? true : false
-  let newFields
+  const hasAddress = userInfo?.shippingAddress ? true : false
 
   // hooks
-  const [fields, setFields] = useState({ ...basicFields })
-  const [editBtnClicked, setEditBtnClicked] = useState(false)
+  const [updatedFields, setUpdatedFields] = useState({})
+  const [editMode, setEditMode] = useState(false)
   const [flashMsg, setFlashMsg] = useState({})
-  const [changed, setChanged] = useState(false)
 
   useEffect(() => {
-    userInfo && emptyCart && history.push('/')
+    if (userInfo && emptyCart) history.push('/')
 
-    if (updated || updateError) {
-      if (updated) {
+    if (!hasAddress) setEditMode(true)
+
+    if (updateSuccess || updateError) {
+      if (updateSuccess) {
         dispatch({
           type: USER_INFO_UPDATE,
-          payload: { shippingAddress: fields },
+          payload: { shippingAddress: updatedFields },
         })
-        setEditBtnClicked(false)
+        setEditMode(false)
+        msgHandler('Updated successfully')
       }
-      updated
-        ? msgHandler('Updated successfully')
-        : msgHandler(updateError, 'danger')
-      dispatch({ type: shaddresReset, payload: updated ? 'success' : 'error' })
-      setChanged(false)
+      updateError && msgHandler(updateError, 'danger')
+      dispatch({
+        type: userInfoReset,
+        payload: updateSuccess ? 'success' : 'error',
+      })
     }
 
     return () => axios.CancelToken.source().cancel()
-  }, [emptyCart, shaddress, updated, updateError])
+  }, [emptyCart, shaddress, updateSuccess, updateError])
 
-  const confirmHandler = () => history.push('/payment')
-
-  const createAddressHandler = (e) => {
-    e.preventDefault()
-    dispatch(createShaddress(fields))
+  const handleSubmit = (vals) => {
+    if (areSameObjects(shaddress, vals)) {
+      setEditMode(false)
+      return
+    }
+    setUpdatedFields(vals)
+    dispatch(update({ shippingAddress: vals }))
   }
 
-  const changesHandler = (e) => {
-    e.persist()
-    setChanged(true)
-    newFields = { ...fields }
-    newFields[e.target.name] = e.target.value
-    setFields(newFields)
-    console.log(changed)
+  const initialValues = {
+    address: shaddress?.address || '',
+    city: shaddress?.city || '',
+    postalCode: shaddress?.postalCode || '',
+    country: shaddress?.country || '',
   }
 
-  const editBtnHandler = () => setEditBtnClicked(!editBtnClicked)
+  const readModeBtns = [
+    { variant: 'info', onClick: () => setEditMode(true), label: 'Edit' },
+    {
+      variant: 'success',
+      onClick: () => history.push('/payment'),
+      label: 'Confirm',
+    },
+  ]
 
-  const cancelChanges = () => {
-    setFields({ ...basicFields })
-    setChanged(false)
-    setEditBtnClicked(!editBtnClicked)
-  }
-
-  const functionsForReadForm = {
-    onClick: editBtnHandler,
-    onProceed: confirmHandler,
-  }
-
-  const functionsForUpdateForm = {
-    submitHandler: createAddressHandler,
-    changesHandler,
-    cancelChanges,
-  }
-
-  const values = { ...fields, changed }
+  const editModeBtns = [
+    {
+      variant: 'secondary',
+      type: 'reset',
+      onClick: () => setEditMode(false),
+      hidden: !hasAddress,
+      label: 'Cancel',
+    },
+    {
+      variant: 'success',
+      type: 'submit',
+      onClick: void 0,
+      hidden: false,
+      label: 'Save',
+    },
+  ]
 
   const msgHandler = (message, variant = 'success') => {
     setFlashMsg({ display: true, variant, message })
@@ -122,24 +144,47 @@ const ShippingScreen = ({ history, location, match }) => {
       <FormContainer>
         <CheckOutSteps step1 step2 />
         <h1>Shipping Address</h1>
-        {loading && <Spinner />}
-        {flashMsg.display && (
-          <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
-        )}
-        {editBtnClicked || !hasAddress ? (
-          <ShaddressUpdateForm
-            values={values}
-            functions={functionsForUpdateForm}
-            profile={false}
-            addressExists={hasAddress}
-          />
-        ) : (
-          <ShaddressReadForm
-            values={fields}
-            functions={functionsForReadForm}
-            profile={false}
-          />
-        )}
+        <Spinner hidden={!loading} />
+        <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          <FormikForm>
+            {formFields.map((f, i) => (
+              <FormikFieldGroup key={i} formField={f} readOnly={!editMode} />
+            ))}
+            <Row hidden={editMode}>
+              {readModeBtns.map((btn, i) => (
+                <Col key={i} mb={2}>
+                  <Button
+                    type='button'
+                    className='btn-block'
+                    variant={btn.variant}
+                    onClick={btn.onClick}
+                  >
+                    {btn.label}
+                  </Button>
+                </Col>
+              ))}
+            </Row>
+            <Row hidden={!editMode}>
+              {editModeBtns.map((btn, i) => (
+                <Col key={i} mb={2} hidden={btn.hidden}>
+                  <Button
+                    type={btn.type}
+                    className='btn-block'
+                    variant={btn.variant}
+                    onClick={btn.onClick}
+                  >
+                    {btn.label}
+                  </Button>
+                </Col>
+              ))}
+            </Row>
+          </FormikForm>
+        </Formik>
       </FormContainer>
     </Auth>
   )
