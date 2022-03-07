@@ -119,11 +119,9 @@ const ProductEditScreen = ({ history, match }) => {
     <Auth history={history} adminOnly>
       <FormContainer>
         <h2>{product && product.name}</h2>
-        {loading && <Spinner />}
-        {requestError && <Message variant='danger'>{requestError}</Message>}
-        {flashMsg.display && (
-          <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
-        )}
+        <Spinner hidden={!loading} />
+        <Message variant='danger'>{requestError}</Message>
+        <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
         <div className='py-4'>
           <div className='centered-img'>
             <img src={updatedProduct.image} alt='Product Image' />

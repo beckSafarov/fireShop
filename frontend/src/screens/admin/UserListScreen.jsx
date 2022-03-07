@@ -11,7 +11,6 @@ import {
   Loader,
   Spinner,
   Exceptional,
-  UserEditPopup,
   SearchUser,
 } from '../../components'
 
@@ -23,6 +22,7 @@ import {
   ADMIN_USER_DELETE_RESET,
   ADMIN_USER_UPDATE_RESET,
 } from '../../constants'
+import UserEditModal from '../../components/Modals/UserEditModal'
 // import SearchUser from '../../components'
 
 const UserListScreen = ({ history }) => {
@@ -190,7 +190,10 @@ const UserListScreen = ({ history }) => {
               ))}
             </tbody>
           </Table>
-          <UserEditPopup modal={modal} setModal={setModal} />
+          <UserEditModal
+            modal={modal}
+            onClose={() => setModal({ display: false })}
+          />
         </>
       ) : (
         <Exceptional />

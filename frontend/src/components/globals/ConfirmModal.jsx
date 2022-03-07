@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { useState, useEffect } from 'react'
+import { Modal, Button } from 'react-bootstrap'
 
 const ConfirmModal = ({
   active,
@@ -10,14 +10,14 @@ const ConfirmModal = ({
   proceedText,
   primaryVariant,
 }) => {
-  const [show, setShow] = useState(null);
+  const [show, setShow] = useState(null)
 
   useEffect(() => {
-    setShow(active);
-  }, [active]);
+    setShow(active)
+  }, [active])
 
   return (
-    <Modal show={show} onHide={hideHandler}>
+    <Modal show={active} onHide={hideHandler}>
       <Modal.Header closeButton>
         <Modal.Title>{heading}</Modal.Title>
       </Modal.Header>
@@ -31,8 +31,8 @@ const ConfirmModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
 ConfirmModal.defaultProps = {
   active: false,
@@ -42,6 +42,6 @@ ConfirmModal.defaultProps = {
   hideHandler: () => console.log('hideHandler not passed'),
   proceedText: 'PROCEED',
   primaryVariant: 'success',
-};
+}
 
-export default ConfirmModal;
+export default ConfirmModal

@@ -55,4 +55,10 @@ export const areSameObjects = (obj1, obj2) => {
   return str1 === str2
 }
 
+export const withoutProps = (obj, props = []) => {
+  const objCopy = { ...obj }
+  props.forEach((p) => delete objCopy[p])
+  return objCopy
+}
+
 export const isInvalid = (f, p) => f.touched[p] && f.errors[p]

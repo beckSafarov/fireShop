@@ -23,7 +23,7 @@ export { default as Rating } from './Product/Rating.jsx'
 export { default as Rate } from './Product/Rate.jsx'
 
 // modals
-export { default as UserEditPopup } from './Modals/UserEditPopup.jsx'
+export { default as UserEditModal } from './Modals/UserEditModal.jsx'
 export { default as UpdateDeliveryModal } from './Modals/UpdateDeliveryModal.jsx'
 export { default as Review } from './Modals/Review.jsx'
 

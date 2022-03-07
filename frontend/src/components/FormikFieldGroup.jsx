@@ -14,18 +14,31 @@ const FormikFieldGroup = ({
       <Field name={f.name}>
         {({ field, form }) => (
           <>
-            <Form.Label>
-              {f.label}
-              <span className={isMandatoryField ? 'danger-text' : 'hidden'}>
-                *
-              </span>
-            </Form.Label>
-            <Form.Control
-              type={f.type}
-              readOnly={readOnly}
-              isInvalid={isInvalid(form, f.name)}
-              {...field}
-            ></Form.Control>
+            {f.type === 'switch' ? (
+              <Form.Check
+                type='switch'
+                variant='info'
+                checked={field.value || false}
+                name={f.name}
+                label={field.value ? 'Admin' : 'Not Admin'}
+                {...field}
+              />
+            ) : (
+              <>
+                <Form.Label>
+                  {f.label}
+                  <span className={isMandatoryField ? 'danger-text' : 'hidden'}>
+                    *
+                  </span>
+                </Form.Label>
+                <Form.Control
+                  type={f.type}
+                  readOnly={readOnly}
+                  isInvalid={isInvalid(form, f.name)}
+                  {...field}
+                />
+              </>
+            )}
           </>
         )}
       </Field>
