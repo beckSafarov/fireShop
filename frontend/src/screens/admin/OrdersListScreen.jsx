@@ -148,7 +148,10 @@ const OrdersListScreen = ({ history }) => {
           <h3 className='mb-3'>All Orders</h3>
           {loading && <Spinner />}
           {modal.display && (
-            <UpdateDeliveryModal modal={modal} setModal={setModal} />
+            <UpdateDeliveryModal
+              modal={modal}
+              onClose={() => setModal((m) => ({ ...m, display: false }))}
+            />
           )}
 
           <div className='menu-row'>

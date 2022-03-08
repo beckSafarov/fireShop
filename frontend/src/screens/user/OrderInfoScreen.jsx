@@ -78,7 +78,7 @@ const OrderInfoScreen = ({ match, history }) => {
     setUpdateModal({
       display: true,
       _id: order._id,
-      deliveryStatus: order.deliveryStatus,
+      status: order.deliveryStatus,
     })
   }
 
@@ -92,21 +92,19 @@ const OrderInfoScreen = ({ match, history }) => {
   return (
     <Auth history={history}>
       <Container>
-        {flashMsg.display && (
-          <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
-        )}
+        <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
         {requestLoading ? (
           <Loader />
         ) : error ? (
           <Message variant='danger'>{error}</Message>
         ) : order.user ? (
           <Row>
-            {updateModal.display && (
-              <UpdateDeliveryModal
-                modal={updateModal}
-                setModal={setUpdateModal}
-              />
-            )}
+            <UpdateDeliveryModal
+              modal={updateModal}
+              display={updateModal.display}
+              data={updateModal}
+              onClose={() => setUpdateModal({ display: false })}
+            />
             {revModal.display && (
               <Review modal={revModal} setModal={setRevModal} />
             )}

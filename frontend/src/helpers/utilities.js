@@ -61,4 +61,6 @@ export const withoutProps = (obj, props = []) => {
   return objCopy
 }
 
+export const isEmptyObj = (obj = {}) => Object.keys(obj).length === 0
+
 export const isInvalid = (f, p) => f.touched[p] && f.errors[p]
