@@ -106,7 +106,10 @@ const OrderInfoScreen = ({ match, history }) => {
               onClose={() => setUpdateModal({ display: false })}
             />
             {revModal.display && (
-              <Review modal={revModal} setModal={setRevModal} />
+              <Review
+                modal={revModal}
+                onClose={() => setRevModal((m) => ({ ...m, display: false }))}
+              />
             )}
             <Col md={6}>
               <>

@@ -61,6 +61,14 @@ export const withoutProps = (obj, props = []) => {
   return objCopy
 }
 
+export const onlyProps = (obj, props = []) => {
+  const obj2 = {}
+  props.forEach((p) => {
+    obj2[p] = obj[p]
+  })
+  return obj2
+}
+
 export const isEmptyObj = (obj = {}) => Object.keys(obj).length === 0
 
 export const isInvalid = (f, p) => f.touched[p] && f.errors[p]
