@@ -7,6 +7,7 @@ const FormikFieldGroup = ({
   hidden,
   isMandatoryField,
   readOnly,
+  ...rest
 }) => {
   const isInvalid = (f, p) => f.touched[p] && f.errors[p]
   return (
@@ -35,7 +36,9 @@ const FormikFieldGroup = ({
                   type={f.type}
                   readOnly={readOnly}
                   isInvalid={isInvalid(form, f.name)}
+                  disabled={f.disabled}
                   {...field}
+                  {...rest}
                 />
               </>
             )}

@@ -97,8 +97,6 @@ export const productDetailsReducer = (state = { reviews: [] }, action) => {
       const { user, body } = action.payload
       let reviews = [...state.product.reviews]
       reviews.forEach((r) => (r = r.user === user ? { ...r, body } : r))
-      console.log(reviews)
-      console.log({ ...state.products, reviews })
       return Success2({ ...state.product, reviews }, 'update')
     case cs.PRODUCT_DETAILS_RESET:
       let newState = { ...state }

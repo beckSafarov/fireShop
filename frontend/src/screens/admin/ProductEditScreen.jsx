@@ -2,12 +2,58 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
+import * as Yup from 'yup'
+import {
+  IMG_UPLOAD_RESET,
+  PRODUCT_DETAILS_RESET as prodDetailsReset,
+} from '../../constants'
+import { imgUpload, updateProduct } from '../../actions/adminActions'
+import { listProductDetails as getProduct } from '../../actions/productActions'
+import { areSameObjects, isEmptyObj } from '../../helpers/utilities'
+
 // UI components
 import { Auth, FormContainer, Message, Spinner } from '../../components'
-import { ProductUpdateForm } from '../../components/Forms'
-import { imgUpload, updateProduct } from '../../actions/adminActions'
-import { listProductDetails } from '../../actions/productActions'
-import { IMG_UPLOAD_RESET, PRODUCT_DETAILS_RESET } from '../../constants'
+import { Formik, Form as FormikForm } from 'formik'
+import { Form, Row, Col, Button } from 'react-bootstrap'
+import FormikFieldGroup from '../../components/FormikFieldGroup'
+
+const formFields = [
+  { name: '_id', label: 'Product ID', type: 'text', disabled: true },
+  { name: 'name', label: 'Product Name', type: 'text' },
+  { name: 'price', label: 'Price', type: 'number' },
+  { name: 'user', label: 'User', type: 'text', disabled: true },
+  { name: 'brand', label: 'Brand', type: 'text' },
+  { name: 'category', label: 'Category', type: 'text' },
+  { name: 'countInStock', label: 'In Stock', type: 'number' },
+  {
+    name: 'numReviews',
+    label: 'Number of Reviews',
+    type: 'number',
+    disabled: true,
+  },
+  { name: 'description', label: 'Description', type: 'text' },
+]
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, 'Too Short!')
+    .required('Please enter the product name!'),
+  price: Yup.number()
+    .min(0, 'Why free?')
+    .required('Please enter the product price!'),
+  brand: Yup.string()
+    .min(2, 'Too Short!')
+    .max(32, 'Too Long!')
+    .required('Please enter the brand name!'),
+  category: Yup.string()
+    .min(3, 'Too Short!')
+    .max(32, 'Too Long!')
+    .required('Please enter the product category!'),
+  countInStock: Yup.number().required('Please enter the number in stock!'),
+  description: Yup.string()
+    .min(3, 'Too Short!')
+    .required('Please enter the product description!'),
+})
 
 const ProductEditScreen = ({ history, match }) => {
   // redux stuff
@@ -25,67 +71,55 @@ const ProductEditScreen = ({ history, match }) => {
     data: uploadData,
     error: uploadError,
   } = useSelector((state) => state.imgUploadStore)
+  // hooks
+  const [flashMsg, setFlashMsg] = useState({})
+  const [uploadLabel, setUploadLabel] = useState('No File Chosen')
+  const [newUpload, setNewUpload] = useState('')
 
   // variables
   const requestError = error && type === 'request' ? error : null
   const loading = requestLoading || uploadLoading
 
-  const dataExists = product && product.name && product._id === match.params.id
-  let newProduct
-
-  // hooks
-  const [change, setChange] = useState(false)
-  const [flashMsg, setFlashMsg] = useState({})
-  const [uploadLabel, setUploadLabel] = useState('No File Chosen')
-  const [updatedProduct, setUpdatedProduct] = useState(
-    dataExists ? { ...product } : {}
-  )
-  const [came, setCame] = useState(false)
-
   useEffect(() => {
-    if (!came) {
+    if ((!isEmptyObj(product) || product?._id !== match.params.id) && !error) {
+      dispatch(getProduct(match.params.id))
+    }
+
+    if (success && type === 'update' && !error) {
+      history.replace('/admin/productlist')
+      prodStateReset('success')
+    }
+
+    if (error && type === 'update') {
+      setFlashMsg({ display: true, message: error, variant: 'danger' })
       window.scrollTo(0, 0)
-      setCame(true)
+      prodStateReset('error')
     }
 
-    dataExists
-      ? !updatedProduct.name && setUpdatedProduct({ ...product })
-      : dispatch(listProductDetails(match.params.id))
-
-    if ((success || error) && type === 'update') {
-      success
-        ? history.replace('/admin/productlist')
-        : msgHandler(error, 'danger')
-      dispatch({
-        type: PRODUCT_DETAILS_RESET,
-        payload: success ? 'success' : 'error',
-      })
+    if (uploaded) {
+      setNewUpload(uploadData)
+      dispatch({ type: IMG_UPLOAD_RESET })
     }
 
-    if (uploaded || uploadError) {
-      if (uploaded) {
-        setUpdatedProduct({ ...updatedProduct, image: uploadData })
-        setChange(true)
-      }
-      uploadError && msgHandler(uploadError, 'danger', 5)
+    if (uploadError) {
+      showFlashMsg(uploadError, 'danger')
       dispatch({ type: IMG_UPLOAD_RESET })
     }
 
     return () => {
       axios.CancelToken.source().cancel()
-      setCame(false)
-      setChange(false)
     }
-  }, [dispatch, product, match, success, error, uploaded, uploadError])
+  }, [
+    product?._id,
+    match.params.id,
+    success,
+    type,
+    error,
+    uploaded,
+    uploadError,
+  ])
 
-  const changesHandler = (e) => {
-    setChange(true)
-    newProduct = { ...updatedProduct }
-    newProduct[e.target.name] = e.target.value
-    setUpdatedProduct(newProduct)
-  }
-
-  const uploadImgHandler = (e) => {
+  const handleImgUpload = (e) => {
     const file = e.target.files[0]
     const formData = new FormData()
     formData.append('image', file)
@@ -93,41 +127,95 @@ const ProductEditScreen = ({ history, match }) => {
     dispatch(imgUpload(formData))
   }
 
-  const submitHandler = (e) => {
-    e.preventDefault()
-    dispatch(updateProduct({ ...updatedProduct }))
-    setChange(false)
+  const handleSubmit = (vals) => {
+    const updated = { ...vals, image: newUpload || vals.image }
+    if (areSameObjects(updated, product)) {
+      history.goBack()
+      return
+    }
+    dispatch(updateProduct({ ...vals, image: newUpload || vals.image }))
   }
 
-  const msgHandler = (msg, variant = 'success', s = 3) => {
-    setFlashMsg({ display: true, message: msg, variant })
+  const showFlashMsg = (message, variant = 'success') => {
+    setFlashMsg({ display: true, message, variant })
     setTimeout(() => setFlashMsg({}), 3000)
-    setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
-  const cancelChanges = () => window.location.reload()
+  const prodStateReset = (payload) =>
+    dispatch({ type: prodDetailsReset, payload })
 
-  const values = { ...updatedProduct, change, uploadLabel }
-  const functions = {
-    changesHandler,
-    uploadImgHandler,
-    submitHandler,
-    cancelChanges,
-  }
+  const btns = [
+    {
+      type: 'reset',
+      variant: 'dark',
+      icon: <i className='fas fa-times'></i>,
+      label: 'Cancel',
+      onClick: () => history.goBack(),
+    },
+    {
+      type: 'submit',
+      variant: 'success',
+      icon: <i className='fas fa-save'></i>,
+      label: 'Submit',
+      onClick: () => void 0,
+    },
+  ]
 
   return (
     <Auth history={history} adminOnly>
       <FormContainer>
-        <h2>{product && product.name}</h2>
+        <h2>{product?.name}</h2>
         <Spinner hidden={!loading} />
-        <Message variant='danger'>{requestError}</Message>
-        <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+        <Message variant={flashMsg.variant || 'danger'}>
+          {flashMsg.message || requestError}
+        </Message>
         <div className='py-4'>
           <div className='centered-img'>
-            <img src={updatedProduct.image} alt='Product Image' />
+            <img src={newUpload || product?.image} alt='Product Image' />
           </div>
-          <ProductUpdateForm values={values} functions={functions} />
         </div>
+        {!isEmptyObj(product) && product?._id === match.params.id && (
+          <Formik
+            initialValues={product}
+            onSubmit={handleSubmit}
+            validationSchema={validationSchema}
+          >
+            <FormikForm>
+              <Form.Group controlId='imgUpload'>
+                <Form.File
+                  id='image-file'
+                  label={uploadLabel}
+                  onChange={handleImgUpload}
+                  accept='image/jpg, image/jpeg, image/png'
+                  custom
+                />
+              </Form.Group>
+              {formFields.map((f, i) => (
+                <FormikFieldGroup
+                  key={i}
+                  formField={f}
+                  as={f.name === 'description' ? 'textarea' : 'input'}
+                />
+              ))}
+              <Row>
+                {btns.map((btn, i) => (
+                  <Col mb={2} key={i}>
+                    <Button
+                      type={btn.type}
+                      className='rounded-btn'
+                      variant={btn.variant}
+                      onClick={btn.onClick}
+                      block
+                    >
+                      {btn.icon}
+                      {' ' + btn.label}
+                    </Button>
+                  </Col>
+                ))}
+              </Row>
+            </FormikForm>
+          </Formik>
+        )}
       </FormContainer>
     </Auth>
   )
