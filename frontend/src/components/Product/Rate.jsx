@@ -2,15 +2,17 @@ import { useState } from 'react'
 
 const Rate = ({ stars, setStars, color }) => {
   const [oldStars, setOldStars] = useState(stars)
+  const fullStar = 'fas fa-star'
+  const emptyStar = 'far fa-star'
 
-  const mouseOverHandler = (e) => {
+  const handleMouseOver = (e) => {
     setOldStars(stars)
     setStars(Number(e.target.id))
   }
 
-  const mouseLeaveHandler = (e) => setStars(oldStars)
+  const handleMouseleave = (e) => setStars(oldStars)
 
-  const clickHandler = (e) => {
+  const handleClick = (e) => {
     setOldStars(Number(e.target.id))
     setStars(Number(e.target.id))
   }
@@ -18,46 +20,17 @@ const Rate = ({ stars, setStars, color }) => {
   return (
     <div className='longer-rating'>
       <span>
-        <i
-          style={{ color }}
-          id='1'
-          className='fas fa-star'
-          onMouseOver={mouseOverHandler}
-          onMouseLeave={mouseLeaveHandler}
-          onClick={clickHandler}
-        ></i>
-        <i
-          style={{ color }}
-          id='2'
-          className={stars > 1 ? 'fas fa-star' : 'far fa-star'}
-          onMouseOver={mouseOverHandler}
-          onMouseLeave={mouseLeaveHandler}
-          onClick={clickHandler}
-        ></i>
-        <i
-          style={{ color }}
-          id='3'
-          className={stars > 2 ? 'fas fa-star' : 'far fa-star'}
-          onMouseOver={mouseOverHandler}
-          onMouseLeave={mouseLeaveHandler}
-          onClick={clickHandler}
-        ></i>
-        <i
-          style={{ color }}
-          id='4'
-          className={stars > 3 ? 'fas fa-star' : 'far fa-star'}
-          onMouseOver={mouseOverHandler}
-          onMouseLeave={mouseLeaveHandler}
-          onClick={clickHandler}
-        ></i>
-        <i
-          style={{ color }}
-          id='5'
-          className={stars > 4 ? 'fas fa-star' : 'far fa-star'}
-          onMouseOver={mouseOverHandler}
-          onMouseLeave={mouseLeaveHandler}
-          onClick={clickHandler}
-        ></i>
+        {[...Array(5).keys()].map((n, key) => (
+          <i
+            style={{ color }}
+            key={key}
+            id={n + 1}
+            className={n === 0 || stars > n ? fullStar : emptyStar}
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseleave}
+            onClick={handleClick}
+          ></i>
+        ))}
       </span>
     </div>
   )
