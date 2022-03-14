@@ -8,7 +8,7 @@ import { getMe } from './actions/userActions'
 
 // UI components
 import { Container } from 'react-bootstrap'
-import { Header, Footer, Loader, Message } from './components'
+import { Header, Footer, Loader, Message, Spinner } from './components'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 // Screens
@@ -58,7 +58,7 @@ const App = () => {
       <Header />
       <main className='py-3'>
         {loading && online ? (
-          <Loader />
+          <Spinner />
         ) : !online ? (
           <Container>
             <Message variant='danger'>You are offline!</Message>

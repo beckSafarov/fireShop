@@ -1,8 +1,8 @@
-import React from 'react';
-import { Image } from 'react-bootstrap';
+import React from 'react'
+import { Image } from 'react-bootstrap'
 
-const EmptyCart = () => {
-  return (
+const EmptyCart = ({ hidden }) => {
+  return !hidden ? (
     <div className='empty-cart-container'>
       <h2>Your Cart is Empty!</h2>
       <div className='my-5'>
@@ -16,7 +16,13 @@ const EmptyCart = () => {
         />
       </div>
     </div>
-  );
-};
+  ) : (
+    <></>
+  )
+}
 
-export default EmptyCart;
+EmptyCart.defaultProps = {
+  hidden: false,
+}
+
+export default EmptyCart

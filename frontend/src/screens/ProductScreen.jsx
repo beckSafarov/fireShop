@@ -1,6 +1,5 @@
 // -- CORE LIBRARIES --
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 // -- Helpers
@@ -15,7 +14,7 @@ import {
   Form,
   Alert,
 } from 'react-bootstrap'
-import { Rating, Loader, CountOptions } from '../components'
+import { Rating, CountOptions, Spinner } from '../components'
 
 // -- REDUX ACTIONS
 import { listProductDetails as getProduct } from '../actions/productActions'
@@ -71,7 +70,7 @@ const ProductScreen = ({ match, history }) => {
     return () => axios.CancelToken.source().cancel()
   }, [dispatch, match, successType, cartError])
 
-  const addToCartHandler = () => {
+  const handleAddToCart = () => {
     const more = lcs.have(product) ? 'more' : ''
     dispatch(addToCart(product, Number(qty), logged))
 
@@ -81,7 +80,7 @@ const ProductScreen = ({ match, history }) => {
     }
   }
 
-  const buyNowHandler = () => {
+  const handleBuyNow = () => {
     dispatch(buyNowAction(product, Number(qty), logged))
   }
 
@@ -92,19 +91,32 @@ const ProductScreen = ({ match, history }) => {
 
   const sendBack = () => history.goBack()
 
+  const btns = [
+    {
+      label: 'Add to Cart',
+      variant: 'outline-primary',
+      onClick: handleAddToCart,
+    },
+    {
+      label: 'Buy Now',
+      variant: 'primary',
+      onClick: handleBuyNow,
+    },
+  ]
+
   return (
     <>
       <div className='btn btn-light my-3 rounded' onClick={sendBack}>
         <i className='fas fa-arrow-left fa-2x'></i>
       </div>
-      {flashMsg.display && (
-        <Alert variant={flashMsg.variant}>{flashMsg.msg}</Alert>
-      )}
-      {loading || !product ? (
-        <Loader />
-      ) : error ? (
-        <Alert variant='danger'>{error}</Alert>
-      ) : (
+      <Alert
+        hidden={!flashMsg.display && !error}
+        variant={flashMsg.variant || 'danger'}
+      >
+        {flashMsg.msg || error}
+      </Alert>
+      <Spinner hidden={!loading || product} />
+      {!loading && product && !error && (
         <>
           <Row>
             <Col md={6}>
@@ -149,45 +161,34 @@ const ProductScreen = ({ match, history }) => {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-                {product.countInStock > 0 && (
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>Qty</Col>
-                      <Col>
-                        <Form.Control
-                          as='select'
-                          value={qty}
-                          onChange={(e) => setQty(e.target.value)}
-                        >
-                          <CountOptions countInStock={product.countInStock} />
-                        </Form.Control>
-                      </Col>
-                    </Row>
-                  </ListGroup.Item>
-                )}
-                <ListGroup.Item>
+                <ListGroup.Item hidden={product.countInStock === 0}>
                   <Row>
-                    <Button
-                      onClick={addToCartHandler}
-                      variant='outline-primary'
-                      type='button'
-                      disabled={product.countInStock < 1}
-                      block
-                    >
-                      Add to cart
-                    </Button>
+                    <Col>Qty</Col>
+                    <Col>
+                      <Form.Control
+                        as='select'
+                        value={qty}
+                        onChange={(e) => setQty(e.target.value)}
+                      >
+                        <CountOptions countInStock={product.countInStock} />
+                      </Form.Control>
+                    </Col>
                   </Row>
-                  <Row className='my-1'>
-                    <Button
-                      onClick={buyNowHandler}
-                      variant='primary'
-                      type='button'
-                      disabled={product.countInStock < 1}
-                      block
-                    >
-                      Buy Now
-                    </Button>
-                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  {btns.map((btn, i) => (
+                    <Row className='mb-1' key={i}>
+                      <Button
+                        onClick={btn.onClick}
+                        variant={btn.variant}
+                        type='button'
+                        disabled={product.countInStock < 1}
+                        block
+                      >
+                        {btn.label}
+                      </Button>
+                    </Row>
+                  ))}
                 </ListGroup.Item>
               </ListGroup>
             </Col>
