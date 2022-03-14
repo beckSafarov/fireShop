@@ -23,7 +23,6 @@ import {
   ADMIN_USER_UPDATE_RESET,
 } from '../../constants'
 import UserEditModal from '../../components/Modals/UserEditModal'
-// import SearchUser from '../../components'
 
 const UserListScreen = ({ history }) => {
   const dispatch = useDispatch()
@@ -87,7 +86,7 @@ const UserListScreen = ({ history }) => {
 
     return () => {
       axios.CancelToken.source().cancel()
-      searchedUsers && searchClear()
+      searchedUsers && handleClearSearch()
     }
   }, [
     dispatch,
@@ -112,10 +111,11 @@ const UserListScreen = ({ history }) => {
   const modalHandler = (userInfo, display = true) =>
     setModal({ display, userInfo })
 
-  const searchHandler = (q) =>
-    dispatch(searchUser(q.field, q.secondField, q.keyword))
+  const handleSearch = (q) => {
+    dispatch(searchUser(q.searchBy, q.searchAddressBy, q.keyword))
+  }
 
-  const searchClear = () => dispatch({ type: ADMIN_SEARCH_USER_RESET })
+  const handleClearSearch = () => dispatch({ type: ADMIN_SEARCH_USER_RESET })
 
   return (
     <Auth history={history} adminOnly>
@@ -130,7 +130,7 @@ const UserListScreen = ({ history }) => {
             <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
           )}
           <div className='py-4'>
-            <SearchUser onSearch={searchHandler} onClear={searchClear} />
+            <SearchUser onSearch={handleSearch} onClear={handleClearSearch} />
           </div>
 
           {deleteLoading || (searchLoading && <Spinner />)}

@@ -1,117 +1,115 @@
 import React, { useState } from 'react'
-import { Form, Button, Row, Col } from 'react-bootstrap'
+import { Form, Button, Row, Col, InputGroup } from 'react-bootstrap'
 import { withRouter } from 'react-router-dom'
-const defaults = {
-  keyword: '',
-  field: 'name',
-  secondField: 'city',
-}
+import { FaTimes } from 'react-icons/fa'
+import { Formik, Form as FormikForm, Field } from 'formik'
 
-const SearchUser = ({ onSearch, onClear, bordered, rounded }) => {
-  const [queries, setQueries] = useState(defaults)
+const searchOptions = [
+  { value: '_id', label: 'By ID' },
+  { value: 'name', label: 'By Name' },
+  { value: 'email', label: 'By Email' },
+  { value: 'address', label: 'By Shipping Address' },
+]
+
+const searchByAddressOptions = [
+  { value: 'address', label: 'By Address' },
+  { value: 'city', label: 'By City' },
+  { value: 'country', label: 'By Country' },
+  { value: 'postalCode', label: 'By Postal Code' },
+]
+
+const SearchUser = ({ onSearch, onClear }) => {
   const [showCancel, setShowCancel] = useState(false)
-  let newQueries = {}
 
-  const changesHandler = (e) => {
-    newQueries = { ...queries }
-    newQueries[e.target.name] = e.target.value
-    setQueries(newQueries)
+  const handleSubmit = (vals) => {
+    onSearch(vals)
+    setShowCancel(true)
   }
 
-  const submitHandler = (e) => {
-    e.preventDefault()
-    queries.keyword && onSearch(queries) && setShowCancel(true)
-  }
-
-  const clearHandler = () => {
-    setQueries(defaults)
+  const handleClear = () => {
     onClear()
     setShowCancel(false)
   }
 
+  const selects = [
+    {
+      name: 'searchBy',
+      options: searchOptions,
+      md: 3,
+    },
+    {
+      name: 'searchAddressBy',
+      options: searchByAddressOptions,
+      md: 2,
+    },
+  ]
+
+  const validate = ({ keyword }) => (!keyword ? { keyword: 'No keyword' } : {})
+
   return (
-    <Form onSubmit={submitHandler}>
-      <Row>
-        <Col md={5}>
-          <Form.Control
-            type='text'
-            name='keyword'
-            onChange={changesHandler}
-            placeholder='Search Users...'
-            value={queries.keyword}
-            className={`${bordered && 'bordered'} ${rounded && 'rounded'}`}
-          ></Form.Control>
-        </Col>
-        <Col md={3}>
-          <Form.Control
-            as='select'
-            name='field'
-            defaultValue={queries.field}
-            onChange={changesHandler}
-            className={`${bordered && 'bordered'} ${rounded && 'rounded'}`}
-          >
-            <option key={1} value={'_id'}>
-              By ID
-            </option>
-            <option key={2} value={'name'}>
-              By Name
-            </option>
-            <option key={3} value={'email'}>
-              By Email
-            </option>
-            <option key={4} value={'address'}>
-              By Shipping Address
-            </option>
-          </Form.Control>
-        </Col>
-        {queries.field === 'address' && (
-          <Col md={2}>
-            <Form.Control
-              as='select'
-              name='secondField'
-              defaultValue={queries.secondField}
-              onChange={changesHandler}
-              className={`${bordered && 'bordered'} ${rounded && 'rounded'}`}
-            >
-              <option key={1} value={'address'}>
-                By Address
-              </option>
-              <option key={2} value={'city'}>
-                By City
-              </option>
-              <option key={3} value={'country'}>
-                By Country
-              </option>
-              <option key={4} value={'postalCode'}>
-                By Postal Code
-              </option>
-            </Form.Control>
-          </Col>
-        )}
-        <Col md={1}>
-          <Button
-            type='submit'
-            variant='outline-info'
-            className='p-2 rounded'
-            block
-          >
-            Search
-          </Button>
-        </Col>
-        {showCancel && (
-          <Col md={1}>
+    <Formik
+      initialValues={{ keyword: '', searchBy: '', searchAddressBy: '' }}
+      onSubmit={handleSubmit}
+      validate={validate}
+    >
+      <FormikForm>
+        <Row>
+          <Field name='keyword'>
+            {({ field }) => (
+              <Col md={5}>
+                <InputGroup className='mb-3'>
+                  <Form.Control
+                    type='text'
+                    placeholder='Search Users...'
+                    {...field}
+                  />
+                  <Button
+                    style={{ fontSize: '1rem' }}
+                    type='reset'
+                    onClick={handleClear}
+                    variant='outline-secondary'
+                    hidden={!showCancel}
+                    size='sm'
+                  >
+                    <FaTimes />
+                  </Button>
+                </InputGroup>
+              </Col>
+            )}
+          </Field>
+          {selects.map((select, key) => (
+            <Field name={select.name} key={key}>
+              {({ field, form }) => (
+                <Col
+                  md={select.md}
+                  hidden={
+                    select.name === 'searchAddressBy' &&
+                    form.values.searchBy !== 'address'
+                  }
+                >
+                  <Form.Control as='select' {...field}>
+                    {select.options.map((o, i) => (
+                      <option key={i} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Col>
+              )}
+            </Field>
+          ))}
+          <div className='mx-1'>
             <Button
-              type='button'
-              variant='outline-dark'
+              type='submit'
+              variant='outline-info'
               className='p-2 rounded'
-              onClick={clearHandler}
             >
-              Clear
+              Search
             </Button>
-          </Col>
-        )}
-      </Row>
-    </Form>
+          </div>
+        </Row>
+      </FormikForm>
+    </Formik>
   )
 }
 
