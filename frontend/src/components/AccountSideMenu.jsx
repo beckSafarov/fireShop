@@ -1,27 +1,25 @@
-import React from 'react';
-import { ListGroup } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import React from 'react'
+import { ListGroup } from 'react-bootstrap'
+import { LinkContainer } from 'react-router-bootstrap'
 
 const AccountSideMenu = ({ active }) => {
+  const links = [
+    { to: '/profile', label: 'Profile' },
+    { to: '/address', label: 'Address' },
+    { to: '/myreviews', label: 'My Reviews' },
+  ]
+
   return (
     <ListGroup variant='flush'>
-      <LinkContainer to='/profile'>
-        <ListGroup.Item active={active === 1} action={active !== 1}>
-          Profile
-        </ListGroup.Item>
-      </LinkContainer>
-      <LinkContainer to='/address'>
-        <ListGroup.Item active={active === 2} action={active !== 2}>
-          Address
-        </ListGroup.Item>
-      </LinkContainer>
-      <LinkContainer to='/myreviews'>
-        <ListGroup.Item active={active === 3} action={active !== 3}>
-          My Reviews
-        </ListGroup.Item>
-      </LinkContainer>
+      {links.map((link, i) => (
+        <LinkContainer to={link.to} key={i}>
+          <ListGroup.Item active={active === i + 1} action={active !== i + 1}>
+            {link.label}
+          </ListGroup.Item>
+        </LinkContainer>
+      ))}
     </ListGroup>
-  );
-};
+  )
+}
 
-export default AccountSideMenu;
+export default AccountSideMenu
