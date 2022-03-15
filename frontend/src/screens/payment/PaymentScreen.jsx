@@ -29,7 +29,7 @@ const PaymentScreen = ({ history, location, match }) => {
   return (
     <Auth history={history}>
       <FormContainer>
-        <CheckOutSteps step1 step2 step3 />
+        <CheckOutSteps step={2} />
         <h1>Payment Method</h1>
         <Form onSubmit={handleSubmit} className='py-3'>
           <Form.Group>

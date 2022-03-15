@@ -142,7 +142,7 @@ const ShippingScreen = ({ history }) => {
   return (
     <Auth history={history}>
       <FormContainer>
-        <CheckOutSteps step1 step2 />
+        <CheckOutSteps step={1} />
         <h1>Shipping Address</h1>
         <Spinner hidden={!loading} />
         <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
