@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 // -- helpers --
-import { Calculations } from '../helpers/Calculations'
+import { Calculations } from '../helpers/calculations'
 import * as cartLcs from '../helpers/cartLCS'
 import * as qtyLcs from '../helpers/qtyLCS'
 
