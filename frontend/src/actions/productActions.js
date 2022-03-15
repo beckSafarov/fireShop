@@ -1,34 +1,30 @@
 import * as cs from '../constants.js'
 import axios from 'axios'
 import { axiosConfig, config } from '../helpers/axiosConfigs'
+import { getErrMessage } from '../helpers/utilities.js'
 
-export const listProducts =
-  (keyword = '') =>
-  async (dispatch) => {
-    try {
-      dispatch({
-        type: keyword ? cs.PRODUCT_SEARCH_REQUEST : cs.PRODUCT_LIST_REQUEST,
-      })
+export const listProducts = (keyword) => async (dispatch) => {
+  try {
+    dispatch({
+      type: keyword ? cs.PRODUCT_SEARCH_REQUEST : cs.PRODUCT_LIST_REQUEST,
+    })
 
-      const { data } = await axios.get(
-        `/api/products?keyword=${keyword}`,
-        axiosConfig
-      )
+    const { data } = await axios.get(
+      `/api/products?keyword=${keyword || ''}`,
+      axiosConfig
+    )
 
-      dispatch({
-        type: keyword ? cs.PRODUCT_SEARCH_SUCCESS : cs.PRODUCT_LIST_SUCCESS,
-        payload: data,
-      })
-    } catch (err) {
-      dispatch({
-        type: keyword ? cs.PRODUCT_SEARCH_FAILURE : cs.PRODUCT_LIST_FAILURE,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
-      })
-    }
+    dispatch({
+      type: keyword ? cs.PRODUCT_SEARCH_SUCCESS : cs.PRODUCT_LIST_SUCCESS,
+      payload: data,
+    })
+  } catch (err) {
+    dispatch({
+      type: keyword ? cs.PRODUCT_SEARCH_FAILURE : cs.PRODUCT_LIST_FAILURE,
+      payload: getErrMessage(err),
+    })
   }
+}
 
 export const listProductDetails = (id) => async (dispatch) => {
   try {
@@ -40,10 +36,7 @@ export const listProductDetails = (id) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.PRODUCT_DETAILS_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -58,10 +51,7 @@ export const productReviewAction = (id, body) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.PRODUCT_REVIEW_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -81,10 +71,7 @@ export const productReviewUpdateAction =
     } catch (err) {
       dispatch({
         type: cs.PRODUCT_REVIEW_UPDATE_FAILURE,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
+        payload: getErrMessage(err),
       })
     }
   }

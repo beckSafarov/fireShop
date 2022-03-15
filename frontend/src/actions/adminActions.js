@@ -1,9 +1,7 @@
 import * as cs from '../constants.js'
 import axios from 'axios'
-const config = {
-  headers: { 'Content-Type': 'application/json' },
-  cancelToken: axios.CancelToken.source().token,
-}
+import { getErrMessage } from '../helpers/utilities.js'
+import { fullConfig as config } from '../helpers/rxConfigs.js'
 
 export const listUsers = () => async (dispatch) => {
   try {
@@ -15,10 +13,7 @@ export const listUsers = () => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.USER_LIST_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -37,10 +32,7 @@ export const searchUser =
     } catch (err) {
       dispatch({
         type: cs.ADMIN_SEARCH_USER_FAILURE,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
+        payload: getErrMessage(err),
       })
     }
   }
@@ -54,10 +46,7 @@ export const adminUpdateUser = (id, body) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.ADMIN_USER_UPDATE_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -77,10 +66,7 @@ export const deleteUser = (id) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.ADMIN_USER_DELETE_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -93,10 +79,7 @@ export const addProduct = () => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.PRODUCT_ADD_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -118,10 +101,7 @@ export const updateProduct = (body) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.PRODUCT_DETAILS_UPDATE_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -137,10 +117,7 @@ export const deleteProduct = (id) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.PRODUCT_DELETE_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -161,10 +138,7 @@ export const imgUpload = (formData) => async (dispatch) => {
     console.log(err)
     dispatch({
       type: cs.IMG_UPLOAD_FAILURE,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }

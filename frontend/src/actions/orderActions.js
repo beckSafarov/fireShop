@@ -1,6 +1,7 @@
 import * as cs from '../constants.js'
 import axios from 'axios'
 import { axiosConfig, config } from '../helpers/axiosConfigs'
+import { getErrMessage } from '../helpers/utilities.js'
 
 export const createOrder = (order) => async (dispatch) => {
   try {
@@ -15,10 +16,7 @@ export const createOrder = (order) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.ORDER_CREATE_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -36,10 +34,7 @@ export const getOrderDetails = (id) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.ORDER_DETAILS_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -56,10 +51,7 @@ export const getMyOrders = () => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.MY_ORDERS_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }
@@ -81,10 +73,7 @@ export const getAllOrders =
     } catch (err) {
       dispatch({
         type: cs.ORDERS_LIST_FAILURE,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
+        payload: getErrMessage(err),
       })
     }
   }
@@ -104,10 +93,7 @@ export const getFilteredOrders =
     } catch (err) {
       dispatch({
         type: cs.ORDERS_FILTER_FAILURE,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
+        payload: getErrMessage(err),
       })
     }
   }
@@ -130,10 +116,7 @@ export const updateDeliveryStatus = (id, body) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: cs.ORDER_UPDATE_FAIL,
-      payload:
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message,
+      payload: getErrMessage(err),
     })
   }
 }

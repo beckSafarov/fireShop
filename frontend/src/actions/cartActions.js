@@ -1,11 +1,8 @@
 import * as constants from '../constants.js'
 import axios from 'axios'
 import * as lcs from '../helpers/cartLCS.js'
-const config = {
-  headers: { 'Content-Type': 'application/json' },
-  cancelToken: axios.CancelToken.source().token,
-}
-const confMin = { cancelToken: axios.CancelToken.source().token }
+import { getErrMessage } from '../helpers/utilities.js'
+import { fullConfig, cancelTokenConfig } from '../helpers/rxConfigs.js'
 
 export const addToCart =
   (product, qty, logged = true, many = false) =>
@@ -20,7 +17,7 @@ export const addToCart =
         const res = await axios.post(
           `/api/users/cartItems${manyRoute}`,
           product,
-          config
+          fullConfig
         )
 
         dispatch({
@@ -53,10 +50,7 @@ export const addToCart =
     } catch (err) {
       dispatch({
         type: constants.CART_ADD_ITEM_FAIL,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
+        payload: getErrMessage(err),
       })
     }
   }
@@ -66,10 +60,12 @@ export const buyNowAction =
     try {
       dispatch({ type: constants.CART_REQUIRE_BUY_NOW })
 
-      product.qty = qty
-
       if (logged) {
-        const res = await axios.post(`/api/users/cartItems`, product, config)
+        const res = await axios.post(
+          `/api/users/cartItems`,
+          { ...product, qty },
+          fullConfig
+        )
 
         dispatch({
           type: constants.CART_BUY_NOW_SUCCESS,
@@ -98,10 +94,7 @@ export const buyNowAction =
     } catch (err) {
       dispatch({
         type: constants.CART_BUY_NOW_FAIL,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
+        payload: getErrMessage(err),
       })
     }
   }
@@ -113,7 +106,7 @@ export const qtyReset =
       dispatch({ type: constants.CARD_ITEM_QUANTITY_RESET_REQUIRE })
 
       logged
-        ? await axios.put('api/users/cartItems/qty', product, config)
+        ? await axios.put('api/users/cartItems/qty', product, fullConfig)
         : lcs.qtyUpdate(product)
 
       dispatch({
@@ -123,10 +116,7 @@ export const qtyReset =
     } catch (err) {
       dispatch({
         type: constants.CARD_ITEM_QUANTITY_RESET_FAIL,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
+        payload: getErrMessage(err),
       })
     }
   }
@@ -138,7 +128,7 @@ export const removeItem =
       dispatch({ type: constants.CART_REMOVE_ITEM_REQUEST })
 
       logged
-        ? await axios.delete(`/api/users/cartItems/${id}`, confMin)
+        ? await axios.delete(`/api/users/cartItems/${id}`, cancelTokenConfig)
         : lcs.remove({ _id: id })
 
       dispatch({
@@ -148,10 +138,7 @@ export const removeItem =
     } catch (err) {
       dispatch({
         type: constants.CART_REMOVE_ITEM_FAILURE,
-        payload:
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message,
+        payload: getErrMessage(err),
       })
     }
   }
@@ -166,9 +153,7 @@ export const savePaymentMethod = (data) => (dispatch) => {
 }
 
 export const flushCart = () => async (dispatch) => {
-  try {
-    dispatch({
-      type: constants.CART_FLUSH,
-    })
-  } catch (err) {}
+  dispatch({
+    type: constants.CART_FLUSH,
+  })
 }
