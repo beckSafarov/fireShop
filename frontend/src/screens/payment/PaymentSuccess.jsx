@@ -1,21 +1,40 @@
-import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { getOrderDetails } from '../../actions/orderActions';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { getOrderDetails } from '../../actions/orderActions'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap';
-import axios from 'axios';
-import { Auth, Loader, Message, Exceptional } from '../../components';
+import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap'
+import axios from 'axios'
+import {
+  Auth,
+  Loader,
+  Message,
+  Exceptional,
+  UserAddress,
+} from '../../components'
+import { isEmptyObj } from '../../helpers/utilities'
 
 const PaymentSuccess = ({ history, location }) => {
-  const dispatch = useDispatch();
-  const id = location.search.split('=')[1];
-  const { loading, order, error } = useSelector((state) => state.orderDetails);
+  const dispatch = useDispatch()
+  const id = location.search.split('=')[1]
+  const { loading, order, error } = useSelector((state) => state.orderDetails)
 
   useEffect(() => {
-    dispatch(getOrderDetails(id));
-    return () => axios.CancelToken.source().cancel();
-  }, [dispatch]);
+    dispatch(getOrderDetails(id))
+    return () => axios.CancelToken.source().cancel()
+  }, [dispatch])
+
+  const transactionInfo = [
+    { label: 'Order ID', body: order?.paymentResult?.id },
+    { label: 'Name', body: order?.user?.name },
+    { label: 'Email', body: order?.paymentResult?.email_address },
+    {
+      label: 'Address',
+      body: <UserAddress data={order?.user?.shippingAddress} />,
+    },
+    { label: 'Payment Method', body: order?.paymentMethod },
+    { label: 'Payment Date', body: order?.paidAt },
+  ]
 
   return (
     <Auth history={history}>
@@ -23,46 +42,25 @@ const PaymentSuccess = ({ history, location }) => {
         <Loader />
       ) : error ? (
         <Message variant='danger'>{error}</Message>
-      ) : order ? (
+      ) : !isEmptyObj(order) ? (
         <Container>
           <ListGroup variant='flush'>
             {console.log(order)}
             <h2 className='mb-4 text-center'>Payment Was Successful!</h2>
             <ListGroup.Item>
-              <p>
-                <strong>Order ID: </strong>
-                {order.paymentResult.id}
-              </p>
-              <p>
-                <strong>Name: </strong>
-                {order.user.name}
-              </p>
-              <p>
-                <strong>Email: </strong>
-                {order.paymentResult.email_address}
-              </p>
-
-              <p>
-                <strong>Address: </strong>
-                {order.shippingAddress.address}, {order.shippingAddress.city},{' '}
-                {order.shippingAddress.postalCode},{' '}
-                {order.shippingAddress.country}
-              </p>
-              <p>
-                <strong>Payment Method: </strong>
-                {order.paymentMethod}
-              </p>
-              <p>
-                <strong>Payment Date: </strong>
-                {order.paidAt}
-              </p>
+              {transactionInfo.map((transaction, i) => (
+                <p key={i}>
+                  <strong>{transaction.label} </strong>
+                  {transaction.body}
+                </p>
+              ))}
             </ListGroup.Item>
             <ListGroup.Item>
               <p>
                 <strong>Order items: </strong>
               </p>
               <ListGroup variant='flush'>
-                {order.orderItems.map((item, index) => (
+                {order.orderItems?.map((item, index) => (
                   <ListGroup.Item key={index}>
                     <Row>
                       <Col md={1}>
@@ -102,8 +100,8 @@ const PaymentSuccess = ({ history, location }) => {
         <Exceptional />
       )}
     </Auth>
-  );
-};
+  )
+}
 
-export default PaymentSuccess;
+export default PaymentSuccess
 // const id = new URLSearchParams(useLocation().search).get('id');

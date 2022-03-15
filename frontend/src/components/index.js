@@ -10,7 +10,6 @@ export { default as CartItem } from './Cart/CartItem.jsx'
 export { default as CheckOutSteps } from './Cart/CheckOutSteps.jsx'
 export { default as CountOptions } from './Cart/CountOptions.jsx'
 export { default as EmptyCart } from './Cart/EmptyCart.jsx'
-export { default as ListRow } from './Cart/ListRow.jsx'
 
 // layout
 export { default as Footer } from './Layout/Footer.jsx'
@@ -42,3 +41,4 @@ export { default as OrdersSort } from './Sorts/OrdersSort'
 export { default as AccountSideMenu } from './AccountSideMenu.jsx'
 export { default as Auth } from './Auth.jsx'
 export { default as FormContainer } from './FormContainer.jsx'
+export { default as UserAddress } from './UserAddress.jsx'

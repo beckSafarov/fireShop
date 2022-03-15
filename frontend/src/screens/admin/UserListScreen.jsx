@@ -12,6 +12,7 @@ import {
   Spinner,
   Exceptional,
   SearchUser,
+  UserAddress,
 } from '../../components'
 
 // redux actions
@@ -23,6 +24,8 @@ import {
   ADMIN_USER_UPDATE_RESET,
 } from '../../constants'
 import UserEditModal from '../../components/Modals/UserEditModal'
+
+const tableHeadings = ['id', 'name', 'email', 'address', 'actions']
 
 const UserListScreen = ({ history }) => {
   const dispatch = useDispatch()
@@ -98,7 +101,7 @@ const UserListScreen = ({ history }) => {
     searchFailed,
   ])
 
-  const deleteHandler = (id, name = 'undefined') => {
+  const handleDelete = (id, name = 'undefined') => {
     const c = `Are you sure to delete ${name}?`
     window.confirm(c) && dispatch(deleteUser(id))
   }
@@ -108,7 +111,7 @@ const UserListScreen = ({ history }) => {
     setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
-  const modalHandler = (userInfo, display = true) =>
+  const handleModal = (userInfo, display = true) =>
     setModal({ display, userInfo })
 
   const handleSearch = (q) => {
@@ -126,22 +129,18 @@ const UserListScreen = ({ history }) => {
       ) : users && users.length > 0 ? (
         <>
           <h1>Users</h1>
-          {flashMsg.display && (
-            <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
-          )}
+          <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
           <div className='py-4'>
             <SearchUser onSearch={handleSearch} onClear={handleClearSearch} />
           </div>
 
-          {deleteLoading || (searchLoading && <Spinner />)}
+          <Spinner hidden={!deleteLoading || !searchLoading} />
           <Table responsive className='tale-sm'>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Actions</th>
+                {tableHeadings.map((t, i) => (
+                  <th key={i}>{t.toLocaleUpperCase()}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -159,28 +158,19 @@ const UserListScreen = ({ history }) => {
                   </td>
                   <td>{user.email}</td>
                   <td>
-                    {user.shippingAddress ? (
-                      <>
-                        {user.shippingAddress.address},{' '}
-                        {user.shippingAddress.city},{' '}
-                        {user.shippingAddress.postalCode},{' '}
-                        {user.shippingAddress.country}
-                      </>
-                    ) : (
-                      <p></p>
-                    )}
+                    <UserAddress data={user.shippingAddress} />
                   </td>
                   <td>
                     <div className='two-horizontal-icons'>
                       <div>
                         <i
-                          onClick={() => modalHandler(user)}
+                          onClick={() => handleModal(user)}
                           className='fas fa-edit'
                         ></i>
                       </div>
                       <div>
                         <i
-                          onClick={() => deleteHandler(user._id, user.name)}
+                          onClick={() => handleDelete(user._id, user.name)}
                           className='fas fa-trash'
                         ></i>
                       </div>

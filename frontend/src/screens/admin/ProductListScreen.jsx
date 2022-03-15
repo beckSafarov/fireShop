@@ -22,6 +22,8 @@ import {
 } from '../../constants'
 import { Link } from 'react-router-dom'
 
+const tableHeadings = ['photo', 'name', 'price', 'category', 'brand', 'actions']
+
 const ProductListScreen = ({ history }) => {
   const dispatch = useDispatch()
 
@@ -77,25 +79,25 @@ const ProductListScreen = ({ history }) => {
     return () => {
       axios.CancelToken.source().cancel()
       if (searchedProducts || searchFailed) {
-        searchClearHandler()
+        handleSearchClear()
       }
     }
   }, [dispatch, success, error, allProducts, searchedProducts])
 
-  const createProductHandler = () => {
-    searchClearHandler()
+  const handleCreateProduct = () => {
+    handleSearchClear()
     setClearSearchField(true)
     dispatch(addProduct())
   }
 
-  const deleteHandler = () => {
-    searchClearHandler()
+  const handleDelete = () => {
+    handleSearchClear()
     setClearSearchField(true)
     dispatch(deleteProduct(confirmModal._id))
     hideModalHandler()
   }
 
-  const confirmHandler = (_id, name) => {
+  const handleConfirm = (_id, name) => {
     setConfirmModal({
       display: true,
       heading: `Deleting ${name}`,
@@ -115,14 +117,12 @@ const ProductListScreen = ({ history }) => {
 
   const rxReset = (payload) => dispatch({ type: listReset, payload })
 
-  const searchHandler = (kword) => {
+  const handleSearch = (kword) => {
     dispatch(listProducts(kword))
     setLastSearched(kword)
   }
 
-  const searchClearHandler = () => {
-    dispatch({ type: searchReset })
-  }
+  const handleSearchClear = () => dispatch({ type: searchReset })
 
   return (
     <Auth history={history} adminOnly>
@@ -131,23 +131,17 @@ const ProductListScreen = ({ history }) => {
           <h1>Product List</h1>
         </Col>
         <Col className='text-right'>
-          <Button
-            variant='info'
-            className='my-3'
-            onClick={createProductHandler}
-          >
+          <Button variant='info' className='my-3' onClick={handleCreateProduct}>
             <i className='fas fa-plus'></i> New Product
           </Button>
         </Col>
       </Row>
-      {loading && <Spinner />}
-      {flashMsg.display && (
-        <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
-      )}
+      <Spinner hidden={!loading} />
+      <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
       <div className='py-3'>
         <AdminProductSearch
-          onSearch={searchHandler}
-          onClear={searchClearHandler}
+          onSearch={handleSearch}
+          onClear={handleSearchClear}
           reset={clearSearchField}
           setReset={setClearSearchField}
         />
@@ -156,7 +150,7 @@ const ProductListScreen = ({ history }) => {
         active={confirmModal.display}
         heading={confirmModal.heading}
         message={confirmModal.message}
-        confirmHandler={deleteHandler}
+        confirmHandler={handleDelete}
         hideHandler={hideModalHandler}
         proceedText='Delete'
         primaryVariant='danger'
@@ -176,12 +170,9 @@ const ProductListScreen = ({ history }) => {
         <Table hover responsive className='tale-sm'>
           <thead>
             <tr>
-              <th>Photo</th>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Category</th>
-              <th>Brand</th>
-              <th>Actions</th>
+              {tableHeadings.map((t, i) => (
+                <th key={i}>{t.toLocaleUpperCase()}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -205,9 +196,7 @@ const ProductListScreen = ({ history }) => {
                     </div>
                     <div>
                       <i
-                        onClick={() =>
-                          confirmHandler(product._id, product.name)
-                        }
+                        onClick={() => handleConfirm(product._id, product.name)}
                         className='fas fa-trash'
                       ></i>
                     </div>

@@ -1,37 +1,37 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { savePaymentMethod } from '../../actions/cartActions';
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { savePaymentMethod } from '../../actions/cartActions'
 
 // UI components
-import { Form, Button, Col } from 'react-bootstrap';
-import { FormContainer, CheckOutSteps, Auth } from '../../components';
+import { Form, Button, Col } from 'react-bootstrap'
+import { FormContainer, CheckOutSteps, Auth } from '../../components'
 
 const PaymentScreen = ({ history, location, match }) => {
-  const [paymentMethod, setPaymentMethod] = useState('PayPal');
+  const [paymentMethod, setPaymentMethod] = useState('PayPal')
 
-  const { userInfo } = useSelector((state) => state.userLogin);
-  const { shippingAddress, cartItems } = userInfo;
-  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.userLogin)
+  const { shippingAddress, cartItems } = userInfo
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (userInfo) {
-      !shippingAddress && history.push('/shipping');
-      cartItems.length === 0 && history.push('/');
+      !shippingAddress && history.push('/shipping')
+      cartItems.length === 0 && history.push('/')
     }
-  }, [userInfo, history]);
+  }, [userInfo, history])
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    dispatch(savePaymentMethod(paymentMethod));
-    history.push('/placeorder');
-  };
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    dispatch(savePaymentMethod(paymentMethod))
+    history.push('/placeorder')
+  }
 
   return (
     <Auth history={history}>
       <FormContainer>
         <CheckOutSteps step1 step2 step3 />
         <h1>Payment Method</h1>
-        <Form onSubmit={submitHandler} className='py-3'>
+        <Form onSubmit={handleSubmit} className='py-3'>
           <Form.Group>
             <Form.Label as='legend'>Select Method</Form.Label>
             <Col>
@@ -43,7 +43,7 @@ const PaymentScreen = ({ history, location, match }) => {
                 value='Paypal'
                 checked
                 onChange={(e) => {
-                  setPaymentMethod(e.target.value);
+                  setPaymentMethod(e.target.value)
                 }}
               ></Form.Check>
               <Form.Check
@@ -53,7 +53,7 @@ const PaymentScreen = ({ history, location, match }) => {
                 name='paymentMethod'
                 value='Stripe'
                 onChange={(e) => {
-                  setPaymentMethod(e.target.value);
+                  setPaymentMethod(e.target.value)
                 }}
               ></Form.Check>
             </Col>
@@ -72,7 +72,7 @@ const PaymentScreen = ({ history, location, match }) => {
         </Form>
       </FormContainer>
     </Auth>
-  );
-};
+  )
+}
 
-export default PaymentScreen;
+export default PaymentScreen

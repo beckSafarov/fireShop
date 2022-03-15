@@ -40,6 +40,15 @@ const querify = (sortVals) => {
   return query
 }
 
+const tableHeadings = [
+  'id',
+  'user',
+  'date',
+  'paid',
+  'delivery status',
+  'delivery date',
+]
+
 const OrdersListScreen = ({ history }) => {
   const dispatch = useDispatch()
 
@@ -72,7 +81,6 @@ const OrdersListScreen = ({ history }) => {
   const loading = listLoading || updateLoading || filterLoading
   const sortQuery = initSortVals(0) ? querify(initSortVals()) : ''
 
-  // const noOrders = !allOrders || allOrders.length === 0
   const filterOn = filteredOrders && filteredOrders.length > 0
 
   useEffect(() => {
@@ -104,7 +112,7 @@ const OrdersListScreen = ({ history }) => {
     setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
-  const updateHandler = (order) => {
+  const handleUpdate = (order) => {
     setModal({
       display: true,
       _id: order._id,
@@ -117,24 +125,19 @@ const OrdersListScreen = ({ history }) => {
     return date.toLocaleString()
   }
 
-  const filterHandler = (q) => dispatch(filter(q))
+  const handleFilter = (q) => dispatch(filter(q))
 
-  const filterClearHandler = () => {
+  const handleFilterClear = () => {
     allOrders ? setOrders(allOrders) : dispatch(getAllOrders())
     setShow({ sort: true })
     dispatch({ type: ORDERS_FILTER_RESET })
   }
 
-  const sortHandler = (sortVals) => {
-    // let query = ''
-    // sortVals.forEach((val, i) => {
-    //   query += `${val.sort}=${val.type}${i < sortVals.length - 1 ? '&' : ''}`
-    // })
-    // console.log(querify(sortVals))
+  const handleSort = (sortVals) => {
     dispatch(getAllOrders(querify(sortVals)))
   }
 
-  const menuClickHandler = (e) => {
+  const handleMenuClick = (e) => {
     const { id } = e.target
     const [sort, filter] = [true, true]
     setShow(id == 1 ? { sort } : { filter })
@@ -146,7 +149,7 @@ const OrdersListScreen = ({ history }) => {
       <Container>
         <>
           <h3 className='mb-3'>All Orders</h3>
-          {loading && <Spinner />}
+          <Spinner hidden={!loading} />
           {modal.display && (
             <UpdateDeliveryModal
               modal={modal}
@@ -161,9 +164,8 @@ const OrdersListScreen = ({ history }) => {
                   variant='dark'
                   id={i + 1}
                   key={i}
-                  // className='mb-4'
                   disabled={selectedBtn === i + 1}
-                  onClick={menuClickHandler}
+                  onClick={handleMenuClick}
                 >
                   {btn}
                 </Button>
@@ -175,9 +177,8 @@ const OrdersListScreen = ({ history }) => {
                   type='button'
                   variant='light'
                   className='rounded'
-                  onClick={filterClearHandler}
+                  onClick={handleFilterClear}
                 >
-                  {/* <i className='fas fa-undo'></i> */}
                   <i
                     style={{ fontSize: '20px', color: '#808080' }}
                     className='fas fa-times'
@@ -188,32 +189,27 @@ const OrdersListScreen = ({ history }) => {
           </div>
           <Collapse in={show.sort}>
             <div className='py-2'>
-              <OrdersSort onSubmit={sortHandler} />
+              <OrdersSort onSubmit={handleSort} />
             </div>
           </Collapse>
 
           <Collapse in={show.filter}>
             <div className='py-2'>
-              <OrdersFilter onSubmit={filterHandler} />
+              <OrdersFilter onSubmit={handleFilter} />
             </div>
           </Collapse>
-          {error && <Message variant='danger'>{error}</Message>}
-          {flashMsg.display && (
-            <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
-          )}
+          <Message variant={flashMsg.variant || 'danger'}>
+            {flashMsg.message || { error }}
+          </Message>
           <Table striped bordered hover responsive className='table-sm'>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>USER</th>
-                <th>DATE</th>
-                <th>PAID</th>
-                <th>DELIVERY STATUS</th>
-                <th>DELIVERY DATE</th>
+                {tableHeadings.map((t, i) => (
+                  <th key={i}>{t.toLocaleUpperCase()}</th>
+                ))}
               </tr>
             </thead>
             <tbody style={{ textAlign: 'center' }}>
-              {/* {console.log(orders)} */}
               {orders &&
                 orders.map((order) => (
                   <tr key={order._id}>
@@ -232,7 +228,7 @@ const OrdersListScreen = ({ history }) => {
                     <td>
                       <p
                         title='update status'
-                        onClick={() => updateHandler(order)}
+                        onClick={() => handleUpdate(order)}
                         className='simple-link'
                       >
                         {order.deliveryStatus}

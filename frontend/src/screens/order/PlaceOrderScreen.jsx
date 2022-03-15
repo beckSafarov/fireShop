@@ -7,7 +7,13 @@ import axios from 'axios'
 import { Calculations } from '../../helpers/Calculations'
 
 // UI components
-import { Auth, Loader, Message, CheckOutSteps, ListRow } from '../../components'
+import {
+  Auth,
+  Loader,
+  Message,
+  CheckOutSteps,
+  UserAddress,
+} from '../../components'
 import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap'
 import { PayPalButton } from 'react-paypal-button-v2'
 import { Link } from 'react-router-dom'
@@ -29,7 +35,6 @@ const PlaceOrderScreen = ({ history }) => {
 
   // hooks states
   const [sdkReady, setSdkReady] = useState(false)
-  const [paymentError, setPaymentError] = useState(false)
   const [paymentErrorMessage, setPaymentErrorMessage] = useState('undefined')
 
   useEffect(
@@ -43,7 +48,6 @@ const PlaceOrderScreen = ({ history }) => {
           const { data: clientId } = await axios.get('/api/config/paypal', {
             cancelToken: axios.CancelToken.source().token,
           })
-          console.log('building paypal')
           const script = document.createElement('script')
           script.type = 'text/javascript'
           script.async = true
@@ -88,13 +92,16 @@ const PlaceOrderScreen = ({ history }) => {
   }
 
   const paymentErrorHandler = (error = 'payment failed') => {
-    setPaymentError(true)
     setPaymentErrorMessage(error)
   }
 
-  // listrow values
-  const labels = ['Items price', 'Shipping', 'Tax', 'Total']
-
+  const orderSummaryLabels = [
+    'Subtotal',
+    "Product's Price",
+    'Shipping Price',
+    'Tax Price',
+    'Total Price',
+  ]
   return (
     <Auth history={history}>
       {loading ? (
@@ -132,10 +139,7 @@ const PlaceOrderScreen = ({ history }) => {
 
                   <p>
                     <strong>Address: </strong>
-                    {userInfo.shippingAddress.address},{' '}
-                    {userInfo.shippingAddress.city},{' '}
-                    {userInfo.shippingAddress.postalCode},{' '}
-                    {userInfo.shippingAddress.country}
+                    <UserAddress data={userInfo.shippingAddress} />
                   </p>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -177,13 +181,15 @@ const PlaceOrderScreen = ({ history }) => {
               <h2 className='mb-4 text-center'>Order Summary</h2>
               <Card>
                 <ListGroup variant='flush'>
-                  {[...Array(4).keys()].map((loopNum, index) => (
-                    <ListGroup.Item key={index}>
-                      <ListRow
-                        label={labels[index]}
-                        value={Object.values(calcs)[index]}
-                        sign={index === 3 ? '=' : '+'}
-                      />
+                  {orderSummaryLabels.map((label, i) => (
+                    <ListGroup.Item key={i}>
+                      <Row>
+                        <Col>{label}</Col>
+                        <Col>
+                          {i === orderSummaryLabels.length - 1 ? '= ' : '+ '}
+                          {Object.values(calcs)[i]}
+                        </Col>
+                      </Row>
                     </ListGroup.Item>
                   ))}
                   <ListGroup.Item>
