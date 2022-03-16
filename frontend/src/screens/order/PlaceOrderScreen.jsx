@@ -7,19 +7,14 @@ import axios from 'axios'
 import { Calculations } from '../../helpers/calculations'
 
 // UI components
-import {
-  Auth,
-  Loader,
-  Message,
-  CheckOutSteps,
-  UserAddress,
-} from '../../components'
+import { Auth, Loader, Message, CheckOutSteps } from '../../components'
 import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap'
 import { PayPalButton } from 'react-paypal-button-v2'
 import { Link } from 'react-router-dom'
 
 // redux actions
 import { createOrder } from '../../actions/orderActions'
+import { getUserAddress } from '../../helpers/utilities'
 
 const PlaceOrderScreen = ({ history }) => {
   // bringing redux related things
@@ -139,7 +134,7 @@ const PlaceOrderScreen = ({ history }) => {
 
                   <p>
                     <strong>Address: </strong>
-                    <UserAddress data={userInfo.shippingAddress} />
+                    {getUserAddress(userInfo.shippingAddress)}
                   </p>
                 </ListGroup.Item>
                 <ListGroup.Item>

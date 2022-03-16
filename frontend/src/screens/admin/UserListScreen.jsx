@@ -24,6 +24,7 @@ import {
   ADMIN_USER_UPDATE_RESET,
 } from '../../constants'
 import UserEditModal from '../../components/Modals/UserEditModal'
+import { getUserAddress } from '../../helpers/utilities'
 
 const tableHeadings = ['id', 'name', 'email', 'address', 'actions']
 
@@ -157,9 +158,7 @@ const UserListScreen = ({ history }) => {
                     )}
                   </td>
                   <td>{user.email}</td>
-                  <td>
-                    <UserAddress data={user.shippingAddress} />
-                  </td>
+                  <td>{getUserAddress(user.shippingAddress)}</td>
                   <td>
                     <div className='two-horizontal-icons'>
                       <div>

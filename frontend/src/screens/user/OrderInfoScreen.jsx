@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // methods
-import { Calculations } from '../../helpers/Calculations'
+import { Calculations } from '../../helpers/calculations'
 
 // UI components
 import { Row, Col, ListGroup, Image, Container, Button } from 'react-bootstrap'
@@ -22,16 +22,11 @@ import {
 import { getOrderDetails } from '../../actions/orderActions'
 import {
   ORDERS_LIST_PROPERTY_RESET as listReset,
-  ORDER_DETAILS_RESET,
   ORDER_UPDATE_RESET as detailsReset,
 } from '../../constants'
+import { getUserAddress } from '../../helpers/utilities'
 
-const deliverySteps = {
-  Received: 1,
-  Packed: 2,
-  Shipped: 3,
-  Delivered: 4,
-}
+const deliverySteps = ['Received', 'Packed', 'Shipped', 'Delivered']
 
 const OrderInfoScreen = ({ match, history }) => {
   const dispatch = useDispatch()
@@ -89,6 +84,14 @@ const OrderInfoScreen = ({ match, history }) => {
   const canReview = (_id) =>
     userInfo.purchased.find((i) => i._id === _id && i.isDelivered)
 
+  const orderInfoList = [
+    { label: 'Order ID: ', body: order?._id },
+    { label: 'Name: ', body: order?.user.name },
+    { label: 'Email: ', body: order?.user.email },
+    { label: 'Address: ', body: getUserAddress(order?.shippingAddress) },
+    { label: 'Payment Method: ', body: order?.paymentMethod },
+  ]
+
   return (
     <Auth history={history}>
       <Container>
@@ -116,35 +119,18 @@ const OrderInfoScreen = ({ match, history }) => {
                 <h3 className='mb-4'>Order Info</h3>
                 <ListGroup variant='flush'>
                   {/* info about the order */}
-                  <ListGroup.Item key={1}>
-                    <p>
-                      <strong>Order ID: </strong>
-                      {order._id}
-                    </p>
-                    <p>
-                      <strong>Name: </strong>
-                      {order.user.name}
-                    </p>
-                    <p>
-                      <strong>Email: </strong>
-                      {order.user.email}
-                    </p>
-                    <p>
-                      <strong>Address: </strong>
-                      {order.shippingAddress.address},{' '}
-                      {order.shippingAddress.city},{' '}
-                      {order.shippingAddress.postalCode},{' '}
-                      {order.shippingAddress.country}
-                    </p>
-                    <p>
-                      <strong>Payment Method: </strong>
-                      {order.paymentMethod}
-                    </p>
+                  <ListGroup.Item>
+                    {orderInfoList.map((info, i) => (
+                      <p key={i}>
+                        <strong>{info.label}</strong>
+                        {info.body}
+                      </p>
+                    ))}
                   </ListGroup.Item>
                   {/* list of bought items */}
-                  <ListGroup.Item key={2}>
+                  <ListGroup.Item>
                     <p>Purchased Product(s)</p>
-                    {order.orderItems.map((item, index) => (
+                    {order.orderItems.map((item) => (
                       <Row key={item._id}>
                         <Col md={1}>
                           <Image
@@ -175,7 +161,7 @@ const OrderInfoScreen = ({ match, history }) => {
                     ))}
                   </ListGroup.Item>
                   {/* order calculations */}
-                  <ListGroup.Item key={3}>
+                  <ListGroup.Item>
                     <Row>
                       <Col> Cumulative Products' Price </Col>
                       <Col>+ {calcs.productsPrice}</Col>
@@ -209,7 +195,7 @@ const OrderInfoScreen = ({ match, history }) => {
                 <DeliveryProgress
                   width={500}
                   height={100}
-                  progress={deliverySteps[order.deliveryStatus]}
+                  progress={deliverySteps[order.deliveryStatus - 1]}
                 />
               </div>
               <ListGroup variant='flush'>

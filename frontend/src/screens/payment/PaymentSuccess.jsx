@@ -5,14 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap'
 import axios from 'axios'
-import {
-  Auth,
-  Loader,
-  Message,
-  Exceptional,
-  UserAddress,
-} from '../../components'
-import { isEmptyObj } from '../../helpers/utilities'
+import { Auth, Loader, Message, Exceptional } from '../../components'
+import { getUserAddress, isEmptyObj } from '../../helpers/utilities'
 
 const PaymentSuccess = ({ history, location }) => {
   const dispatch = useDispatch()
@@ -30,7 +24,7 @@ const PaymentSuccess = ({ history, location }) => {
     { label: 'Email', body: order?.paymentResult?.email_address },
     {
       label: 'Address',
-      body: <UserAddress data={order?.user?.shippingAddress} />,
+      body: getUserAddress(order?.shippingAddress),
     },
     { label: 'Payment Method', body: order?.paymentMethod },
     { label: 'Payment Date', body: order?.paidAt },

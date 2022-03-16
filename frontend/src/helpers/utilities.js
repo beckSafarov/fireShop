@@ -74,3 +74,7 @@ export const isEmptyObj = (obj = {}) => Object.keys(obj).length === 0
 export const isInvalid = (f, p) => f.touched[p] && f.errors[p]
 
 export const getErrMessage = (err) => err.response?.data?.message || err.message
+
+export const getUserAddress = (data) => {
+  return data ? Object.values(data).join(', ') : ''
+}
