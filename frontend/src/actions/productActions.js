@@ -4,23 +4,22 @@ import { axiosConfig, config } from '../helpers/axiosConfigs'
 import { getErrMessage } from '../helpers/utilities.js'
 
 export const listProducts = (keyword) => async (dispatch) => {
+  const getDispatchType = (status) =>
+    keyword
+      ? cs[`PRODUCT_SEARCH_${status.toUpperCase()}`]
+      : cs[`PRODUCT_LIST_${status.toUpperCase()}`]
   try {
-    dispatch({
-      type: keyword ? cs.PRODUCT_SEARCH_REQUEST : cs.PRODUCT_LIST_REQUEST,
-    })
+    dispatch({ type: getDispatchType('request') })
 
     const { data } = await axios.get(
       `/api/products?keyword=${keyword || ''}`,
       axiosConfig
     )
 
-    dispatch({
-      type: keyword ? cs.PRODUCT_SEARCH_SUCCESS : cs.PRODUCT_LIST_SUCCESS,
-      payload: data,
-    })
+    dispatch({ type: getDispatchType('success'), payload: data })
   } catch (err) {
     dispatch({
-      type: keyword ? cs.PRODUCT_SEARCH_FAILURE : cs.PRODUCT_LIST_FAILURE,
+      type: getDispatchType('failure'),
       payload: getErrMessage(err),
     })
   }

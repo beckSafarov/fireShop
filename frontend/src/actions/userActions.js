@@ -1,6 +1,7 @@
 import * as cs from '../constants.js'
 import axios from 'axios'
 import { fullConfig as config } from '../helpers/rxConfigs.js'
+import { getErrMessage } from '../helpers/utilities.js'
 
 export const login = (email, password) => async (dispatch) => {
   try {
@@ -13,7 +14,6 @@ export const login = (email, password) => async (dispatch) => {
     )
 
     dispatch({ type: cs.USER_LOGIN_SUCCESS, payload: data.data })
-
     dispatch({
       type: cs.CART_ITEMS_RECEIVED,
       payload: data.data.cartItems,
@@ -75,7 +75,7 @@ export const updateUserProfile = (user) => async (dispatch) => {
   }
 }
 
-export const getMe = () => async (dispatch, getState) => {
+export const getMe = () => async (dispatch) => {
   try {
     dispatch({ type: cs.USER_LOGIN_REQUEST })
 
@@ -87,10 +87,9 @@ export const getMe = () => async (dispatch, getState) => {
       type: cs.USER_LOGIN_SUCCESS,
       payload: data.user || false,
     })
-
     dispatch({
       type: cs.CART_ITEMS_RECEIVED,
-      payload: data.user ? data.user.cartItems : [],
+      payload: data.user?.cartItems || [],
     })
   } catch (err) {
     dispatch({

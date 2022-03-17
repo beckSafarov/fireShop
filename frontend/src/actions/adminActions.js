@@ -40,7 +40,7 @@ export const searchUser =
 export const adminUpdateUser = (id, body) => async (dispatch) => {
   try {
     dispatch({ type: cs.ADMIN_USER_UPDATE_REQUEST })
-    const { data } = await axios.put(`/api/admin/users/${id}`, body, config)
+    const { data } = await axios.put(`/api/admin/userss/${id}`, body, config)
     dispatch({ type: cs.ADMIN_USER_UPDATE_SUCCESS, payload: data.user })
     dispatch({ type: cs.USER_LIST_UPDATE, payload: data.user })
   } catch (err) {
@@ -135,7 +135,6 @@ export const imgUpload = (formData) => async (dispatch) => {
       payload: data,
     })
   } catch (err) {
-    console.log(err)
     dispatch({
       type: cs.IMG_UPLOAD_FAILURE,
       payload: getErrMessage(err),
