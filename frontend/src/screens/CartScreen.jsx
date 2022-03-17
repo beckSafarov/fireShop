@@ -39,13 +39,13 @@ const CartScreen = ({ history }) => {
   const calcs = Calculations(cartItems)
 
   useEffect(() => {
-    error && msgHandler(error)
-    cart && setCartItems(cart.cartItems)
-
-    return () => {
-      axios.CancelToken.source().cancel()
+    if (cart) setCartItems(cart.cartItems)
+    if (error) {
+      setFlashMsg({ message: error, variant: 'danger' })
       dispatch({ type: cartReset, payload: 'error' })
     }
+
+    return () => axios.CancelToken.source().cancel()
   }, [dispatch, error, cart])
 
   const handleConfirmDelete = (id, name) => {
