@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 
 const DeliveryProgress = ({
   height,
@@ -13,6 +13,9 @@ const DeliveryProgress = ({
   const firstEnding = 10 + 2 * r
   const lastEnding = width - 2 * r
   const distance = (lastEnding - firstEnding - 10) / 3
+  const [delvProgress, setDelvProgress] = useState(0)
+
+  useEffect(() => setDelvProgress(progress), [progress])
 
   const firstCircleX = 10 + r
   const secondCircleX = firstCircleX + r + distance
@@ -41,14 +44,14 @@ const DeliveryProgress = ({
             cx={circle.cx}
             cy={startHeight}
             r={r}
-            fill={progress >= i + 1 ? completedColor : 'white'}
-            stroke={progress >= i + 1 ? completedColor : uncompletedColor}
+            fill={delvProgress >= i ? completedColor : 'white'}
+            stroke={delvProgress >= i ? completedColor : uncompletedColor}
             strokeWidth='2'
           />
           <text
             x={circle.cx - (i === 1 ? 1.25 : 1.5) * r}
             y={startHeight + 2 * r}
-            fill={progress >= i + 1 ? completedColor : uncompletedColor}
+            fill={delvProgress >= i ? completedColor : uncompletedColor}
           >
             {circle.label}
           </text>

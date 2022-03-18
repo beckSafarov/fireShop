@@ -60,13 +60,14 @@ const OrdersListScreen = ({ history }) => {
 
   // -- redux stores --
   // all orders
+  const ordersListStore = useSelector((state) => state.ordersListStore)
   const {
     loading: listLoading,
     orders: allOrders,
     success: allOrdersLoaded,
     type,
     error,
-  } = useSelector((state) => state.ordersListStore)
+  } = ordersListStore
 
   // filtered orders
   const {
@@ -82,6 +83,8 @@ const OrdersListScreen = ({ history }) => {
   const sortQuery = initSortVals(0) ? querify(initSortVals()) : ''
 
   const filterOn = filteredOrders && filteredOrders.length > 0
+
+  // console.log(allOrders)
 
   useEffect(() => {
     if (allOrdersLoaded) {
@@ -116,7 +119,7 @@ const OrdersListScreen = ({ history }) => {
     setModal({
       display: true,
       _id: order._id,
-      deliveryStatus: order.deliveryStatus,
+      status: order.deliveryStatus,
     })
   }
 
@@ -199,7 +202,7 @@ const OrdersListScreen = ({ history }) => {
             </div>
           </Collapse>
           <Message variant={flashMsg.variant || 'danger'}>
-            {flashMsg.message || { error }}
+            {flashMsg.message || error}
           </Message>
           <Table striped bordered hover responsive className='table-sm'>
             <thead>

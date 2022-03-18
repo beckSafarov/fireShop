@@ -28,7 +28,7 @@ const UpdateDeliveryModal = ({ modal, onClose }) => {
 
     if (!_id || modal._id === _id) {
       setId(modal._id)
-      setDeliveryStatus(modal.deliveryStatus)
+      setDeliveryStatus(modal.status)
     }
 
     return () => axios.CancelToken.source().cancel()
@@ -65,7 +65,7 @@ const UpdateDeliveryModal = ({ modal, onClose }) => {
         <Form>
           <Form.Control
             as='select'
-            defaultValue={stepOptions[deliveryStatus - 1]}
+            value={stepOptions.indexOf(deliveryStatus)}
             onChange={handleChange}
           >
             {stepOptions.map((step, i) => (
