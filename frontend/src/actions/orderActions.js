@@ -103,7 +103,6 @@ export const updateDeliveryStatus = (id, body) => async (dispatch) => {
     dispatch({ type: cs.ORDER_UPDATE_REQUEST })
 
     const { data } = await axios.put(`/api/orders/${id}`, body, config)
-
     dispatch({
       type: cs.ORDER_UPDATE_SUCCESS,
       payload: data.order,

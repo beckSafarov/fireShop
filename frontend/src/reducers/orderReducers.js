@@ -1,16 +1,7 @@
-import { STATES } from 'mongoose'
 import * as cs from '../constants.js'
+import produce from 'immer'
 
-const Loading = (type, state = {}) => ({ ...state, loading: true, type })
-const Success = (order, type) => ({
-  loading: false,
-  success: true,
-  order,
-  type,
-})
-const Error = (error, state = {}) => ({ ...state, loading: false, error })
-
-export const orderCreateReducer = (state = { order: {} }, action) => {
+export const orderCreateReducer = produce((draft = { order: {} }, action) => {
   switch (action.type) {
     case cs.ORDER_CREATE_REQUEST:
       return { loading: true, order: {} }
@@ -19,11 +10,11 @@ export const orderCreateReducer = (state = { order: {} }, action) => {
     case cs.ORDER_CREATE_FAIL:
       return { loading: false, order: {}, error: action.payload }
     default:
-      return state
+      return draft
   }
-}
+})
 
-export const ordersFilterReducer = (state = { orders: [] }, action) => {
+export const ordersFilterReducer = produce((draft = { orders: [] }, action) => {
   switch (action.type) {
     case cs.ORDERS_FILTER_REQUEST:
       return { loading: true }
@@ -34,36 +25,39 @@ export const ordersFilterReducer = (state = { orders: [] }, action) => {
     case cs.ORDERS_FILTER_RESET:
       return {}
     default:
-      return state
+      return draft
   }
-}
+})
 
-export const orderDetailsReducer = (state = { order: {} }, action) => {
+export const orderDetailsReducer = produce((draft = { order: {} }, action) => {
+  const loadingState = { ...draft, loading: true }
+  const successState = { loading: false, success: true, order: action.payload }
   switch (action.type) {
     case cs.ORDER_DETAILS_REQUEST:
-      return Loading('request', state)
+      return { ...loadingState, type: 'request' }
     case cs.ORDER_DETAILS_SUCCESS:
-      return Success(action.payload, 'request')
+      return { ...successState, type: 'request' }
     case cs.ORDER_DETAILS_FAIL:
-      return Error(action.payload, state)
+    case cs.ORDER_UPDATE_FAIL:
+      return { ...draft, loading: false, error: action.payload }
     case cs.ORDER_DETAILS_RESET:
       return {}
     case cs.ORDER_UPDATE_REQUEST:
-      return Loading('update', state)
+      return { ...loadingState, type: 'update' }
     case cs.ORDER_UPDATE_SUCCESS:
-      return Success(action.payload, 'update')
-    case cs.ORDER_UPDATE_FAIL:
-      return Error(action.payload, state)
+      return { ...successState, order: action.payload, type: 'update' }
     case cs.ORDER_UPDATE_RESET:
-      let newState = { ...state }
-      newState[action.payload] = null
-      return newState
+      draft[action.payload] = null
+      break
     default:
-      return state
+      return draft
   }
-}
+})
 
-export const myOrdersReducer = (state = { orders: [] }, action) => {
+/**
+ * @access public
+ */
+export const myOrdersReducer = produce((draft = { orders: [] }, action) => {
   switch (action.type) {
     case cs.MY_ORDERS_REQUEST:
       return { loading: true }
@@ -72,43 +66,45 @@ export const myOrdersReducer = (state = { orders: [] }, action) => {
     case cs.MY_ORDERS_FAIL:
       return { loading: false, error: action.payload }
     default:
-      return state
+      return draft
   }
-}
+})
 
-// export const ordersFilterRedc
-
-export const ordersListReducer = (state = { orders: [] }, action) => {
+/**
+ * @access public && private
+ */
+export const ordersListReducer = produce((draft = { orders: [] }, action) => {
+  const successState = { loading: false, success: true }
   switch (action.type) {
     case cs.ORDERS_LIST_REQUEST:
-      return { loading: true }
+      return { ...draft, loading: true }
     case cs.ORDERS_LIST_SUCCESS:
-      return { loading: false, success: true, orders: action.payload }
+      console.log(action.payload)
+      return { ...successState, orders: action.payload }
     case cs.ORDERS_LIST_FAILURE:
       return { loading: false, error: action.payload }
     case cs.ORDERS_LIST_UPDATE_SUCCESS:
       const updatedOrder = action.payload
-      let newOrders = [...state.orders]
-      for (let i = 0; i < newOrders.length; i++) {
-        if (newOrders[i]._id === updatedOrder._id) {
-          newOrders[i].isDelivered = updatedOrder.isDelivered
-          newOrders[i].deliveryStatus = updatedOrder.deliveryStatus
-          break
-        }
-      }
+      const ordersUpdated = draft.orders.map((order) =>
+        order._id === updatedOrder._id
+          ? {
+              ...order,
+              isDelivered: updatedOrder.isDelivered,
+              deliveryStatus: updatedOrder.deliveryStatus,
+            }
+          : order
+      )
       return {
-        loading: false,
-        success: true,
+        ...successState,
+        orders: ordersUpdated,
         type: 'update',
-        orders: newOrders,
       }
     case cs.ORDERS_LIST_RESET:
       return {}
     case cs.ORDERS_LIST_PROPERTY_RESET:
-      const newState = { ...state }
-      newState[action.payload] = null
-      return newState
+      draft[action.payload] = null
+      break
     default:
-      return state
+      return draft
   }
-}
+})
