@@ -86,8 +86,13 @@ export const updateOrderDeliveryStatus = asyncHandler(async (req, res) => {
   if (isDelivered) {
     const user = await User.findById(order.user)
     user.purchased.forEach((i) => {
-      if (i.date.toString() === order.paidAt.toString()) {
+      if (order.paidAt) {
+        if (i.date.toString() === order.paidAt.toString()) {
+          i.isDelivered = true
+        }
+      } else {
         i.isDelivered = true
+        i.paidAt = i.date
       }
     })
     await user.save()
