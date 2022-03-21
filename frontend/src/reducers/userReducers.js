@@ -1,78 +1,73 @@
 import * as cs from '../constants'
-const Loading = (loading = true) => ({ loading })
-const Error = (error) => ({ loading: false, error })
-const Success = (userInfo = null) => ({
-  loading: false,
-  success: true,
-  userInfo,
-})
+import produce from 'immer'
+const successState = { loading: false, success: true }
 
-export const userLoginReducer = (state = {}, action) => {
+export const userLoginReducer = produce((draft = {}, action) => {
   switch (action.type) {
     case cs.USER_LOGIN_REQUEST:
-      return Loading()
+      return { loading: true }
     case cs.USER_LOGIN_SUCCESS:
-      return Success(action.payload)
+      return { ...successState, userInfo: action.payload }
     case cs.USER_LOGIN_FAILURE:
-      return Error(action.payload)
-    case cs.USER_LOGOUT_REQUEST:
-      return Loading(false)
-    case cs.USER_LOGOUT_SUCCESS:
-      return Success()
     case cs.USER_LOGOUT_FAILURE:
-      return Error(action.payload)
+      return { loading: false, error: action.payload }
+    case cs.USER_LOGOUT_REQUEST:
+      return { loading: false }
+    case cs.USER_LOGOUT_SUCCESS:
+      return successState
     case cs.USER_INFO_UPDATE:
-      return Success({ ...state.userInfo, ...action.payload })
+      return {
+        ...successState,
+        userInfo: { ...draft.userInfo, ...action.payload },
+      }
     case cs.USER_DETAILS_CLEAR:
       return {}
     default:
-      return state
+      return draft
   }
-}
+})
 
-export const userRegisterReducer = (state = {}, action) => {
+export const userRegisterReducer = produce((draft = {}, action) => {
   switch (action.type) {
     case cs.USER_REGISTER_REQUEST:
-      return Loading()
+      return { loading: true }
     case cs.USER_REGISTER_SUCCESS:
-      return Success(undefined)
+      return successState
     case cs.USER_REGISTER_FAILURE:
-      return Error(action.payload)
+      return { loading: false, error: action.payload }
     default:
-      return state
+      return draft
   }
-}
+})
 
-export const updateUserDetailsReducer = (state = {}, action) => {
-  let newState = state
+export const updateUserDetailsReducer = produce((draft = {}, action) => {
   switch (action.type) {
     case cs.USER_DETAILS_UPDATE_REQUEST:
-      return Loading()
+      return { loading: true }
     case cs.USER_DETAILS_UPDATE_SUCCESS:
-      return Success(undefined)
+      return successState
     case cs.USER_DETAILS_UPDATE_FAILURE:
-      return Error(action.payload)
+      return { loading: false, error: action.payload }
     case cs.USER_DETAILS_PROPERTY_RESET:
-      newState[action.payload] = null
-      return newState
+      draft[action.payload] = null
+      break
     default:
-      return state
+      return draft
   }
-}
+})
 
-export const ShaddressReducer = (state = {}, action) => {
-  let newState = state
+export const ShaddressReducer = produce((draft = {}, action) => {
   switch (action.type) {
     case cs.SHADDRESS_POST_REQUEST:
-      return Loading()
+      return { loading: true }
     case cs.SHADDRESS_POST_SUCCESS:
       return { loading: false, success: true, data: action.payload }
     case cs.SHADDRESS_POST_FAILURE:
-      return Error(action.payload)
+      return { loading: false, error: action.payload }
     case cs.SHADDRESS_PROPERTY_RESET:
-      newState[action.payload] = null
-      return newState
+      draft[action.payload] = null
+      break
     default:
-      return state
+      return draft
   }
-}
+})
