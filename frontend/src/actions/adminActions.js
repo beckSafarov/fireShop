@@ -95,7 +95,7 @@ export const updateProduct = (body) => async (dispatch) => {
     })
 
     dispatch({
-      type: cs.PRODUCT_UPDATE,
+      type: cs.PRODUCT_LIST_UPDATE,
       payload: body,
     })
   } catch (err) {

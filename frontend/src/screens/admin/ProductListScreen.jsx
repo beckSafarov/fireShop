@@ -66,7 +66,7 @@ const ProductListScreen = ({ history }) => {
           history.push(`/admin/productedit/${newProduct._id}`)
           break
       }
-      rxReset('success')
+      // rxReset('success')
     }
 
     if (error && type !== 'request') {

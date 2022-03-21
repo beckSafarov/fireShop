@@ -1,131 +1,137 @@
 import * as cs from '../constants.js'
-const Loading = (state) => ({ ...state, loading: true }),
-  Error = (state, error, type) => ({ ...state, loading: false, error, type }),
-  Success = (products, type) => ({
-    loading: false,
-    success: true,
-    products,
-    type,
-  }),
-  Success2 = (product, type) => ({
-    loading: false,
-    product,
-    success: true,
-    type,
-  })
+import produce from 'immer'
 
-export const productListReducer = (state = { products: [] }, action) => {
-  let newProducts, currProducts
-  switch (action.type) {
-    case cs.PRODUCT_LIST_REQUEST:
-      return Loading(state)
-    case cs.PRODUCT_LIST_SUCCESS:
-      return Success(action.payload, 'request')
-    case cs.PRODUCT_LIST_FAILURE:
-      return Error(state, action.payload, 'request')
-    case cs.PRODUCT_ADD_REQUEST:
-      return Loading(state)
-    case cs.PRODUCT_ADD_SUCCESS:
-      newProducts = [...state.products]
-      newProducts.push({ ...action.payload, new: true })
-      return Success(newProducts, 'add')
-    case cs.PRODUCT_ADD_FAILURE:
-      return Error(state, action.payload, 'add')
-
-    case cs.PRODUCT_UPDATE:
-      let newProduct = action.payload
-      currProducts = [...state.products]
-      for (let i = 0; i < currProducts.length; i++) {
-        if (currProducts[i]._id === newProduct._id) {
-          newProduct.new && (newProduct.new = undefined)
-          currProducts[i] = { ...currProducts[i], ...newProduct }
-          break
+export const productListReducer = produce(
+  (draft = { products: [] }, action) => {
+    const errState = { ...draft, loading: false, error: action.payload }
+    const changeStateToSuccess = (type) => {
+      draft.loading = false
+      draft.type = type
+      draft.success = true
+    }
+    switch (action.type) {
+      case cs.PRODUCT_LIST_REQUEST:
+      case cs.PRODUCT_ADD_REQUEST:
+      case cs.PRODUCT_DELETE_REQUEST:
+        return { ...draft, loading: true }
+      case cs.PRODUCT_LIST_SUCCESS:
+        return {
+          loading: false,
+          success: true,
+          products: action.payload,
+          type: 'request',
         }
-      }
-      return Success(currProducts, 'update')
-    case cs.PRODUCT_DELETE_REQUEST:
-      return Loading(state)
-    case cs.PRODUCT_DELETE_SUCCESS:
-      newProducts = [...state.products]
-      newProducts = state.products.filter((p) => p._id !== action.payload)
-      return Success(newProducts, 'delete')
-    case cs.PRODUCT_DELETE_FAILURE:
-      return Error(state, action.payload, 'delete')
-    case cs.PRODUCT_LIST_PROPERTY_RESET:
-      let newState = { ...state }
-      newState[action.payload] = null
-      return newState
-    default:
-      return state
+      case cs.PRODUCT_LIST_FAILURE:
+        return { ...errState, type: 'request' }
+      case cs.PRODUCT_ADD_SUCCESS:
+        draft.products.push({ ...action.payload, new: true })
+        changeStateToSuccess('add')
+        break
+      case cs.PRODUCT_ADD_FAILURE:
+        return { ...errState, type: 'add' }
+      case cs.PRODUCT_LIST_UPDATE:
+        const updatedProduct = action.payload
+        draft.products = draft.products.map((p) => {
+          if (p._id === updatedProduct._id) {
+            if (updatedProduct.new) updatedProduct.new = false
+            return { ...p, ...updatedProduct }
+          }
+          return p
+        })
+        changeStateToSuccess('update')
+        break
+      case cs.PRODUCT_DELETE_SUCCESS:
+        draft.products = draft.products.filter((p) => p._id !== action.payload)
+        changeStateToSuccess('delete')
+        return
+      case cs.PRODUCT_DELETE_FAILURE:
+        return { ...errState, type: 'delete' }
+      case cs.PRODUCT_LIST_PROPERTY_RESET:
+        draft[action.payload] = null
+        break
+      default:
+        return draft
+    }
   }
-}
+)
 
-export const productSearchReducer = (state = {}, action) => {
+export const productSearchReducer = produce((draft = {}, action) => {
   switch (action.type) {
     case cs.PRODUCT_SEARCH_REQUEST:
-      return Loading(state)
+      return { ...draft, loading: true }
     case cs.PRODUCT_SEARCH_SUCCESS:
-      return Success(action.payload)
+      return {
+        loading: false,
+        success: true,
+        products: action.payload,
+      }
     case cs.PRODUCT_SEARCH_FAILURE:
       return { loading: false, products: [], error: action.payload }
     case cs.PRODUCT_SEARCH_RESET:
       return {}
     case cs.PRODUCT_SEARCH_PROPERTY_RESET:
-      let newState = state
-      newState[action.payload] = null
-      return newState
+      draft[action.payload] = null
+      break
     default:
-      return state
+      return draft
   }
-}
+})
 
-export const productDetailsReducer = (state = { reviews: [] }, action) => {
-  switch (action.type) {
-    case cs.PRODUCT_DETAILS_REQUEST:
-      return Loading(state)
-    case cs.PRODUCT_DETAILS_SUCCESS:
-      return Success2(action.payload, 'request')
-    case cs.PRODUCT_DETAILS_FAILURE:
-      return Error(state, action.payload, 'request')
-    case cs.PRODUCT_DETAILS_UPDATE_REQUEST:
-      return Loading(state)
-    case cs.PRODUCT_DETAILS_UPDATE_SUCCESS:
-      return Success2(action.payload, 'update')
-    case cs.PRODUCT_DETAILS_UPDATE_FAILURE:
-      return Error(state, action.payload, 'update')
-    case cs.PRODUCT_REVIEW_UPDATE:
-      const { user, body } = action.payload
-      let reviews = [...state.product.reviews]
-      reviews.forEach((r) => (r = r.user === user ? { ...r, body } : r))
-      return Success2({ ...state.product, reviews }, 'update')
-    case cs.PRODUCT_DETAILS_RESET:
-      let newState = { ...state }
-      newState[action.payload] = null
-      return newState
-    default:
-      return state
+export const productDetailsReducer = produce(
+  (draft = { reviews: [] }, action) => {
+    const successState = {
+      loading: false,
+      product: action.payload,
+      success: true,
+    }
+    const errState = { ...draft, loading: false, error: action.payload }
+    switch (action.type) {
+      case cs.PRODUCT_DETAILS_REQUEST:
+      case cs.PRODUCT_DETAILS_UPDATE_REQUEST:
+        return { ...draft, loading: true }
+      case cs.PRODUCT_DETAILS_SUCCESS:
+        return { ...successState, type: 'request' }
+      case cs.PRODUCT_DETAILS_FAILURE:
+        return { ...errState, type: 'request' }
+      case cs.PRODUCT_DETAILS_UPDATE_SUCCESS:
+        return { ...successState, type: 'update' }
+      case cs.PRODUCT_DETAILS_UPDATE_FAILURE:
+        return { ...errState, type: 'update' }
+      case cs.PRODUCT_REVIEW_UPDATE:
+        const { user, body: updatedReview } = action.payload
+        draft.product.reviews = draft.product.reviews.map((review) =>
+          review.user === user ? { ...review, updatedReview } : review
+        )
+        draft.loading = false
+        draft.success = true
+        draft.type = 'update'
+        break
+      case cs.PRODUCT_DETAILS_RESET:
+        draft[action.payload] = null
+        break
+      default:
+        return draft
+    }
   }
-}
+)
 
-export const productReviewReducer = (state = { reviews: [] }, action) => {
-  switch (action.type) {
-    case cs.PRODUCT_REVIEW_REQUEST:
-      return { loading: true }
-    case cs.PRODUCT_REVIEW_SUCCESS:
-      return { loading: false, success: true }
-    case cs.PRODUCT_REVIEW_FAILURE:
-      return { loading: false, error: action.payload }
-    case cs.PRODUCT_REVIEW_UPDATE_REQUEST:
-      return { loading: true }
-    case cs.PRODUCT_REVIEW_UPDATE_SUCCESS:
-      return { loading: false, success: true }
-    case cs.PRODUCT_REVIEW_UPDATE_FAILURE:
-      return { loading: false, error: action.payload }
-    case cs.PRODUCT_REVIEW_PROPERTY_RESET:
-      let newState = { ...state }
-      newState[action.payload] = null
-      return newState
-    default:
-      return state
+export const productReviewReducer = produce(
+  (draft = { reviews: [] }, action) => {
+    switch (action.type) {
+      case cs.PRODUCT_REVIEW_REQUEST:
+      case cs.PRODUCT_REVIEW_UPDATE_REQUEST:
+        return { loading: true }
+      case cs.PRODUCT_REVIEW_SUCCESS:
+      case cs.PRODUCT_REVIEW_UPDATE_SUCCESS:
+        return { loading: false, success: true }
+      case cs.PRODUCT_REVIEW_FAILURE:
+      case cs.PRODUCT_REVIEW_UPDATE_FAILURE:
+        return { loading: false, error: action.payload }
+      case cs.PRODUCT_REVIEW_PROPERTY_RESET:
+        draft[action.payload] = null
+        break
+      default:
+        return draft
+    }
   }
-}
+)
