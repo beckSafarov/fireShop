@@ -48,7 +48,7 @@ const App = () => {
 
   useEffect(() => {
     userInfo === null && dispatch(getMe())
-    userInfo && lcc.length > 0 && dispatch(addToCart(lcc, null, true, true))
+    userInfo && lcc.length > 0 && dispatch(addToCart(lcc, true, true))
 
     return () => axios.CancelToken.source().cancel()
   }, [dispatch, userInfo])

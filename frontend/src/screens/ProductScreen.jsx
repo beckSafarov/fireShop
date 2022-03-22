@@ -72,7 +72,7 @@ const ProductScreen = ({ match, history }) => {
 
   const handleAddToCart = () => {
     const more = lcs.have(product) ? 'more' : ''
-    dispatch(addToCart(product, Number(qty), logged))
+    dispatch(addToCart({ ...product, qty: Number(qty) }, logged))
 
     if (!logged) {
       const text = `You added ${qty} ${more} ${product.name}(s) to your shopping cart`

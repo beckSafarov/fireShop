@@ -7,6 +7,7 @@ import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap'
 import axios from 'axios'
 import { Auth, Loader, Message, Exceptional } from '../../components'
 import { getUserAddress, isEmptyObj } from '../../helpers/utilities'
+import { CART_REMOVE_ITEMS } from '../../constants'
 
 const PaymentSuccess = ({ history, location }) => {
   const dispatch = useDispatch()
@@ -14,9 +15,18 @@ const PaymentSuccess = ({ history, location }) => {
   const { loading, order, error } = useSelector((state) => state.orderDetails)
 
   useEffect(() => {
-    dispatch(getOrderDetails(id))
+    if (isEmptyObj(order)) {
+      dispatch(getOrderDetails(id))
+    } else {
+      dispatch({
+        type: CART_REMOVE_ITEMS,
+        payload: {
+          cartItems: order.orderItems,
+        },
+      })
+    }
     return () => axios.CancelToken.source().cancel()
-  }, [dispatch])
+  }, [dispatch, order])
 
   const transactionInfo = [
     { label: 'Order ID', body: order?.paymentResult?.id },
@@ -39,7 +49,6 @@ const PaymentSuccess = ({ history, location }) => {
       ) : !isEmptyObj(order) ? (
         <Container>
           <ListGroup variant='flush'>
-            {console.log(order)}
             <h2 className='mb-4 text-center'>Payment Was Successful!</h2>
             <ListGroup.Item>
               {transactionInfo.map((transaction, i) => (

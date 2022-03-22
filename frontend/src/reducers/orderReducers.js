@@ -79,7 +79,6 @@ export const ordersListReducer = produce((draft = { orders: [] }, action) => {
     case cs.ORDERS_LIST_REQUEST:
       return { ...draft, loading: true }
     case cs.ORDERS_LIST_SUCCESS:
-      console.log(action.payload)
       return { ...successState, orders: action.payload }
     case cs.ORDERS_LIST_FAILURE:
       return { loading: false, error: action.payload }

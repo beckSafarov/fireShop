@@ -1,5 +1,6 @@
 import produce from 'immer'
 import * as cs from '../constants'
+import { differenceBy } from 'lodash'
 
 export const cartReducer = produce(
   (draft = { loading: false, message: null, cartItems: [] }, action) => {
@@ -70,6 +71,13 @@ export const cartReducer = produce(
           cartItems: cartItemsAfterRemove,
           successType: 'remove',
         }
+      case cs.CART_REMOVE_ITEMS:
+        draft.cartItems = differenceBy(
+          draft.cartItems,
+          action.payload.cartItems,
+          '_id'
+        )
+        break
       case cs.CART_SAVE_PAYMENT_METHOD:
         return { ...draft, paymentMethod: action.payload }
       case cs.CART_PROPERTY_RESET:

@@ -5,13 +5,10 @@ import { getErrMessage } from '../helpers/utilities.js'
 import { fullConfig, cancelTokenConfig } from '../helpers/rxConfigs.js'
 
 export const addToCart =
-  (product, qty, logged = true, many = false) =>
+  (product, logged = true, many = false) =>
   async (dispatch, getState) => {
     try {
       dispatch({ type: constants.CART_REQUIRE_ADD_ITEM })
-
-      if (!many) product.qty = qty
-
       if (logged) {
         const manyRoute = many ? '/many' : ''
         const res = await axios.post(

@@ -84,7 +84,7 @@ const OrdersListScreen = ({ history }) => {
 
   const filterOn = filteredOrders && filteredOrders.length > 0
 
-  // console.log(allOrders)
+  console.log(allOrders)
 
   useEffect(() => {
     if (allOrdersLoaded) {

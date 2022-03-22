@@ -64,11 +64,6 @@ const CartScreen = ({ history }) => {
   const handleCheckout = () =>
     history.push(logged ? '/shipping' : '/signin?redirect=shipping')
 
-  const msgHandler = (message, variant = 'danger') => {
-    setFlashMsg({ display: true, message, variant })
-    setTimeout(() => setFlashMsg({}), 3000)
-  }
-
   const handleProceedModal = (e) => {
     e.preventDefault()
     handleHideModal()

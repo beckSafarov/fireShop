@@ -19,6 +19,7 @@ const UserOrdersScreen = ({ history }) => {
     if (orders && orders.length === 0) dispatch(getMyOrders())
     return () => axios.CancelToken.source().cancel()
   }, [dispatch, orders])
+  console.log(orders)
 
   const LocaleDate = (d) => {
     const date = new Date(d)
