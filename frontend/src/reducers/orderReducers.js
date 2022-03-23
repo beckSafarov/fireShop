@@ -65,6 +65,8 @@ export const myOrdersReducer = produce((draft = { orders: [] }, action) => {
       return { loading: false, success: true, orders: action.payload }
     case cs.MY_ORDERS_FAIL:
       return { loading: false, error: action.payload }
+    case cs.MY_ORDERS_RESET:
+      return { orders: [] }
     default:
       return draft
   }

@@ -31,9 +31,9 @@ export const logout = () => async (dispatch) => {
     dispatch({ type: cs.USER_LOGOUT_REQUEST })
     await axios.put('/api/users/logout')
     dispatch({ type: cs.USER_LOGOUT_SUCCESS })
-
     dispatch({ type: cs.USER_DETAILS_CLEAR })
     dispatch({ type: cs.CART_FLUSH })
+    dispatch({ type: cs.MY_ORDERS_RESET })
   } catch (err) {
     dispatch({
       type: cs.USER_LOGOUT_FAILURE,
