@@ -4,7 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 // internal components
-import { Auth, FormContainer, Message, Spinner } from '../../components'
+import {
+  Auth,
+  FlashMsg,
+  FormContainer,
+  Message,
+  Spinner,
+} from '../../components'
 // redux actions
 import { login } from '../../actions/userActions'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
@@ -45,7 +51,9 @@ const LoginScreen = ({ history }) => {
       <FormContainer>
         <h1>Sign in</h1>
         <Spinner hidden={!loading} />
-        <Message variant='danger'>{loginError}</Message>
+        <FlashMsg variant='danger' permanent>
+          {loginError}
+        </FlashMsg>
         <div className='py-4'>
           <Formik
             initialValues={initialValues}

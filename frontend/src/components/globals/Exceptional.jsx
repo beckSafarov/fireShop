@@ -1,8 +1,8 @@
 import React from 'react'
-import Message from './Message'
+import { Alert } from 'react-bootstrap'
 
 const Exceptional = ({ variant, children }) => {
-  return <Message variant={variant}>{children}</Message>
+  return <Alert variant={variant}>{children}</Alert>
 }
 
 Exceptional.defaultProps = {

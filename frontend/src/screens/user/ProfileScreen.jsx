@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // -- COMPONENTS --
-import { Auth, Message, Spinner } from '../../components'
-import { Row, Col, Form, Button } from 'react-bootstrap'
+import { Auth, Spinner, FlashMsg } from '../../components'
+import { Row, Col, Button } from 'react-bootstrap'
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile } from '../../actions/userActions'
 import AccountSideMenu from '../../components/AccountSideMenu'
 import { USER_DETAILS_PROPERTY_RESET, USER_INFO_UPDATE } from '../../constants'
-import { Formik, Form as FormikForm, Field, ErrorMessage } from 'formik'
+import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 import { MAX_NAME_CHARS, PASSWORD_LENGTH } from '../../config'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
@@ -67,13 +67,13 @@ const ProfileScreen = ({ history }) => {
         payload: updatedVals,
       })
       setEditMode(false)
-      setMsgHandler('Updated successfully', 'success')
+      setFlashMsg({ variant: 'success', msg: 'Updated Successfully' })
       rxReset('success')
     }
 
     if (updateError) {
-      setMsgHandler(updateError, 'danger')
-      rxReset('success')
+      setFlashMsg({ variant: 'danger', msg: updateError })
+      rxReset('error')
     }
 
     return () => axios.CancelToken.source().cancel()
@@ -86,23 +86,31 @@ const ProfileScreen = ({ history }) => {
     })
   }
 
-  //preparing props to pass to profile update form
   const initialValues = {
-    name: userInfo?.name || '',
-    email: userInfo?.email || '',
+    name: userInfo?.name,
+    email: userInfo?.email,
     password: '',
     confirmPass: '',
   }
 
-  const handleSubmit = ({ name, email, password, confirmPass }) => {
-    if (password !== confirmPass || (!password && confirmPass)) {
-      setMsgHandler('Passwords do not match', 'danger')
-      return
+  const validated = ({ name, email, password, confirmPass }) => {
+    const passwordsDontMatch =
+      password !== confirmPass || (!password && confirmPass)
+    if (passwordsDontMatch) {
+      setFlashMsg({ variant: 'danger', msg: 'Passwords do not match' })
+      return false
     }
-    if (name === userInfo.name && email === userInfo.email && !password) {
+
+    const notModified =
+      name === userInfo.name && email === userInfo.email && !password
+    if (notModified) {
       setEditMode(false)
-      return
+      return false
     }
+    return true
+  }
+
+  const handleUpdate = ({ name, email, password }) => {
     setUpdatedVals({ name, email })
     dispatch(
       updateUserProfile({
@@ -113,11 +121,9 @@ const ProfileScreen = ({ history }) => {
     )
   }
 
-  const setMsgHandler = (msg, variant) => {
-    setFlashMsg({ display: true, variant, message: msg })
-    setTimeout(() => {
-      setFlashMsg({ display: false })
-    }, 3000)
+  const handleSubmit = (vals) => {
+    if (!validated(vals)) return
+    handleUpdate(vals)
   }
 
   return (
@@ -129,7 +135,12 @@ const ProfileScreen = ({ history }) => {
         </Col>
         <Col md={10} sm={10} hidden={!userInfo}>
           <h3>User Profile</h3>
-          <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+          <FlashMsg
+            variant={flashMsg.variant}
+            clearChildren={() => setFlashMsg({})}
+          >
+            {flashMsg.msg}
+          </FlashMsg>
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}

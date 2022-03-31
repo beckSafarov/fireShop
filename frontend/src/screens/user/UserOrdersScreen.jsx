@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // UI components
-import { Message, Loader, Auth } from '../../components'
+import { Loader, Auth, FlashMsg } from '../../components'
 import { Table, Container, Button } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 // Redux related imports
@@ -31,7 +31,9 @@ const UserOrdersScreen = ({ history }) => {
         {loading ? (
           <Loader />
         ) : error ? (
-          <Message variant='danger'>{error}</Message>
+          <FlashMsg variant='danger' permanent>
+            {error}
+          </FlashMsg>
         ) : (
           <>
             <h3 className='mb-5'>

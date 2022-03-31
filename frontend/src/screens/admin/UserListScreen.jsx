@@ -10,15 +10,14 @@ import {
   Message,
   Loader,
   Spinner,
-  Exceptional,
   SearchUser,
-  UserAddress,
+  FlashMsg,
 } from '../../components'
 
 // redux actions
 import { listUsers, deleteUser, searchUser } from '../../actions/adminActions'
 import {
-  ADMIN_SEARCH_PROPERTY_RESET,
+  ADMIN_SEARCH_PROPERTY_RESET as searchPropReset,
   ADMIN_SEARCH_USER_RESET,
   ADMIN_USER_DELETE_RESET,
   ADMIN_USER_UPDATE_RESET,
@@ -43,7 +42,7 @@ const UserListScreen = ({ history }) => {
     loading: deleteLoading,
     success: deleted,
     error: deleteError,
-    message,
+    message: deleteSuccessMsg,
   } = useSelector((state) => state.adminUserDelete)
 
   // search user store
@@ -70,22 +69,27 @@ const UserListScreen = ({ history }) => {
     listAllUsers ? dispatch(listUsers()) : setUsers(allUsers)
 
     if (deleted || deleteError) {
-      deleted ? msgHandler(message) : msgHandler(deleteError, 'danger', 3)
+      setFlashMsg({
+        variant: deleted ? 'success' : 'danger',
+        msg: deleteSuccessMsg || deleteError,
+      })
       dispatch({ type: ADMIN_USER_DELETE_RESET })
     }
 
     if (updated) {
-      msgHandler('Updated successfully')
+      setFlashMsg({ variant: 'success', msg: 'Updated successfully' })
       dispatch({ type: ADMIN_USER_UPDATE_RESET })
     }
 
-    searchedUsers && setUsers(searchedUsers)
+    if (searchedUsers) setUsers(searchedUsers)
+
     if (searchFailed) {
-      msgHandler(searchFailed, 'danger', 3)
-      dispatch({
-        type: ADMIN_SEARCH_PROPERTY_RESET,
-        payload: 'error',
-      })
+      setFlashMsg({ variant: 'danger', msg: searchFailed })
+      dispatch({ type: searchPropReset, payload: 'error' })
+    }
+
+    if (listRequestError) {
+      setFlashMsg({ variant: 'danger', msg: listRequestError })
     }
 
     return () => {
@@ -100,16 +104,12 @@ const UserListScreen = ({ history }) => {
     allUsers,
     searchedUsers,
     searchFailed,
+    listRequestError,
   ])
 
   const handleDelete = (id, name = 'undefined') => {
     const c = `Are you sure to delete ${name}?`
     window.confirm(c) && dispatch(deleteUser(id))
-  }
-
-  const msgHandler = (msg, variant = 'success', s = 2) => {
-    setFlashMsg({ display: true, variant, msg })
-    setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
   const handleModal = (userInfo, display = true) =>
@@ -125,67 +125,70 @@ const UserListScreen = ({ history }) => {
     <Auth history={history} adminOnly>
       {listLoading ? (
         <Loader />
-      ) : listRequestError ? (
-        <Message variant='danger'>{listRequestError}</Message>
-      ) : users && users.length > 0 ? (
+      ) : (
         <>
           <h1>Users</h1>
-          <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
+          <FlashMsg
+            variant={flashMsg.variant}
+            permanent={Boolean(listRequestError)}
+          >
+            {flashMsg.msg}
+          </FlashMsg>
           <div className='py-4'>
             <SearchUser onSearch={handleSearch} onClear={handleClearSearch} />
           </div>
 
           <Spinner hidden={!deleteLoading || !searchLoading} />
-          <Table responsive className='tale-sm'>
-            <thead>
-              <tr>
-                {tableHeadings.map((t, i) => (
-                  <th key={i}>{t.toLocaleUpperCase()}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user._id}>
-                  <td>{user._id}</td>
-                  <td>
-                    {user.name}{' '}
-                    {user.isAdmin && (
-                      <i
-                        style={{ color: '#00cc66', fontSize: '10px' }}
-                        className='fas fa-check-circle'
-                      ></i>
-                    )}
-                  </td>
-                  <td>{user.email}</td>
-                  <td>{getUserAddress(user.shippingAddress)}</td>
-                  <td>
-                    <div className='two-horizontal-icons'>
-                      <div>
-                        <i
-                          onClick={() => handleModal(user)}
-                          className='fas fa-edit'
-                        ></i>
-                      </div>
-                      <div>
-                        <i
-                          onClick={() => handleDelete(user._id, user.name)}
-                          className='fas fa-trash'
-                        ></i>
-                      </div>
-                    </div>
-                  </td>
+          {users && users.length > 0 && (
+            <Table responsive className='tale-sm'>
+              <thead>
+                <tr>
+                  {tableHeadings.map((t, i) => (
+                    <th key={i}>{t.toLocaleUpperCase()}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user._id}>
+                    <td>{user._id}</td>
+                    <td>
+                      {user.name}{' '}
+                      {user.isAdmin && (
+                        <i
+                          style={{ color: '#00cc66', fontSize: '10px' }}
+                          className='fas fa-check-circle'
+                        ></i>
+                      )}
+                    </td>
+                    <td>{user.email}</td>
+                    <td>{getUserAddress(user.shippingAddress)}</td>
+                    <td>
+                      <div className='two-horizontal-icons'>
+                        <div>
+                          <i
+                            onClick={() => handleModal(user)}
+                            className='fas fa-edit'
+                          ></i>
+                        </div>
+                        <div>
+                          <i
+                            onClick={() => handleDelete(user._id, user.name)}
+                            className='fas fa-trash'
+                          ></i>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
           <UserEditModal
             modal={modal}
             onClose={() => setModal({ display: false })}
           />
         </>
-      ) : (
-        <Exceptional />
       )}
     </Auth>
   )

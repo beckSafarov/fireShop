@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 // UI components
 import { Modal, Form, Button } from 'react-bootstrap'
-import { Message, Spinner } from '..'
+import { FlashMsg, Spinner } from '..'
 import { updateDeliveryStatus } from '../../actions/orderActions'
 import axios from 'axios'
 import { ORDER_UPDATE_RESET as updateReset } from '../../constants'
@@ -22,7 +22,8 @@ const UpdateDeliveryModal = ({ modal, onClose }) => {
 
   useEffect(() => {
     if (error && type === 'update') {
-      setMsgHandler(error) && setChange(false)
+      setFlashMsg({ msg: error })
+      setChange(false)
       dispatch({ type: updateReset, payload: 'error' })
     }
 
@@ -37,11 +38,6 @@ const UpdateDeliveryModal = ({ modal, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     dispatch(updateDeliveryStatus(_id, { deliveryStatus }))
-  }
-
-  const setMsgHandler = (message, variant = 'danger', s = 3) => {
-    setFlashMsg({ display: true, message, variant })
-    setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
   const handleChange = (e) => {
@@ -60,7 +56,9 @@ const UpdateDeliveryModal = ({ modal, onClose }) => {
         <Modal.Title id='example-custom-modal-styling-title'>{_id}</Modal.Title>
       </Modal.Header>
       <Spinner hidden={!updateLoading} />
-      <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+      <FlashMsg variant='danger' clearChildren={() => setFlashMsg({})}>
+        {flashMsg.msg}
+      </FlashMsg>
       <Modal.Body variant='flush'>
         <Form>
           <Form.Control
@@ -90,14 +88,5 @@ const UpdateDeliveryModal = ({ modal, onClose }) => {
     </Modal>
   )
 }
-
-// UpdateDeliveryModal.defaultProps = {
-//   modal: {
-//     display: false,
-//     _id: '3223ewf243fecd',
-//     deliveryStatus: 'Received',
-//   },
-//   setModal: () => console.log('no func passed'),
-// }
 
 export default UpdateDeliveryModal

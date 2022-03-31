@@ -14,7 +14,7 @@ import {
   Form,
   Alert,
 } from 'react-bootstrap'
-import { Rating, CountOptions, Spinner } from '../components'
+import { Rating, CountOptions, Spinner, Message } from '../components'
 
 // -- REDUX ACTIONS
 import { listProductDetails as getProduct } from '../actions/productActions'
@@ -22,6 +22,7 @@ import { addToCart, buyNowAction } from '../actions/cartActions'
 import { CART_PROPERTY_RESET as cartReset } from '../constants'
 import timeSince from '../helpers/timeSince'
 import { pluralize } from '../helpers/utilities'
+import FlashMsg from '../components/globals/FlashMsg'
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
@@ -47,7 +48,7 @@ const ProductScreen = ({ match, history }) => {
     if (successType) {
       switch (successType) {
         case 'add':
-          msgHandler(cartMessage, 'success')
+          setFlashMsg({ variant: 'success', msg: cartMessage })
           break
         case 'buyNow':
           history.push(
@@ -63,7 +64,7 @@ const ProductScreen = ({ match, history }) => {
     }
 
     if (cartError) {
-      msgHandler(cartError)
+      setFlashMsg({ variant: 'danger', msg: cartError })
       dispatch({ type: cartReset, payload: 'error' })
     }
 
@@ -76,17 +77,12 @@ const ProductScreen = ({ match, history }) => {
 
     if (!logged) {
       const text = `You added ${qty} ${more} ${product.name}(s) to your shopping cart`
-      msgHandler(text, 'success')
+      setFlashMsg({ variant: 'success', msg: text })
     }
   }
 
   const handleBuyNow = () => {
     dispatch(buyNowAction(product, Number(qty), logged))
-  }
-
-  const msgHandler = (msg, variant = 'danger', s = 3) => {
-    setFlashMsg({ display: true, msg, variant })
-    setTimeout(() => setFlashMsg({}), s * 1000)
   }
 
   const sendBack = () => history.goBack()
@@ -109,12 +105,12 @@ const ProductScreen = ({ match, history }) => {
       <div className='btn btn-light my-3 rounded' onClick={sendBack}>
         <i className='fas fa-arrow-left fa-2x'></i>
       </div>
-      <Alert
-        hidden={!flashMsg.display && !error}
-        variant={flashMsg.variant || 'danger'}
+      <FlashMsg
+        variant={flashMsg.variant}
+        clearChildren={() => setFlashMsg({})}
       >
-        {flashMsg.msg || error}
-      </Alert>
+        {flashMsg.msg}
+      </FlashMsg>
       <Spinner hidden={!loading || product} />
       {!loading && product && !error && (
         <>

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // -- UI COMPONENTS
-import { Message, Rating, Spinner } from '../components'
+import { FlashMsg, Rating, Spinner } from '../components'
 import { Row, Col, Container, Image, ListGroup } from 'react-bootstrap'
 
 // -- REDUX RELATED IMPORTS
@@ -39,7 +39,9 @@ const SearchScreen = ({ history }) => {
     <>
       <Spinner hidden={!loading} />
       <Container>
-        {error && !notFound && <Message variant='danger'>{error}</Message>}
+        <FlashMsg variant='danger' permanent>
+          {error}
+        </FlashMsg>
         {products && (
           <ListGroup>
             {notFound && (

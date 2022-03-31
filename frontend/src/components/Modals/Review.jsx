@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Modal, Form, Button } from 'react-bootstrap'
-import { Message, Spinner } from '..'
+import { Spinner } from '..'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import {
@@ -11,6 +11,7 @@ import {
 import { PRODUCT_REVIEW_PROPERTY_RESET as revReset } from '../../constants'
 import Rate from '../Product/Rate'
 import { onlyProps } from '../../helpers/utilities'
+import FlashMsg from '../globals/FlashMsg'
 
 const Review = ({ modal, onClose }) => {
   const dispatch = useDispatch()
@@ -44,16 +45,17 @@ const Review = ({ modal, onClose }) => {
     }
 
     if (success) {
-      msgHandler(
-        reviewed ? 'Updated successfully!' : 'Thank you for your review!'
-      )
+      setFlashMsg({
+        variant: 'success',
+        msg: reviewed ? 'Updated successfully!' : 'Thank you for your review!',
+      })
       dispatch({ type: revReset, payload: 'success' })
       setClearExisting(true)
       setTimeout(() => onClose(), 1500)
     }
 
     if (error) {
-      msgHandler(error, 'danger')
+      setFlashMsg({ variant: 'danger', msg: error })
       dispatch({ type: revReset, payload: 'error' })
     }
 
@@ -70,11 +72,6 @@ const Review = ({ modal, onClose }) => {
       : dispatch(newRev(modal._id, fields))
   }
 
-  const msgHandler = (message, variant = 'success') => {
-    setFlashMsg({ message, variant })
-    setTimeout(() => setFlashMsg({}), 3000)
-  }
-
   return (
     <Modal
       show={modal.display}
@@ -87,7 +84,12 @@ const Review = ({ modal, onClose }) => {
       </Modal.Header>
       <Modal.Body variant='flush'>
         <Spinner hidden={!loading} />
-        <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+        <FlashMsg
+          variant={flashMsg.variant}
+          clearChildren={() => setFlashMsg({})}
+        >
+          {flashMsg.msg}
+        </FlashMsg>
         <Form>
           <Form.Group className='mb-3' controlId='rating'>
             <Form.Label>Rate</Form.Label>

@@ -1,7 +1,7 @@
 // globals
 export { default as ConfirmModal } from './globals/ConfirmModal.jsx'
 export { default as Loader } from './globals/Loader.jsx'
-export { default as Message } from './globals/Message.jsx'
+export { default as FlashMsg } from './globals/FlashMsg.jsx'
 export { default as Exceptional } from './globals/Exceptional.jsx'
 export { default as Spinner } from './globals/Spinner.jsx'
 

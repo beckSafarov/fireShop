@@ -8,7 +8,7 @@ import { getMe } from './actions/userActions'
 
 // UI components
 import { Container } from 'react-bootstrap'
-import { Header, Footer, Loader, Message, Spinner } from './components'
+import { Header, Footer, Spinner, FlashMsg } from './components'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 // Screens
@@ -38,7 +38,7 @@ import SearchScreen from './screens/SearchScreen'
 
 const App = () => {
   const dispatch = useDispatch()
-  const { loading: cartLoading, error } = useSelector((state) => state.cart)
+  const { loading: cartLoading } = useSelector((state) => state.cart)
   const { loading: userLoading, userInfo } = useSelector(
     (state) => state.userLogin
   )
@@ -61,7 +61,9 @@ const App = () => {
           <Spinner />
         ) : !online ? (
           <Container>
-            <Message variant='danger'>You are offline!</Message>
+            <FlashMsg variant='danger' permanent>
+              You are offline!
+            </FlashMsg>
           </Container>
         ) : (
           <Container id='container'>

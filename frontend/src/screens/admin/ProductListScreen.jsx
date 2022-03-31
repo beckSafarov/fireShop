@@ -7,10 +7,10 @@ import axios from 'axios'
 import { Table, Row, Col, Button } from 'react-bootstrap'
 import {
   Auth,
-  Message,
   ConfirmModal,
   Spinner,
   AdminProductSearch,
+  FlashMsg,
 } from '../../components'
 
 // redux actions
@@ -48,7 +48,6 @@ const ProductListScreen = ({ history }) => {
 
   const requestError = error && type === 'request' ? error : null
   const loading = allProductsLoading || searchLoading
-  let newProduct
 
   useEffect(() => {
     allProducts.length === 0
@@ -58,23 +57,26 @@ const ProductListScreen = ({ history }) => {
     if (success) {
       switch (type) {
         case 'update':
-          msgHandler('Updated successfully')
+          setFlashMsg({ msg: 'Updated successfully', variant: 'success' })
           break
         case 'add':
           setProducts(allProducts)
-          newProduct = allProducts.find((p) => p.new)
+          const newProduct = allProducts.find((p) => p.new)
           history.push(`/admin/productedit/${newProduct._id}`)
           break
       }
-      // rxReset('success')
     }
 
     if (error && type !== 'request') {
-      msgHandler(error, 'danger')
-      rxReset('error')
+      setFlashMsg({ msg: error, variant: 'danger' })
+      dispatch({ type: listReset, payload: 'error' })
     }
 
     if (searchedProducts) setProducts(searchedProducts)
+
+    if (requestError) {
+      setFlashMsg({ variant: 'danger', msg: requestError })
+    }
 
     return () => {
       axios.CancelToken.source().cancel()
@@ -82,7 +84,7 @@ const ProductListScreen = ({ history }) => {
         handleSearchClear()
       }
     }
-  }, [dispatch, success, error, allProducts, searchedProducts])
+  }, [dispatch, success, error, allProducts, searchedProducts, requestError])
 
   const handleCreateProduct = () => {
     handleSearchClear()
@@ -110,13 +112,6 @@ const ProductListScreen = ({ history }) => {
 
   const hideModalHandler = () => setConfirmModal({ display: false })
 
-  const msgHandler = (msg, variant = 'success') => {
-    setFlashMsg({ display: true, message: msg, variant })
-    setTimeout(() => setFlashMsg({}), 3000)
-  }
-
-  const rxReset = (payload) => dispatch({ type: listReset, payload })
-
   const handleSearch = (kword) => {
     dispatch(listProducts(kword))
     setLastSearched(kword)
@@ -137,7 +132,13 @@ const ProductListScreen = ({ history }) => {
         </Col>
       </Row>
       <Spinner hidden={!loading} />
-      <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+      <FlashMsg
+        variant={flashMsg.variant}
+        clearChildren={() => setFlashMsg({})}
+        permanent={Boolean(requestError)}
+      >
+        {flashMsg.msg}
+      </FlashMsg>
       <div className='py-3'>
         <AdminProductSearch
           onSearch={handleSearch}
@@ -155,9 +156,7 @@ const ProductListScreen = ({ history }) => {
         proceedText='Delete'
         primaryVariant='danger'
       />
-      {requestError ? (
-        <Message variant='danger'>{requestError}</Message>
-      ) : searchFailed ? (
+      {searchFailed ? (
         <>
           <h3>Not found</h3>
           <p className='py-3'>
@@ -167,45 +166,49 @@ const ProductListScreen = ({ history }) => {
           </p>
         </>
       ) : (
-        <Table hover responsive className='tale-sm'>
-          <thead>
-            <tr>
-              {tableHeadings.map((t, i) => (
-                <th key={i}>{t.toLocaleUpperCase()}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product._id}>
-                <img
-                  className='product-table-img'
-                  src={product.image}
-                  alt={product.name}
-                />
-                <td>{product.name}</td>
-                <td>$ {product.price}</td>
-                <td>{product.category}</td>
-                <td>{product.brand}</td>
-                <td>
-                  <div className='two-horizontal-icons'>
-                    <div>
-                      <Link to={`/admin/productedit/${product._id}`}>
-                        <i className='fas fa-edit'></i>
-                      </Link>
-                    </div>
-                    <div>
-                      <i
-                        onClick={() => handleConfirm(product._id, product.name)}
-                        className='fas fa-trash'
-                      ></i>
-                    </div>
-                  </div>
-                </td>
+        !requestError && (
+          <Table hover responsive className='tale-sm'>
+            <thead>
+              <tr>
+                {tableHeadings.map((t, i) => (
+                  <th key={i}>{t.toLocaleUpperCase()}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product._id}>
+                  <img
+                    className='product-table-img'
+                    src={product.image}
+                    alt={product.name}
+                  />
+                  <td>{product.name}</td>
+                  <td>$ {product.price}</td>
+                  <td>{product.category}</td>
+                  <td>{product.brand}</td>
+                  <td>
+                    <div className='two-horizontal-icons'>
+                      <div>
+                        <Link to={`/admin/productedit/${product._id}`}>
+                          <i className='fas fa-edit'></i>
+                        </Link>
+                      </div>
+                      <div>
+                        <i
+                          onClick={() =>
+                            handleConfirm(product._id, product.name)
+                          }
+                          className='fas fa-trash'
+                        ></i>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )
       )}
     </Auth>
   )

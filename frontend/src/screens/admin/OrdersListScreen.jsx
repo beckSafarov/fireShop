@@ -5,12 +5,12 @@ import axios from 'axios'
 
 // UI components
 import {
-  Message,
   Auth,
   UpdateDeliveryModal,
   Spinner,
   OrdersFilter,
   OrdersSort,
+  FlashMsg,
 } from '../../components'
 import {
   Table,
@@ -84,8 +84,6 @@ const OrdersListScreen = ({ history }) => {
 
   const filterOn = filteredOrders && filteredOrders.length > 0
 
-  console.log(allOrders)
-
   useEffect(() => {
     if (allOrdersLoaded) {
       setOrders(allOrders)
@@ -95,7 +93,7 @@ const OrdersListScreen = ({ history }) => {
     if (orders.length < 1) dispatch(getAllOrders(sortQuery))
 
     if (updated) {
-      msgHandler('Updated successfully')
+      setFlashMsg({ variant: 'success', msg: 'Updated successfully' })
       setModal({})
       dispatch({ type: orderPropReset, payload: 'type' })
     }
@@ -103,17 +101,12 @@ const OrdersListScreen = ({ history }) => {
     if (filterOn) setOrders(filteredOrders)
 
     if (filterFailed) {
-      msgHandler(filterFailed, 'danger')
+      setFlashMsg({ variant: 'danger', msg: filterFailed })
       dispatch({ type: ORDERS_FILTER_RESET })
     }
 
     return () => axios.CancelToken.source().cancel()
   }, [dispatch, updated, orders, allOrdersLoaded, filterOn, filterFailed])
-
-  const msgHandler = (message, variant = 'success', s = 3) => {
-    setFlashMsg({ display: true, message, variant })
-    setTimeout(() => setFlashMsg({}), s * 1000)
-  }
 
   const handleUpdate = (order) => {
     setModal({
@@ -201,9 +194,12 @@ const OrdersListScreen = ({ history }) => {
               <OrdersFilter onSubmit={handleFilter} />
             </div>
           </Collapse>
-          <Message variant={flashMsg.variant || 'danger'}>
-            {flashMsg.message || error}
-          </Message>
+          <FlashMsg
+            variant={flashMsg.variant || 'danger'}
+            clearChildren={() => setFlashMsg({})}
+          >
+            {flashMsg.msg || error}
+          </FlashMsg>
           <Table striped bordered hover responsive className='table-sm'>
             <thead>
               <tr>

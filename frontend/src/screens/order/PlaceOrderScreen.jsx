@@ -7,7 +7,7 @@ import axios from 'axios'
 import { Calculations } from '../../helpers/calculations'
 
 // UI components
-import { Auth, Loader, Message, CheckOutSteps } from '../../components'
+import { Auth, Loader, CheckOutSteps, FlashMsg } from '../../components'
 import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap'
 import { PayPalButton } from 'react-paypal-button-v2'
 import { Link } from 'react-router-dom'
@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom'
 // redux actions
 import { createOrder } from '../../actions/orderActions'
 import { getUserAddress } from '../../helpers/utilities'
+import { cancelTokenConfig } from '../../helpers/rxConfigs'
 
 const PlaceOrderScreen = ({ history }) => {
   // bringing redux related things
@@ -40,9 +41,10 @@ const PlaceOrderScreen = ({ history }) => {
 
       const addPaypalScript = async () => {
         try {
-          const { data: clientId } = await axios.get('/api/config/paypal', {
-            cancelToken: axios.CancelToken.source().token,
-          })
+          const { data: clientId } = await axios.get(
+            '/api/config/paypal',
+            cancelTokenConfig
+          )
           const script = document.createElement('script')
           script.type = 'text/javascript'
           script.async = true
@@ -68,9 +70,8 @@ const PlaceOrderScreen = ({ history }) => {
 
   const successPaymentHandler = (paymentResult) => {
     const paymentInfo = {
-      id: paymentResult.id,
+      ...paymentResult, //id and update_time
       Status: paymentResult.status,
-      update_time: paymentResult.update_time,
       email_address: paymentResult.payer.email_address,
     }
 
@@ -102,7 +103,7 @@ const PlaceOrderScreen = ({ history }) => {
       {loading ? (
         <Loader />
       ) : error ? (
-        <Message variant='danger'>
+        <FlashMsg variant='danger' permanent>
           <>
             <h2 className='danger-text'>Payment Failed!</h2>
             <p>Error: {orderCreated.error || paymentErrorMessage}</p>
@@ -114,7 +115,7 @@ const PlaceOrderScreen = ({ history }) => {
               </p>
             )}
           </>
-        </Message>
+        </FlashMsg>
       ) : userInfo ? (
         <>
           <CheckOutSteps step={3} />

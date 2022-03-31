@@ -7,7 +7,7 @@ import * as Yup from 'yup'
 // UI components
 
 import { Form, Button, Row, Col } from 'react-bootstrap'
-import { Auth, Message, Loader, FormContainer } from '../../components'
+import { Auth, Loader, FormContainer, FlashMsg } from '../../components'
 
 // redux actions
 import { register } from '../../actions/userActions'
@@ -68,7 +68,9 @@ const RegisterScreen = ({ history }) => {
     <Auth history={history} reverse>
       <FormContainer>
         <h1>Sign in</h1>
-        <Message variant='danger'>{error}</Message>
+        <FlashMsg variant='danger' permanent>
+          {error}
+        </FlashMsg>
         <Loader hidden={!loading} />
         <Formik
           initialValues={initialValues}

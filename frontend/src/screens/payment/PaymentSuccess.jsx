@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap'
 import axios from 'axios'
-import { Auth, Loader, Message, Exceptional } from '../../components'
+import { Auth, Loader, FlashMsg } from '../../components'
 import { getUserAddress, isEmptyObj } from '../../helpers/utilities'
 import { CART_REMOVE_ITEMS } from '../../constants'
 
@@ -42,11 +42,11 @@ const PaymentSuccess = ({ history, location }) => {
 
   return (
     <Auth history={history}>
-      {loading ? (
-        <Loader />
-      ) : error ? (
-        <Message variant='danger'>{error}</Message>
-      ) : !isEmptyObj(order) ? (
+      <Loader hidden={!loading} />
+      <FlashMsg variant='danger' permanent>
+        {error}
+      </FlashMsg>
+      {!isEmptyObj(order) && (
         <Container>
           <ListGroup variant='flush'>
             <h2 className='mb-4 text-center'>Payment Was Successful!</h2>
@@ -99,8 +99,6 @@ const PaymentSuccess = ({ history, location }) => {
             </p>
           </div>
         </Container>
-      ) : (
-        <Exceptional />
       )}
     </Auth>
   )

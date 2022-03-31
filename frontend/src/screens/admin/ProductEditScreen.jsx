@@ -12,7 +12,7 @@ import { listProductDetails as getProduct } from '../../actions/productActions'
 import { areSameObjects, isEmptyObj } from '../../helpers/utilities'
 
 // UI components
-import { Auth, FormContainer, Message, Spinner } from '../../components'
+import { Auth, FlashMsg, FormContainer, Spinner } from '../../components'
 import { Formik, Form as FormikForm } from 'formik'
 import { Form, Row, Col, Button } from 'react-bootstrap'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
@@ -91,7 +91,7 @@ const ProductEditScreen = ({ history, match }) => {
     }
 
     if (error && type === 'update') {
-      setFlashMsg({ display: true, message: error, variant: 'danger' })
+      setFlashMsg({ msg: error })
       window.scrollTo(0, 0)
       prodStateReset('error')
     }
@@ -102,13 +102,11 @@ const ProductEditScreen = ({ history, match }) => {
     }
 
     if (uploadError) {
-      showFlashMsg(uploadError, 'danger')
+      setFlashMsg({ msg: uploadError })
       dispatch({ type: IMG_UPLOAD_RESET })
     }
 
-    return () => {
-      axios.CancelToken.source().cancel()
-    }
+    return () => axios.CancelToken.source().cancel()
   }, [
     product?._id,
     match.params.id,
@@ -133,12 +131,7 @@ const ProductEditScreen = ({ history, match }) => {
       history.goBack()
       return
     }
-    dispatch(updateProduct({ ...vals, image: newUpload || vals.image }))
-  }
-
-  const showFlashMsg = (message, variant = 'success') => {
-    setFlashMsg({ display: true, message, variant })
-    setTimeout(() => setFlashMsg({}), 3000)
+    dispatch(updateProduct(updated))
   }
 
   const prodStateReset = (payload) =>
@@ -166,9 +159,13 @@ const ProductEditScreen = ({ history, match }) => {
       <FormContainer>
         <h2>{product?.name}</h2>
         <Spinner hidden={!loading} />
-        <Message variant={flashMsg.variant || 'danger'}>
-          {flashMsg.message || requestError}
-        </Message>
+        <FlashMsg
+          variant='danger'
+          clearChildren={() => setFlashMsg({})}
+          permanent={Boolean(requestError)}
+        >
+          {flashMsg.msg || requestError}
+        </FlashMsg>
         <div className='py-4'>
           <div className='centered-img'>
             <img src={newUpload || product?.image} alt='Product Image' />

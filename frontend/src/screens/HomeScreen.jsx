@@ -1,10 +1,10 @@
 // -- LIBRARIES & METHODS
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // -- UI COMPONENTS
-import { Message, Loader, Product } from '../components'
+import { Loader, Product, FlashMsg } from '../components'
 import { Row, Col } from 'react-bootstrap'
 
 // -- REDUX RELATED IMPORTS
@@ -23,17 +23,11 @@ const HomeScreen = ({}) => {
   return (
     <>
       <h1>Latest Products</h1>
-      {loading ? (
-        <>
-          <br />
-          <Loader />
-        </>
-      ) : error ? (
-        <>
-          <br />
-          <Message variant='danger' children={error} />
-        </>
-      ) : (
+      <Loader hidden={!loading} />
+      <FlashMsg variant='danger' permanent>
+        {error}
+      </FlashMsg>
+      {products && (
         <Row>
           {products.map((product) => (
             <Col

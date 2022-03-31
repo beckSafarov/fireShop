@@ -15,6 +15,7 @@ import { MAX_NAME_CHARS } from '../../config'
 import FormikFieldGroup from '../FormikFieldGroup'
 import { areSameObjects, withoutProps } from '../../helpers/utilities'
 import { adminUpdateUser } from '../../actions/adminActions'
+import FlashMsg from '../globals/FlashMsg'
 
 const defaultFields = {
   name: '',
@@ -69,24 +70,23 @@ const UserEditModal = ({ modal, onClose }) => {
     if (modal.userInfo && !userInfo.name) {
       setUserInfo({ ...modal.userInfo, ...modal.userInfo.shippingAddress })
     }
-    updated && handleClose()
+    if (updated) handleClose()
 
     if (error) {
-      msgHandler(error, 'danger')
+      setFlashMsg({ msg: error })
       dispatch({ type: updateReset, payload: 'error' })
     }
   }, [modal.userInfo, updated, error])
 
-  const msgHandler = (msg, variant) => {
-    setFlashMsg({ display: true, msg, variant })
-    setTimeout(() => setFlashMsg({ ...msg, display: false }), 3000)
-  }
-
-  const handleSubmit = (vals) => {
+  const haveValsChanged = (vals) => {
     if (areSameObjects(vals, userInfo)) {
       handleClose()
-      return
+      return false
     }
+    return true
+  }
+
+  const handleUpdate = (vals) => {
     const user = withoutProps(vals, [
       'address',
       'country',
@@ -100,6 +100,11 @@ const UserEditModal = ({ modal, onClose }) => {
       city: vals.city,
     }
     dispatch(adminUpdateUser(user._id, user))
+  }
+
+  const handleSubmit = (vals) => {
+    if (haveValsChanged(vals)) handleUpdate(vals)
+    return false
   }
 
   const formFields = [
@@ -130,7 +135,9 @@ const UserEditModal = ({ modal, onClose }) => {
         </Modal.Title>
       </Modal.Header>
       <Spinner hidden={!loading} />
-      <Message variant={flashMsg.variant}>{flashMsg.msg}</Message>
+      <FlashMsg variant='danger' clearChildren={() => setFlashMsg({})}>
+        {flashMsg.msg}
+      </FlashMsg>
       <Modal.Body variant='flush'>
         {userInfo.name && (
           <Formik

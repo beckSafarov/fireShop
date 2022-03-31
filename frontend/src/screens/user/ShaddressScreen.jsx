@@ -7,7 +7,7 @@ import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 
 // -- COMPONENTS --
-import { Auth, Message, AccountSideMenu, Spinner } from '../../components'
+import { Auth, AccountSideMenu, Spinner, FlashMsg } from '../../components'
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile as update } from '../../actions/userActions'
@@ -66,12 +66,12 @@ const ShaddressScreen = ({ history }) => {
         payload: { shippingAddress: updatedFields },
       })
       setEditMode(false)
-      setMsgHandler('Updated successfully')
+      setFlashMsg({ variant: 'success', msg: 'Updated Successfully' })
       rxReset('success')
     }
 
     if (updateError) {
-      setMsgHandler(updateError, 'danger')
+      setFlashMsg({ variant: 'danger', msg: updateError })
       rxReset('error')
     }
 
@@ -87,11 +87,6 @@ const ShaddressScreen = ({ history }) => {
     }
     setUpdatedFields(vals)
     dispatch(update({ shippingAddress: vals }))
-  }
-
-  const setMsgHandler = (message, variant = 'success') => {
-    setFlashMsg({ display: true, variant, message })
-    setTimeout(() => setFlashMsg({}), 3000)
   }
 
   const initialValues = {
@@ -121,7 +116,12 @@ const ShaddressScreen = ({ history }) => {
           </Col>
           <Col md={10} sm={10}>
             <h3 className='mb-4'>Address</h3>
-            <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+            <FlashMsg
+              variant={flashMsg.variant}
+              clearChildren={() => setFlashMsg({})}
+            >
+              {flashMsg.msg}
+            </FlashMsg>
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}

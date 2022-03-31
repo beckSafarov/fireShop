@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 // ui components
 import {
-  Message,
   CheckOutSteps,
   FormContainer,
   Spinner,
+  FlashMsg,
 } from '../../components'
 import { Row, Col, Button } from 'react-bootstrap'
 import { Formik, Form as FormikForm } from 'formik'
@@ -73,32 +73,44 @@ const ShippingScreen = ({ history }) => {
 
     if (!hasAddress) setEditMode(true)
 
-    if (updateSuccess || updateError) {
-      if (updateSuccess) {
-        dispatch({
-          type: USER_INFO_UPDATE,
-          payload: { shippingAddress: updatedFields },
-        })
-        setEditMode(false)
-        msgHandler('Updated successfully')
-      }
-      updateError && msgHandler(updateError, 'danger')
+    if (updateSuccess) {
       dispatch({
-        type: userInfoReset,
-        payload: updateSuccess ? 'success' : 'error',
+        type: USER_INFO_UPDATE,
+        payload: { shippingAddress: updatedFields },
       })
+      setEditMode(false)
+      setFlashMsg({ variant: 'success', msg: 'Updated successfully' })
+      rxReset('success')
+    }
+
+    if (updateError) {
+      setFlashMsg({ variant: 'danger', msg: updateError })
+      rxReset('error')
     }
 
     return () => axios.CancelToken.source().cancel()
   }, [emptyCart, shaddress, updateSuccess, updateError])
 
-  const handleSubmit = (vals) => {
+  const rxReset = (payload) => {
+    dispatch({ type: userInfoReset, payload })
+  }
+
+  const haveValsChanged = (vals) => {
     if (areSameObjects(shaddress, vals)) {
       setEditMode(false)
-      return
+      return false
     }
+    return true
+  }
+
+  const handleUpdate = (vals) => {
     setUpdatedFields(vals)
     dispatch(update({ shippingAddress: vals }))
+  }
+
+  const handleSubmit = (vals) => {
+    if (haveValsChanged(vals)) handleUpdate(vals)
+    return
   }
 
   const initialValues = {
@@ -134,18 +146,18 @@ const ShippingScreen = ({ history }) => {
     },
   ]
 
-  const msgHandler = (message, variant = 'success') => {
-    setFlashMsg({ display: true, variant, message })
-    setTimeout(() => setFlashMsg({}), 3000)
-  }
-
   return (
     <Auth history={history}>
       <FormContainer>
         <CheckOutSteps step={1} />
         <h1>Shipping Address</h1>
         <Spinner hidden={!loading} />
-        <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+        <FlashMsg
+          variant={flashMsg.variant}
+          clearChildren={() => setFlashMsg({})}
+        >
+          {flashMsg.msg}
+        </FlashMsg>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}

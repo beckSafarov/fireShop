@@ -10,7 +10,6 @@ import * as qtyLcs from '../helpers/qtyLCS'
 // -- ui components --
 import { Row, Col, ListGroup, Button, Card } from 'react-bootstrap'
 import {
-  Message,
   CartItem,
   EmptyCart,
   Spinner,
@@ -21,12 +20,13 @@ import {
 // -- redux related imports --
 import { qtyReset, removeItem } from '../actions/cartActions'
 import { CART_PROPERTY_RESET as cartReset } from '../constants'
+import FlashMsg from '../components/globals/FlashMsg'
 
 const CartScreen = ({ history }) => {
   const dispatch = useDispatch()
   // hooks
   const [cartItems, setCartItems] = useState(cartLcs.getCart())
-  const [flashMsg, setFlashMsg] = useState({})
+  const [flashMsg, setFlashMsg] = useState('')
   const [confirmModal, setConfirmModal] = useState({})
 
   // redux stores and related stuff
@@ -41,7 +41,7 @@ const CartScreen = ({ history }) => {
   useEffect(() => {
     if (cart) setCartItems(cart.cartItems)
     if (error) {
-      setFlashMsg({ message: error, variant: 'danger' })
+      setFlashMsg(error)
       dispatch({ type: cartReset, payload: 'error' })
     }
 
@@ -91,7 +91,9 @@ const CartScreen = ({ history }) => {
             />
             <Col md={8}>
               <h1>Shopping Cart</h1>
-              <Message variant={flashMsg.variant}>{flashMsg.message}</Message>
+              <FlashMsg variant='danger' permanent>
+                {flashMsg}
+              </FlashMsg>
               <ListGroup variant='flush'>
                 {cartItems.map((item) => (
                   <CartItem
