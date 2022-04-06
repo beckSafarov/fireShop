@@ -39,5 +39,4 @@ export { default as OrdersSort } from './Sorts/OrdersSort'
 
 // folderless
 export { default as AccountSideMenu } from './AccountSideMenu.jsx'
-export { default as Auth } from './Auth.jsx'
 export { default as FormContainer } from './FormContainer.jsx'
