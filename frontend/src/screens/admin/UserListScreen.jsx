@@ -5,14 +5,7 @@ import axios from 'axios'
 
 // UI components
 import { Table } from 'react-bootstrap'
-import {
-  Auth,
-  Message,
-  Loader,
-  Spinner,
-  SearchUser,
-  FlashMsg,
-} from '../../components'
+import { Loader, Spinner, SearchUser, FlashMsg } from '../../components'
 
 // redux actions
 import { listUsers, deleteUser, searchUser } from '../../actions/adminActions'
@@ -122,7 +115,7 @@ const UserListScreen = ({ history }) => {
   const handleClearSearch = () => dispatch({ type: ADMIN_SEARCH_USER_RESET })
 
   return (
-    <Auth history={history} adminOnly>
+    <>
       {listLoading ? (
         <Loader />
       ) : (
@@ -190,7 +183,7 @@ const UserListScreen = ({ history }) => {
           />
         </>
       )}
-    </Auth>
+    </>
   )
 }
 

@@ -21,6 +21,7 @@ import {
 import { qtyReset, removeItem } from '../actions/cartActions'
 import { CART_PROPERTY_RESET as cartReset } from '../constants'
 import FlashMsg from '../components/globals/FlashMsg'
+import { withRouter } from 'react-router-dom'
 
 const CartScreen = ({ history }) => {
   const dispatch = useDispatch()
@@ -137,4 +138,4 @@ const CartScreen = ({ history }) => {
   )
 }
 
-export default CartScreen
+export default withRouter(CartScreen)

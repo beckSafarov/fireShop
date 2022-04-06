@@ -7,7 +7,7 @@ import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 
 // -- COMPONENTS --
-import { Auth, AccountSideMenu, Spinner, FlashMsg } from '../../components'
+import { AccountSideMenu, Spinner, FlashMsg } from '../../components'
 
 // -- REDUX RELATED IMPORTS --
 import { updateUserProfile as update } from '../../actions/userActions'
@@ -107,63 +107,57 @@ const ShaddressScreen = ({ history }) => {
   ]
 
   return (
-    <Auth history={history}>
-      <Row>
-        <>
-          <Spinner hidden={!loading} />
-          <Col md={2} sm={2}>
-            <AccountSideMenu active={2} />
-          </Col>
-          <Col md={10} sm={10}>
-            <h3 className='mb-4'>Address</h3>
-            <FlashMsg
-              variant={flashMsg.variant}
-              clearChildren={() => setFlashMsg({})}
-            >
-              {flashMsg.msg}
-            </FlashMsg>
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
-              <FormikForm>
-                {formFields.map((f, i) => (
-                  <FormikFieldGroup
-                    key={i}
-                    formField={f}
-                    readOnly={!editMode}
-                  />
+    <Row>
+      <>
+        <Spinner hidden={!loading} />
+        <Col md={2} sm={2}>
+          <AccountSideMenu active={2} />
+        </Col>
+        <Col md={10} sm={10}>
+          <h3 className='mb-4'>Address</h3>
+          <FlashMsg
+            variant={flashMsg.variant}
+            clearChildren={() => setFlashMsg({})}
+          >
+            {flashMsg.msg}
+          </FlashMsg>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            <FormikForm>
+              {formFields.map((f, i) => (
+                <FormikFieldGroup key={i} formField={f} readOnly={!editMode} />
+              ))}
+              <Button
+                hidden={editMode}
+                type='button'
+                className='btn-block'
+                variant='info'
+                onClick={() => setEditMode(true)}
+              >
+                Edit
+              </Button>
+              <Row hidden={!editMode}>
+                {editModeBtns.map((btn) => (
+                  <Col mb={2}>
+                    <Button
+                      type={btn.type}
+                      className='btn-block'
+                      variant={btn.variant}
+                      onClick={btn.onClick}
+                    >
+                      {btn.label}
+                    </Button>
+                  </Col>
                 ))}
-                <Button
-                  hidden={editMode}
-                  type='button'
-                  className='btn-block'
-                  variant='info'
-                  onClick={() => setEditMode(true)}
-                >
-                  Edit
-                </Button>
-                <Row hidden={!editMode}>
-                  {editModeBtns.map((btn) => (
-                    <Col mb={2}>
-                      <Button
-                        type={btn.type}
-                        className='btn-block'
-                        variant={btn.variant}
-                        onClick={btn.onClick}
-                      >
-                        {btn.label}
-                      </Button>
-                    </Col>
-                  ))}
-                </Row>
-              </FormikForm>
-            </Formik>
-          </Col>
-        </>
-      </Row>
-    </Auth>
+              </Row>
+            </FormikForm>
+          </Formik>
+        </Col>
+      </>
+    </Row>
   )
 }
 

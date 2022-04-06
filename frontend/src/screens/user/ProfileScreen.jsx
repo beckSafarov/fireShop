@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // -- COMPONENTS --
-import { Auth, Spinner, FlashMsg } from '../../components'
+import { Spinner, FlashMsg } from '../../components'
 import { Row, Col, Button } from 'react-bootstrap'
 
 // -- REDUX RELATED IMPORTS --
@@ -127,66 +127,64 @@ const ProfileScreen = ({ history }) => {
   }
 
   return (
-    <Auth history={history}>
-      <Row>
-        <Spinner hidden={!loading} />
-        <Col md={2} sm={2}>
-          <AccountSideMenu active={1} />
-        </Col>
-        <Col md={10} sm={10} hidden={!userInfo}>
-          <h3>User Profile</h3>
-          <FlashMsg
-            variant={flashMsg.variant}
-            clearChildren={() => setFlashMsg({})}
-          >
-            {flashMsg.msg}
-          </FlashMsg>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-          >
-            <FormikForm>
-              {formFields.map((f, i) => (
-                <FormikFieldGroup
-                  key={i}
-                  formField={f}
-                  hidden={!editMode && f.editOnly}
-                  isMandatoryField={editMode && f.required}
-                  readOnly={!editMode}
-                />
-              ))}
-              <Button
-                hidden={editMode}
-                type='button'
-                className='btn-block'
-                variant='info'
-                onClick={() => setEditMode(true)}
-              >
-                Edit
-              </Button>
-              <Row hidden={!editMode}>
-                <Col mb={2}>
-                  <Button
-                    type='reset'
-                    className='btn-block'
-                    variant='secondary'
-                    onClick={() => setEditMode(false)}
-                  >
-                    Cancel
-                  </Button>
-                </Col>
-                <Col mb={2}>
-                  <Button type='submit' className='btn-block' variant='success'>
-                    Save
-                  </Button>
-                </Col>
-              </Row>
-            </FormikForm>
-          </Formik>
-        </Col>
-      </Row>
-    </Auth>
+    <Row>
+      <Spinner hidden={!loading} />
+      <Col md={2} sm={2}>
+        <AccountSideMenu active={1} />
+      </Col>
+      <Col md={10} sm={10} hidden={!userInfo}>
+        <h3>User Profile</h3>
+        <FlashMsg
+          variant={flashMsg.variant}
+          clearChildren={() => setFlashMsg({})}
+        >
+          {flashMsg.msg}
+        </FlashMsg>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          <FormikForm>
+            {formFields.map((f, i) => (
+              <FormikFieldGroup
+                key={i}
+                formField={f}
+                hidden={!editMode && f.editOnly}
+                isMandatoryField={editMode && f.required}
+                readOnly={!editMode}
+              />
+            ))}
+            <Button
+              hidden={editMode}
+              type='button'
+              className='btn-block'
+              variant='info'
+              onClick={() => setEditMode(true)}
+            >
+              Edit
+            </Button>
+            <Row hidden={!editMode}>
+              <Col mb={2}>
+                <Button
+                  type='reset'
+                  className='btn-block'
+                  variant='secondary'
+                  onClick={() => setEditMode(false)}
+                >
+                  Cancel
+                </Button>
+              </Col>
+              <Col mb={2}>
+                <Button type='submit' className='btn-block' variant='success'>
+                  Save
+                </Button>
+              </Col>
+            </Row>
+          </FormikForm>
+        </Formik>
+      </Col>
+    </Row>
   )
 }
 

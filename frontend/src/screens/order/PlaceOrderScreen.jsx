@@ -7,10 +7,10 @@ import axios from 'axios'
 import { Calculations } from '../../helpers/calculations'
 
 // UI components
-import { Auth, Loader, CheckOutSteps, FlashMsg } from '../../components'
+import { Loader, CheckOutSteps, FlashMsg } from '../../components'
 import { Row, Col, ListGroup, Card, Image } from 'react-bootstrap'
 import { PayPalButton } from 'react-paypal-button-v2'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 
 // redux actions
 import { createOrder } from '../../actions/orderActions'
@@ -99,7 +99,7 @@ const PlaceOrderScreen = ({ history }) => {
     'Total Price',
   ]
   return (
-    <Auth history={history}>
+    <>
       {loading ? (
         <Loader />
       ) : error ? (
@@ -212,8 +212,8 @@ const PlaceOrderScreen = ({ history }) => {
       ) : (
         <p>You should never see this!</p>
       )}
-    </Auth>
+    </>
   )
 }
 
-export default PlaceOrderScreen
+export default withRouter(PlaceOrderScreen)

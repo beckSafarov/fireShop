@@ -12,7 +12,7 @@ import { listProductDetails as getProduct } from '../../actions/productActions'
 import { areSameObjects, isEmptyObj } from '../../helpers/utilities'
 
 // UI components
-import { Auth, FlashMsg, FormContainer, Spinner } from '../../components'
+import { FlashMsg, FormContainer, Spinner } from '../../components'
 import { Formik, Form as FormikForm } from 'formik'
 import { Form, Row, Col, Button } from 'react-bootstrap'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
@@ -155,66 +155,64 @@ const ProductEditScreen = ({ history, match }) => {
   ]
 
   return (
-    <Auth history={history} adminOnly>
-      <FormContainer>
-        <h2>{product?.name}</h2>
-        <Spinner hidden={!loading} />
-        <FlashMsg
-          variant='danger'
-          clearChildren={() => setFlashMsg({})}
-          permanent={Boolean(requestError)}
-        >
-          {flashMsg.msg || requestError}
-        </FlashMsg>
-        <div className='py-4'>
-          <div className='centered-img'>
-            <img src={newUpload || product?.image} alt='Product Image' />
-          </div>
+    <FormContainer>
+      <h2>{product?.name}</h2>
+      <Spinner hidden={!loading} />
+      <FlashMsg
+        variant='danger'
+        clearChildren={() => setFlashMsg({})}
+        permanent={Boolean(requestError)}
+      >
+        {flashMsg.msg || requestError}
+      </FlashMsg>
+      <div className='py-4'>
+        <div className='centered-img'>
+          <img src={newUpload || product?.image} alt='Product Image' />
         </div>
-        {!isEmptyObj(product) && product?._id === match.params.id && (
-          <Formik
-            initialValues={product}
-            onSubmit={handleSubmit}
-            validationSchema={validationSchema}
-          >
-            <FormikForm>
-              <Form.Group controlId='imgUpload'>
-                <Form.File
-                  id='image-file'
-                  label={uploadLabel}
-                  onChange={handleImgUpload}
-                  accept='image/jpg, image/jpeg, image/png'
-                  custom
-                />
-              </Form.Group>
-              {formFields.map((f, i) => (
-                <FormikFieldGroup
-                  key={i}
-                  formField={f}
-                  as={f.name === 'description' ? 'textarea' : 'input'}
-                />
+      </div>
+      {!isEmptyObj(product) && product?._id === match.params.id && (
+        <Formik
+          initialValues={product}
+          onSubmit={handleSubmit}
+          validationSchema={validationSchema}
+        >
+          <FormikForm>
+            <Form.Group controlId='imgUpload'>
+              <Form.File
+                id='image-file'
+                label={uploadLabel}
+                onChange={handleImgUpload}
+                accept='image/jpg, image/jpeg, image/png'
+                custom
+              />
+            </Form.Group>
+            {formFields.map((f, i) => (
+              <FormikFieldGroup
+                key={i}
+                formField={f}
+                as={f.name === 'description' ? 'textarea' : 'input'}
+              />
+            ))}
+            <Row>
+              {btns.map((btn, i) => (
+                <Col mb={2} key={i}>
+                  <Button
+                    type={btn.type}
+                    className='rounded-btn'
+                    variant={btn.variant}
+                    onClick={btn.onClick}
+                    block
+                  >
+                    {btn.icon}
+                    {' ' + btn.label}
+                  </Button>
+                </Col>
               ))}
-              <Row>
-                {btns.map((btn, i) => (
-                  <Col mb={2} key={i}>
-                    <Button
-                      type={btn.type}
-                      className='rounded-btn'
-                      variant={btn.variant}
-                      onClick={btn.onClick}
-                      block
-                    >
-                      {btn.icon}
-                      {' ' + btn.label}
-                    </Button>
-                  </Col>
-                ))}
-              </Row>
-            </FormikForm>
-          </Formik>
-        )}
-      </FormContainer>
-    </Auth>
+            </Row>
+          </FormikForm>
+        </Formik>
+      )}
+    </FormContainer>
   )
 }
 

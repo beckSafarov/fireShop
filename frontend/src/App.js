@@ -9,7 +9,7 @@ import { getMe } from './actions/userActions'
 // UI components
 import { Container } from 'react-bootstrap'
 import { Header, Footer, Spinner, FlashMsg } from './components'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 // Screens
 import HomeScreen from './screens/HomeScreen'
@@ -35,6 +35,38 @@ import ProductListScreen from './screens/admin/ProductListScreen'
 import ProductEditScreen from './screens/admin/ProductEditScreen'
 import OrdersListScreen from './screens/admin/OrdersListScreen'
 import SearchScreen from './screens/SearchScreen'
+import Rowt from './components/Rowt'
+
+const routes = {
+  public: [
+    { path: '/', component: HomeScreen, exact: true },
+    { path: '/search', component: SearchScreen },
+    { path: '/product/:id', component: ProductScreen },
+    { path: '/cart/:id?', component: CartScreen },
+  ],
+  auth: [
+    { path: '/register', component: RegisterScreen },
+    { path: '/signin', component: LoginScreen },
+    { path: '/signin?redirect=:redirect', component: LoginScreen },
+  ],
+  user: [
+    { path: '/profile', component: ProfileScreen },
+    { path: '/address', component: ShaddressScreen },
+    { path: '/myorders', component: UserOrdersScreen, exact: true },
+    { path: '/orders/:id', component: OrderInfoScreen },
+    { path: '/placeorder', component: PlaceOrderScreen },
+    { path: '/shipping', component: ShippingScreen },
+    { path: '/payment', component: PaymentScreen },
+    { path: '/payment-success', component: PaymentSuccess },
+    { path: '/payment-failure', component: PaymentFailure },
+  ],
+  admin: [
+    { path: '/userslist', component: UserListScreen },
+    { path: '/productlist', component: ProductListScreen },
+    { path: '/productedit/:id', component: ProductEditScreen },
+    { path: '/orderslist', component: OrdersListScreen },
+  ],
+}
 
 const App = () => {
   const dispatch = useDispatch()
@@ -43,13 +75,14 @@ const App = () => {
     (state) => state.userLogin
   )
   const lcc = getCart()
-  const online = window ? window.navigator.onLine : true
+  const online = window?.navigator?.onLine || true
   const loading = userLoading || cartLoading || false
 
   useEffect(() => {
     userInfo === null && dispatch(getMe())
-    userInfo && lcc.length > 0 && dispatch(addToCart(lcc, true, true))
-
+    if (userInfo && lcc.length > 0) {
+      dispatch(addToCart(lcc, true, true))
+    }
     return () => axios.CancelToken.source().cancel()
   }, [dispatch, userInfo])
 
@@ -67,55 +100,46 @@ const App = () => {
           </Container>
         ) : (
           <Container id='container'>
-            {/* main routes */}
-            <Route path='/' component={HomeScreen} exact />
-            <Route path='/search' component={SearchScreen} exact />
-            <Route path='/product/:id' component={ProductScreen} />
-            <Route path='/cart/:id?' component={CartScreen} />
+            {routes.public.map((route, i) => (
+              <Rowt
+                key={i}
+                path={route.path}
+                component={route.component}
+                exact={route.exact}
+                open
+              />
+            ))}
 
-            {/* auth routes */}
-            <Route path='/register/' component={RegisterScreen} />
-            <Route path='/signin/' component={LoginScreen} />
+            {routes.auth.map((route, i) => (
+              <Rowt
+                key={i}
+                path={route.path}
+                component={route.component}
+                unloggedOnly
+              />
+            ))}
 
-            {/* user related routes */}
-            <Route path='/profile' component={ProfileScreen}></Route>
-            <Route path='/address' component={ShaddressScreen}></Route>
-            <Route path='/myorders' component={UserOrdersScreen} exact></Route>
-            <Route path='/orders/:id' component={OrderInfoScreen}></Route>
+            {routes.user.map((route, i) => (
+              <Rowt
+                key={i}
+                path={route.path}
+                component={route.component}
+                exact={route.exact}
+              />
+            ))}
 
-            {/* place order related */}
-            <Route path='/placeorder' component={PlaceOrderScreen}></Route>
-            <Route path='/shipping' component={ShippingScreen}></Route>
-
-            {/* payment routes */}
-            <Route path='/payment' component={PaymentScreen}></Route>
-            <Route path='/payment-success' component={PaymentSuccess}></Route>
-            <Route path='/payment-failure' component={PaymentFailure}></Route>
-
-            {/* admin routes */}
-            <Route path='/admin/userslist' component={UserListScreen}></Route>
-            <Route
-              path='/admin/productlist'
-              component={ProductListScreen}
-            ></Route>
-            <Route
-              path='/admin/productedit/:id'
-              component={ProductEditScreen}
-              exact
-            ></Route>
-            <Route
-              path='/admin/jumanji/:id'
-              component={ProductEditScreen}
-              exact
-            ></Route>
-            <Route
-              path='/admin/orderslist'
-              component={OrdersListScreen}
-            ></Route>
+            {routes.admin.map((route, i) => (
+              <Rowt
+                key={i}
+                adminOnly
+                path={`/admin${route.path}`}
+                component={route.component}
+              />
+            ))}
 
             {/*test route */}
             {process.env.NODE_ENV === 'development' && (
-              <Route path='/test' component={testScreen}></Route>
+              <Rowt path='/test' component={testScreen} open />
             )}
           </Container>
         )}

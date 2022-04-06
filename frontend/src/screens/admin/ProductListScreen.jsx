@@ -6,7 +6,6 @@ import axios from 'axios'
 // UI components
 import { Table, Row, Col, Button } from 'react-bootstrap'
 import {
-  Auth,
   ConfirmModal,
   Spinner,
   AdminProductSearch,
@@ -120,7 +119,7 @@ const ProductListScreen = ({ history }) => {
   const handleSearchClear = () => dispatch({ type: searchReset })
 
   return (
-    <Auth history={history} adminOnly>
+    <>
       <Row className='align-items-center'>
         <Col>
           <h1>Product List</h1>
@@ -210,7 +209,7 @@ const ProductListScreen = ({ history }) => {
           </Table>
         )
       )}
-    </Auth>
+    </>
   )
 }
 

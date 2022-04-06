@@ -8,7 +8,7 @@ import { Row, Col, Container, Image, ListGroup } from 'react-bootstrap'
 
 // -- REDUX RELATED IMPORTS
 import { listProducts } from '../actions/productActions.js'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { getQueries } from '../helpers/urlHandler'
 import { PRODUCT_SEARCH_RESET } from '../constants'
 import { pluralize } from '../helpers/utilities'
@@ -84,4 +84,4 @@ const SearchScreen = ({ history }) => {
   )
 }
 
-export default SearchScreen
+export default withRouter(SearchScreen)

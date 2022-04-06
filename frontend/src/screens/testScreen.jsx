@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+import { getURLParam } from '../helpers/utilities'
 
 const TestScreen = ({ history, match }) => {
   const people = ['Beck', 'Tom']
@@ -19,9 +21,11 @@ const TestScreen = ({ history, match }) => {
   // }, [])
 
   const changeStatus = (value) => setStatus(value * 3)
-
+  console.log(useHistory())
   const clickMe = () => {
-    setMsg('Again temple msg')
+    const someQuery = getURLParam('mambo')
+    console.log(someQuery)
+    // setMsg('Again temple msg')
   }
 
   const playGroundFunc = () => {

@@ -4,13 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 // internal components
-import {
-  Auth,
-  FlashMsg,
-  FormContainer,
-  Message,
-  Spinner,
-} from '../../components'
+import { FlashMsg, FormContainer, Message, Spinner } from '../../components'
 // redux actions
 import { login } from '../../actions/userActions'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
@@ -47,43 +41,39 @@ const LoginScreen = ({ history }) => {
   }
 
   return (
-    <Auth history={history} reverse>
-      <FormContainer>
-        <h1>Sign in</h1>
-        <Spinner hidden={!loading} />
-        <FlashMsg variant='danger' permanent>
-          {loginError}
-        </FlashMsg>
-        <div className='py-4'>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-          >
-            <FormikForm>
-              {formFields.map((f, i) => (
-                <FormikFieldGroup key={i} formField={f} />
-              ))}
-              <Button type='submit' className='btn-block' variant='info'>
-                Sign in
-              </Button>
-              <Row className='py-3'>
-                <Col className='text-center'>
-                  New Customer?{' '}
-                  <Link
-                    to={
-                      redirect ? `/register?redirect=${redirect}` : '/register'
-                    }
-                  >
-                    <span className='link'>Register</span>
-                  </Link>
-                </Col>
-              </Row>
-            </FormikForm>
-          </Formik>
-        </div>
-      </FormContainer>
-    </Auth>
+    <FormContainer>
+      <h1>Sign in</h1>
+      <Spinner hidden={!loading} />
+      <FlashMsg variant='danger' permanent>
+        {loginError}
+      </FlashMsg>
+      <div className='py-4'>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          <FormikForm>
+            {formFields.map((f, i) => (
+              <FormikFieldGroup key={i} formField={f} />
+            ))}
+            <Button type='submit' className='btn-block' variant='info'>
+              Sign in
+            </Button>
+            <Row className='py-3'>
+              <Col className='text-center'>
+                New Customer?{' '}
+                <Link
+                  to={redirect ? `/register?redirect=${redirect}` : '/register'}
+                >
+                  <span className='link'>Register</span>
+                </Link>
+              </Col>
+            </Row>
+          </FormikForm>
+        </Formik>
+      </div>
+    </FormContainer>
   )
 }
 

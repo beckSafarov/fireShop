@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../actions/userActions'
 import SearchBox from '../Search/SearchBox'
 
-const Header = ({ history }) => {
+const Header = () => {
   const dispatch = useDispatch()
   const [keyReset, setKeyReset] = useState(false)
   const { userInfo } = useSelector((state) => state.userLogin)
   const cart = useSelector((state) => state.cart)
-  const cartItems = cart && cart.cartItems ? cart.cartItems : []
+  const cartItems = cart?.cartItems || []
 
   const logoutHandler = () => dispatch(logout())
 

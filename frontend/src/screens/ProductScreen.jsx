@@ -14,7 +14,7 @@ import {
   Form,
   Alert,
 } from 'react-bootstrap'
-import { Rating, CountOptions, Spinner, Message } from '../components'
+import { Rating, CountOptions, Spinner } from '../components'
 
 // -- REDUX ACTIONS
 import { listProductDetails as getProduct } from '../actions/productActions'
@@ -23,6 +23,7 @@ import { CART_PROPERTY_RESET as cartReset } from '../constants'
 import timeSince from '../helpers/timeSince'
 import { pluralize } from '../helpers/utilities'
 import FlashMsg from '../components/globals/FlashMsg'
+import { withRouter } from 'react-router-dom'
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
@@ -43,6 +44,7 @@ const ProductScreen = ({ match, history }) => {
   const dataExists = product && product.name && product._id === match.params.id
 
   useEffect(() => {
+    console.log(history)
     !dataExists && dispatch(getProduct(match.params.id))
 
     if (successType) {
@@ -219,4 +221,4 @@ const ProductScreen = ({ match, history }) => {
   )
 }
 
-export default ProductScreen
+export default withRouter(ProductScreen)

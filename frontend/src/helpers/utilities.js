@@ -78,3 +78,6 @@ export const getErrMessage = (err) => err.response?.data?.message || err.message
 export const getUserAddress = (data) => {
   return data ? Object.values(data).join(', ') : ''
 }
+
+export const getURLParam = (query, fallBack = '') =>
+  new URLSearchParams(window?.location?.search).get(query) || fallBack

@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { getOrderDetails } from '../../actions/orderActions'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Row, Col, ListGroup, Image, Container } from 'react-bootstrap'
 import axios from 'axios'
-import { Auth, Loader, FlashMsg } from '../../components'
+import { Loader, FlashMsg } from '../../components'
 import { getUserAddress, isEmptyObj } from '../../helpers/utilities'
 import { CART_REMOVE_ITEMS } from '../../constants'
 
@@ -41,7 +41,7 @@ const PaymentSuccess = ({ history, location }) => {
   ]
 
   return (
-    <Auth history={history}>
+    <>
       <Loader hidden={!loading} />
       <FlashMsg variant='danger' permanent>
         {error}
@@ -100,9 +100,9 @@ const PaymentSuccess = ({ history, location }) => {
           </div>
         </Container>
       )}
-    </Auth>
+    </>
   )
 }
 
-export default PaymentSuccess
+export default withRouter(PaymentSuccess)
 // const id = new URLSearchParams(useLocation().search).get('id');

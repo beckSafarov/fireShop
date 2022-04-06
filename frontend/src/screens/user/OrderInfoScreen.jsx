@@ -10,7 +10,6 @@ import { Calculations } from '../../helpers/calculations'
 // UI components
 import { Row, Col, ListGroup, Image, Container, Button } from 'react-bootstrap'
 import {
-  Auth,
   Loader,
   DeliveryProgress,
   UpdateDeliveryModal,
@@ -91,175 +90,173 @@ const OrderInfoScreen = ({ match, history }) => {
   ]
 
   return (
-    <Auth history={history}>
-      <Container>
-        <FlashMsg
-          variant={flashMsg.variant}
-          permanent={Boolean(error)}
-          clearChildren={() => setFlashMsg({})}
-        >
-          {flashMsg.msg}
-        </FlashMsg>
-        <Loader hidden={!requestLoading} />
-        {order?.user && (
-          <Row>
-            <UpdateDeliveryModal
-              modal={updateModal}
-              display={updateModal.display}
-              data={updateModal}
-              onClose={() => setUpdateModal({ display: false })}
+    <Container>
+      <FlashMsg
+        variant={flashMsg.variant}
+        permanent={Boolean(error)}
+        clearChildren={() => setFlashMsg({})}
+      >
+        {flashMsg.msg}
+      </FlashMsg>
+      <Loader hidden={!requestLoading} />
+      {order?.user && (
+        <Row>
+          <UpdateDeliveryModal
+            modal={updateModal}
+            display={updateModal.display}
+            data={updateModal}
+            onClose={() => setUpdateModal({ display: false })}
+          />
+          {revModal.display && (
+            <Review
+              modal={revModal}
+              onClose={() => setRevModal((m) => ({ ...m, display: false }))}
             />
-            {revModal.display && (
-              <Review
-                modal={revModal}
-                onClose={() => setRevModal((m) => ({ ...m, display: false }))}
-              />
-            )}
-            <Col md={6}>
-              <>
-                <h3 className='mb-4'>Order Info</h3>
-                <ListGroup variant='flush'>
-                  {/* info about the order */}
-                  <ListGroup.Item>
-                    {orderInfoList.map((info, i) => (
-                      <p key={i}>
-                        <strong>{info.label}</strong>
-                        {info.body}
-                      </p>
-                    ))}
-                  </ListGroup.Item>
-                  {/* list of bought items */}
-                  <ListGroup.Item>
-                    <p>Purchased Product(s)</p>
-                    {order.orderItems.map((item) => (
-                      <Row key={item._id}>
-                        <Col md={1}>
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            className='img-fluid img-rounded'
-                          />
-                        </Col>
-                        <Col>
-                          <Link to={`/product/${item._id}`}>{item.name}</Link>
-                        </Col>
-                        <Col md={4}>
-                          {item.qty} x {item.price} = ${item.qty * item.price}
-                        </Col>
-                        {canReview(item._id) && (
-                          <Col>
-                            <Button
-                              type='button'
-                              variant='outline-success'
-                              size='sm'
-                              onClick={() => revModalHandler(item._id)}
-                            >
-                              Review
-                            </Button>
-                          </Col>
-                        )}
-                      </Row>
-                    ))}
-                  </ListGroup.Item>
-                  {/* order calculations */}
-                  <ListGroup.Item>
-                    <Row>
-                      <Col> Cumulative Products' Price </Col>
-                      <Col>+ {calcs.productsPrice}</Col>
-                    </Row>
-                    <Row>
-                      <Col> Shipping </Col>
-                      <Col>+ {order.shippingPrice}</Col>
-                    </Row>
-                    <Row>
-                      <Col> Tax </Col>
-                      <Col>+ {order.taxPrice}</Col>
-                    </Row>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>
-                        {' '}
-                        <h5>Total</h5>{' '}
-                      </Col>
-                      <Col>
-                        <h5>{order.totalPrice}</h5>
-                      </Col>
-                    </Row>
-                  </ListGroup.Item>
-                </ListGroup>
-              </>
-            </Col>
-            <Col md={6}>
-              <h3 className='mb-4'>Order Status</h3>
-              <div className='delivery-progress-container'>
-                <DeliveryProgress
-                  width={500}
-                  height={100}
-                  progress={deliverySteps.indexOf(order.deliveryStatus)}
-                />
-              </div>
+          )}
+          <Col md={6}>
+            <>
+              <h3 className='mb-4'>Order Info</h3>
               <ListGroup variant='flush'>
-                {order.isDelivered ? (
-                  <>
-                    <ListGroup.Item>
-                      <Row>
-                        <Col>Delivered</Col>
+                {/* info about the order */}
+                <ListGroup.Item>
+                  {orderInfoList.map((info, i) => (
+                    <p key={i}>
+                      <strong>{info.label}</strong>
+                      {info.body}
+                    </p>
+                  ))}
+                </ListGroup.Item>
+                {/* list of bought items */}
+                <ListGroup.Item>
+                  <p>Purchased Product(s)</p>
+                  {order.orderItems.map((item) => (
+                    <Row key={item._id}>
+                      <Col md={1}>
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          className='img-fluid img-rounded'
+                        />
+                      </Col>
+                      <Col>
+                        <Link to={`/product/${item._id}`}>{item.name}</Link>
+                      </Col>
+                      <Col md={4}>
+                        {item.qty} x {item.price} = ${item.qty * item.price}
+                      </Col>
+                      {canReview(item._id) && (
                         <Col>
-                          <i
-                            style={{ color: 'green' }}
-                            className='fas fa-check'
-                          ></i>
+                          <Button
+                            type='button'
+                            variant='outline-success'
+                            size='sm'
+                            onClick={() => revModalHandler(item._id)}
+                          >
+                            Review
+                          </Button>
                         </Col>
-                      </Row>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      <Row>
-                        <Col>Delivery Date</Col>
-                        <Col>{UTCDate(order.deliveredAt)}</Col>
-                      </Row>
-                    </ListGroup.Item>
-                  </>
-                ) : (
-                  <>
-                    <ListGroup.Item>
-                      <Row>
-                        <Col>Delievered</Col>
-                        <Col>
-                          <i
-                            style={{ color: 'red' }}
-                            className='fas fa-times'
-                          ></i>
-                        </Col>
-                      </Row>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      <Row>
-                        <Col>Expected Delivery Date</Col>
-                        <Col>some day</Col>
-                      </Row>
-                    </ListGroup.Item>
-                  </>
-                )}
-                {userInfo.isAdmin && (
-                  <ListGroup.Item>
-                    <Button
-                      title='Update Delivery Status'
-                      variant='info'
-                      size='sm'
-                      onClick={updateHandler}
-                      block
-                    >
-                      <i className='fas fa-edit'></i>
-                    </Button>
-                  </ListGroup.Item>
-                )}
+                      )}
+                    </Row>
+                  ))}
+                </ListGroup.Item>
+                {/* order calculations */}
+                <ListGroup.Item>
+                  <Row>
+                    <Col> Cumulative Products' Price </Col>
+                    <Col>+ {calcs.productsPrice}</Col>
+                  </Row>
+                  <Row>
+                    <Col> Shipping </Col>
+                    <Col>+ {order.shippingPrice}</Col>
+                  </Row>
+                  <Row>
+                    <Col> Tax </Col>
+                    <Col>+ {order.taxPrice}</Col>
+                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Row>
+                    <Col>
+                      {' '}
+                      <h5>Total</h5>{' '}
+                    </Col>
+                    <Col>
+                      <h5>{order.totalPrice}</h5>
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
               </ListGroup>
-            </Col>
-          </Row>
-        )}
-      </Container>
-    </Auth>
+            </>
+          </Col>
+          <Col md={6}>
+            <h3 className='mb-4'>Order Status</h3>
+            <div className='delivery-progress-container'>
+              <DeliveryProgress
+                width={500}
+                height={100}
+                progress={deliverySteps.indexOf(order.deliveryStatus)}
+              />
+            </div>
+            <ListGroup variant='flush'>
+              {order.isDelivered ? (
+                <>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Delivered</Col>
+                      <Col>
+                        <i
+                          style={{ color: 'green' }}
+                          className='fas fa-check'
+                        ></i>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Delivery Date</Col>
+                      <Col>{UTCDate(order.deliveredAt)}</Col>
+                    </Row>
+                  </ListGroup.Item>
+                </>
+              ) : (
+                <>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Delievered</Col>
+                      <Col>
+                        <i
+                          style={{ color: 'red' }}
+                          className='fas fa-times'
+                        ></i>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Expected Delivery Date</Col>
+                      <Col>some day</Col>
+                    </Row>
+                  </ListGroup.Item>
+                </>
+              )}
+              {userInfo.isAdmin && (
+                <ListGroup.Item>
+                  <Button
+                    title='Update Delivery Status'
+                    variant='info'
+                    size='sm'
+                    onClick={updateHandler}
+                    block
+                  >
+                    <i className='fas fa-edit'></i>
+                  </Button>
+                </ListGroup.Item>
+              )}
+            </ListGroup>
+          </Col>
+        </Row>
+      )}
+    </Container>
   )
 }
 

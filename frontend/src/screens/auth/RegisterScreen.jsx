@@ -6,8 +6,8 @@ import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 // UI components
 
-import { Form, Button, Row, Col } from 'react-bootstrap'
-import { Auth, Loader, FormContainer, FlashMsg } from '../../components'
+import { Button, Row, Col } from 'react-bootstrap'
+import { Loader, FormContainer, FlashMsg } from '../../components'
 
 // redux actions
 import { register } from '../../actions/userActions'
@@ -65,37 +65,35 @@ const RegisterScreen = ({ history }) => {
   }
 
   return (
-    <Auth history={history} reverse>
-      <FormContainer>
-        <h1>Sign in</h1>
-        <FlashMsg variant='danger' permanent>
-          {error}
-        </FlashMsg>
-        <Loader hidden={!loading} />
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          <FormikForm>
-            {formFields.map((f, i) => (
-              <FormikFieldGroup key={i} formField={f} />
-            ))}
-            <Button type='submit' className='btn-block' variant='info'>
-              Register
-            </Button>
-          </FormikForm>
-        </Formik>
-        <Row className='py-3'>
-          <Col className='text-center'>
-            Already have account?{' '}
-            <Link to='/signin'>
-              <span className='link'>Login</span>
-            </Link>
-          </Col>
-        </Row>
-      </FormContainer>
-    </Auth>
+    <FormContainer>
+      <h1>Sign in</h1>
+      <FlashMsg variant='danger' permanent>
+        {error}
+      </FlashMsg>
+      <Loader hidden={!loading} />
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        <FormikForm>
+          {formFields.map((f, i) => (
+            <FormikFieldGroup key={i} formField={f} />
+          ))}
+          <Button type='submit' className='btn-block' variant='info'>
+            Register
+          </Button>
+        </FormikForm>
+      </Formik>
+      <Row className='py-3'>
+        <Col className='text-center'>
+          Already have account?{' '}
+          <Link to='/signin'>
+            <span className='link'>Login</span>
+          </Link>
+        </Col>
+      </Row>
+    </FormContainer>
   )
 }
 

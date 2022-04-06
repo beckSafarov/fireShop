@@ -15,11 +15,11 @@ import * as Yup from 'yup'
 
 // redux related
 import { updateUserProfile as update } from '../../actions/userActions'
-import Auth from '../../components/Auth'
 import { USER_INFO_UPDATE } from '../../constants'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
 import { areSameObjects } from '../../helpers/utilities'
 import { USER_DETAILS_PROPERTY_RESET as userInfoReset } from '../../constants'
+import { withRouter } from 'react-router-dom'
 
 const formFields = [
   { name: 'address', type: 'text', label: 'Address' },
@@ -147,59 +147,57 @@ const ShippingScreen = ({ history }) => {
   ]
 
   return (
-    <Auth history={history}>
-      <FormContainer>
-        <CheckOutSteps step={1} />
-        <h1>Shipping Address</h1>
-        <Spinner hidden={!loading} />
-        <FlashMsg
-          variant={flashMsg.variant}
-          clearChildren={() => setFlashMsg({})}
-        >
-          {flashMsg.msg}
-        </FlashMsg>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          <FormikForm>
-            {formFields.map((f, i) => (
-              <FormikFieldGroup key={i} formField={f} readOnly={!editMode} />
+    <FormContainer>
+      <CheckOutSteps step={1} />
+      <h1>Shipping Address</h1>
+      <Spinner hidden={!loading} />
+      <FlashMsg
+        variant={flashMsg.variant}
+        clearChildren={() => setFlashMsg({})}
+      >
+        {flashMsg.msg}
+      </FlashMsg>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        <FormikForm>
+          {formFields.map((f, i) => (
+            <FormikFieldGroup key={i} formField={f} readOnly={!editMode} />
+          ))}
+          <Row hidden={editMode}>
+            {readModeBtns.map((btn, i) => (
+              <Col key={i} mb={2}>
+                <Button
+                  type='button'
+                  className='btn-block'
+                  variant={btn.variant}
+                  onClick={btn.onClick}
+                >
+                  {btn.label}
+                </Button>
+              </Col>
             ))}
-            <Row hidden={editMode}>
-              {readModeBtns.map((btn, i) => (
-                <Col key={i} mb={2}>
-                  <Button
-                    type='button'
-                    className='btn-block'
-                    variant={btn.variant}
-                    onClick={btn.onClick}
-                  >
-                    {btn.label}
-                  </Button>
-                </Col>
-              ))}
-            </Row>
-            <Row hidden={!editMode}>
-              {editModeBtns.map((btn, i) => (
-                <Col key={i} mb={2} hidden={btn.hidden}>
-                  <Button
-                    type={btn.type}
-                    className='btn-block'
-                    variant={btn.variant}
-                    onClick={btn.onClick}
-                  >
-                    {btn.label}
-                  </Button>
-                </Col>
-              ))}
-            </Row>
-          </FormikForm>
-        </Formik>
-      </FormContainer>
-    </Auth>
+          </Row>
+          <Row hidden={!editMode}>
+            {editModeBtns.map((btn, i) => (
+              <Col key={i} mb={2} hidden={btn.hidden}>
+                <Button
+                  type={btn.type}
+                  className='btn-block'
+                  variant={btn.variant}
+                  onClick={btn.onClick}
+                >
+                  {btn.label}
+                </Button>
+              </Col>
+            ))}
+          </Row>
+        </FormikForm>
+      </Formik>
+    </FormContainer>
   )
 }
 
-export default ShippingScreen
+export default withRouter(ShippingScreen)
