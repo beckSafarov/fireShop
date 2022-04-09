@@ -4,9 +4,8 @@ import { Redirect, Route } from 'react-router-dom'
 import { getURLParam } from '../helpers/utilities'
 import Loader from './globals/Loader'
 
-const Rowt = ({
+const ProtectedRoute = ({
   component: Component,
-  open,
   unloggedOnly,
   adminOnly,
   ...rest
@@ -19,24 +18,19 @@ const Rowt = ({
   useEffect(() => {
     if (unloggedOnly) handleUnloggedOnly()
     if (adminOnly) handleAdminOnly()
-    if (open) handleOpen()
 
-    if (!unloggedOnly && !adminOnly && !open) {
+    if (!unloggedOnly && !adminOnly) {
       handlePrivate()
     }
-  }, [unloggedOnly, adminOnly, open, logged])
-
-  const handleOpen = () => setPermit(true)
+  }, [unloggedOnly, adminOnly, logged])
 
   const handlePrivate = () => {
     if (logged === false) {
-      console.log('updating redirect')
       const currPage = window.location.href.split('/').pop()
       setRedirect(`/signin?redirect=${currPage}`)
       setPermit(false)
       return
     }
-    console.log('giving permission to private')
     setPermit(true)
   }
 
@@ -46,13 +40,10 @@ const Rowt = ({
   }
 
   const handleUnloggedOnly = () => {
-    if (!logged) {
-      setPermit(true)
-      return
-    }
+    setPermit(!Boolean(logged))
+    if (!logged) return
     const redirectQuery = getRedirectQuery()
     setRedirect(`/${redirectQuery}`)
-    setPermit(false)
   }
 
   const handleAdminOnly = () => {
@@ -68,22 +59,16 @@ const Rowt = ({
         ) : loading || logged === null ? (
           <Loader />
         ) : (
-          permit === false && (
-            <>
-              {console.log('redirecting')}
-              <Redirect to={{ pathname: redirect }} />
-            </>
-          )
+          permit === false && <Redirect to={{ pathname: redirect }} />
         )
       }
     />
   )
 }
 
-Rowt.defaultProps = {
-  open: false,
+ProtectedRoute.defaultProps = {
   unloggedOnly: false,
   adminOnly: false,
 }
 
-export default Rowt
+export default ProtectedRoute

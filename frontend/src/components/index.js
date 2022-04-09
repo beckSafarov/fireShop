@@ -40,3 +40,4 @@ export { default as OrdersSort } from './Sorts/OrdersSort'
 // folderless
 export { default as AccountSideMenu } from './AccountSideMenu.jsx'
 export { default as FormContainer } from './FormContainer.jsx'
+export { default as ProtectedRoute } from './ProtectedRoute.jsx'

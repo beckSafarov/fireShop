@@ -8,8 +8,8 @@ import { getMe } from './actions/userActions'
 
 // UI components
 import { Container } from 'react-bootstrap'
-import { Header, Footer, Spinner, FlashMsg } from './components'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { Header, Footer, Spinner, FlashMsg, ProtectedRoute } from './components'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 // Screens
 import HomeScreen from './screens/HomeScreen'
@@ -19,7 +19,6 @@ import LoginScreen from './screens/auth/LoginScreen'
 import RegisterScreen from './screens/auth/RegisterScreen'
 import ProfileScreen from './screens/user/ProfileScreen'
 import ShippingScreen from './screens/order/ShippingScreen'
-
 import PaymentScreen from './screens/payment/PaymentScreen'
 import PlaceOrderScreen from './screens/order/PlaceOrderScreen'
 import PaymentSuccess from './screens/payment/PaymentSuccess'
@@ -35,38 +34,40 @@ import ProductListScreen from './screens/admin/ProductListScreen'
 import ProductEditScreen from './screens/admin/ProductEditScreen'
 import OrdersListScreen from './screens/admin/OrdersListScreen'
 import SearchScreen from './screens/SearchScreen'
-import Rowt from './components/Rowt'
 
-const routes = {
-  public: [
-    { path: '/', component: HomeScreen, exact: true },
-    { path: '/search', component: SearchScreen },
-    { path: '/product/:id', component: ProductScreen },
-    { path: '/cart/:id?', component: CartScreen },
-  ],
-  auth: [
-    { path: '/register', component: RegisterScreen },
-    { path: '/signin', component: LoginScreen },
-    { path: '/signin?redirect=:redirect', component: LoginScreen },
-  ],
-  user: [
-    { path: '/profile', component: ProfileScreen },
-    { path: '/address', component: ShaddressScreen },
-    { path: '/myorders', component: UserOrdersScreen, exact: true },
-    { path: '/orders/:id', component: OrderInfoScreen },
-    { path: '/placeorder', component: PlaceOrderScreen },
-    { path: '/shipping', component: ShippingScreen },
-    { path: '/payment', component: PaymentScreen },
-    { path: '/payment-success', component: PaymentSuccess },
-    { path: '/payment-failure', component: PaymentFailure },
-  ],
-  admin: [
-    { path: '/userslist', component: UserListScreen },
-    { path: '/productlist', component: ProductListScreen },
-    { path: '/productedit/:id', component: ProductEditScreen },
-    { path: '/orderslist', component: OrdersListScreen },
-  ],
-}
+const publicRoutes = [
+  { path: '/', component: HomeScreen, exact: true },
+  { path: '/search', component: SearchScreen },
+  { path: '/product/:id', component: ProductScreen },
+  { path: '/cart/:id?', component: CartScreen },
+]
+
+const protectedRoutes = [
+  { path: '/register', component: RegisterScreen, unloggedOnly: true },
+  { path: '/signin', component: LoginScreen, unloggedOnly: true },
+  {
+    path: '/signin?redirect=:redirect',
+    component: LoginScreen,
+    unloggedOnly: true,
+  },
+  { path: '/profile', component: ProfileScreen },
+  { path: '/address', component: ShaddressScreen },
+  { path: '/myorders', component: UserOrdersScreen, exact: true },
+  { path: '/orders/:id', component: OrderInfoScreen },
+  { path: '/placeorder', component: PlaceOrderScreen },
+  { path: '/shipping', component: ShippingScreen },
+  { path: '/payment', component: PaymentScreen },
+  { path: '/payment-success', component: PaymentSuccess },
+  { path: '/payment-failure', component: PaymentFailure },
+  { path: '/admin/userslist', component: UserListScreen, adminOnly: true },
+  { path: '/admin/productlist', component: ProductListScreen, adminOnly: true },
+  {
+    path: '/admin/productedit/:id',
+    component: ProductEditScreen,
+    adminOnly: true,
+  },
+  { path: '/admin/orderslist', component: OrdersListScreen, adminOnly: true },
+]
 
 const App = () => {
   const dispatch = useDispatch()
@@ -100,27 +101,8 @@ const App = () => {
           </Container>
         ) : (
           <Container id='container'>
-            {routes.public.map((route, i) => (
-              <Rowt
-                key={i}
-                path={route.path}
-                component={route.component}
-                exact={route.exact}
-                open
-              />
-            ))}
-
-            {routes.auth.map((route, i) => (
-              <Rowt
-                key={i}
-                path={route.path}
-                component={route.component}
-                unloggedOnly
-              />
-            ))}
-
-            {routes.user.map((route, i) => (
-              <Rowt
+            {publicRoutes.map((route, i) => (
+              <Route
                 key={i}
                 path={route.path}
                 component={route.component}
@@ -128,18 +110,20 @@ const App = () => {
               />
             ))}
 
-            {routes.admin.map((route, i) => (
-              <Rowt
+            {protectedRoutes.map((route, i) => (
+              <ProtectedRoute
                 key={i}
-                adminOnly
-                path={`/admin${route.path}`}
+                path={route.path}
                 component={route.component}
+                unloggedOnly={route.unloggedOnly}
+                exact={route.exact}
+                adminOnly={route.adminOnly}
               />
             ))}
 
             {/*test route */}
             {process.env.NODE_ENV === 'development' && (
-              <Rowt path='/test' component={testScreen} open />
+              <Route path='/test' component={testScreen} />
             )}
           </Container>
         )}
