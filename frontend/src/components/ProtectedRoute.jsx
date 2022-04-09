@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Redirect, Route } from 'react-router-dom'
 import { getURLParam } from '../helpers/utilities'
-import Loader from './globals/Loader'
+import Spinner from './globals/Spinner'
 
 const ProtectedRoute = ({
   component: Component,
@@ -57,7 +57,7 @@ const ProtectedRoute = ({
         permit ? (
           <Component />
         ) : loading || logged === null ? (
-          <Loader />
+          <Spinner />
         ) : (
           permit === false && <Redirect to={{ pathname: redirect }} />
         )

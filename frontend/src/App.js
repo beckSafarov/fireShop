@@ -76,7 +76,6 @@ const App = () => {
     (state) => state.userLogin
   )
   const lcc = getCart()
-  const online = window?.navigator?.onLine || true
   const loading = userLoading || cartLoading || false
 
   useEffect(() => {
@@ -91,8 +90,8 @@ const App = () => {
     <Router>
       <Header />
       <main className='py-3'>
-        <Spinner hidden={!loading && online} />
-        <Container id='container'>
+        <Spinner hidden={!loading && window.navigator.onLine} />
+        <Container id='container' hidden={loading}>
           {publicRoutes.map((route, i) => (
             <Route
               key={i}
