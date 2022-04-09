@@ -4,6 +4,7 @@ import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../actions/userActions'
 import SearchBox from '../Search/SearchBox'
+import NavLink from '../NavLink'
 
 const menuLinks = [
   { to: '/profile', label: 'Profile' },
@@ -52,21 +53,16 @@ const Header = () => {
             </div>
             <Nav className='ml-auto'>
               {process.env.NODE_ENV === 'development' && (
-                <LinkContainer to='/test'>
-                  <Nav.Link>
-                    <i className='fas fa-wrench'></i> Test
-                  </Nav.Link>
-                </LinkContainer>
+                <NavLink to='/test'>
+                  <i className='fas fa-wrench'></i> Test
+                </NavLink>
               )}
-              <LinkContainer to='/cart'>
-                <Nav.Link>
-                  <i className='fas fa-shopping-cart'></i> Cart{' '}
-                  <Badge pill variant='info'>
-                    {cartItems.length || ''}
-                  </Badge>
-                </Nav.Link>
-              </LinkContainer>
-
+              <NavLink to='/cart'>
+                <i className='fas fa-shopping-cart'></i> Cart{' '}
+                <Badge pill variant='info'>
+                  {cartItems.length || ''}
+                </Badge>
+              </NavLink>
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>
                   {menuLinks.map((link, i) => (
@@ -79,11 +75,9 @@ const Header = () => {
                   </NavDropdown.Item>
                 </NavDropdown>
               ) : (
-                <LinkContainer to='/signin'>
-                  <Nav.Link>
-                    <i className='fas fa-user'></i> Sign in
-                  </Nav.Link>
-                </LinkContainer>
+                <NavLink>
+                  <i className='fas fa-user'></i> Sign in
+                </NavLink>
               )}
               {userInfo?.isAdmin && (
                 <NavDropdown title='Admin Menu' id='username'>
