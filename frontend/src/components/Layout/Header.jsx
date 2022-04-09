@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
@@ -21,9 +21,14 @@ const adminMenuLinks = [
 const Header = () => {
   const dispatch = useDispatch()
   const [keyReset, setKeyReset] = useState(false)
+  const [online, setOnline] = useState(true)
   const { userInfo } = useSelector((state) => state.userLogin)
   const cart = useSelector((state) => state.cart)
   const cartItems = cart?.cartItems || []
+
+  useEffect(() => {
+    setOnline(window.navigator.onLine)
+  }, [window.navigator.onLine])
 
   const handleLogout = () => dispatch(logout())
 
@@ -36,9 +41,15 @@ const Header = () => {
           <LinkContainer to='/'>
             <Navbar.Brand onClick={searchKeyReset}>FireShop</Navbar.Brand>
           </LinkContainer>
+
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
             <SearchBox reset={keyReset} setKeyReset={setKeyReset} />
+            <div className='px-4' style={{ fontSize: '1rem' }}>
+              <Badge variant='danger' pill hidden={online}>
+                You are offline
+              </Badge>
+            </div>
             <Nav className='ml-auto'>
               {process.env.NODE_ENV === 'development' && (
                 <LinkContainer to='/test'>

@@ -8,7 +8,7 @@ import { getMe } from './actions/userActions'
 
 // UI components
 import { Container } from 'react-bootstrap'
-import { Header, Footer, Spinner, FlashMsg, ProtectedRoute } from './components'
+import { Header, Footer, Spinner, ProtectedRoute } from './components'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 // Screens
@@ -91,42 +91,33 @@ const App = () => {
     <Router>
       <Header />
       <main className='py-3'>
-        {loading && online ? (
-          <Spinner />
-        ) : !online ? (
-          <Container>
-            <FlashMsg variant='danger' permanent>
-              You are offline!
-            </FlashMsg>
-          </Container>
-        ) : (
-          <Container id='container'>
-            {publicRoutes.map((route, i) => (
-              <Route
-                key={i}
-                path={route.path}
-                component={route.component}
-                exact={route.exact}
-              />
-            ))}
+        <Spinner hidden={!loading && online} />
+        <Container id='container'>
+          {publicRoutes.map((route, i) => (
+            <Route
+              key={i}
+              path={route.path}
+              component={route.component}
+              exact={route.exact}
+            />
+          ))}
 
-            {protectedRoutes.map((route, i) => (
-              <ProtectedRoute
-                key={i}
-                path={route.path}
-                component={route.component}
-                unloggedOnly={route.unloggedOnly}
-                exact={route.exact}
-                adminOnly={route.adminOnly}
-              />
-            ))}
+          {protectedRoutes.map((route, i) => (
+            <ProtectedRoute
+              key={i}
+              path={route.path}
+              component={route.component}
+              unloggedOnly={route.unloggedOnly}
+              exact={route.exact}
+              adminOnly={route.adminOnly}
+            />
+          ))}
 
-            {/*test route */}
-            {process.env.NODE_ENV === 'development' && (
-              <Route path='/test' component={testScreen} />
-            )}
-          </Container>
-        )}
+          {/*test route */}
+          {process.env.NODE_ENV === 'development' && (
+            <Route path='/test' component={testScreen} />
+          )}
+        </Container>
       </main>
       <Footer />
     </Router>
