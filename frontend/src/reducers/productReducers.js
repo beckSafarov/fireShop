@@ -16,10 +16,10 @@ export const productListReducer = produce(
         return { ...draft, loading: true }
       case cs.PRODUCT_LIST_SUCCESS:
         return {
+          type: 'request',
           loading: false,
           success: true,
-          products: action.payload,
-          type: 'request',
+          ...action.payload,
         }
       case cs.PRODUCT_LIST_FAILURE:
         return { ...errState, type: 'request' }
@@ -63,7 +63,7 @@ export const productSearchReducer = produce((draft = {}, action) => {
       return {
         loading: false,
         success: true,
-        products: action.payload,
+        ...action.payload,
       }
     case cs.PRODUCT_SEARCH_FAILURE:
       return { loading: false, products: [], error: action.payload }

@@ -1,6 +1,6 @@
 // methods
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
@@ -27,7 +27,7 @@ import FlashMsg from '../../components/globals/FlashMsg'
 
 const deliverySteps = ['Received', 'Packed', 'Shipped', 'Delivered']
 
-const OrderInfoScreen = ({ match, history }) => {
+const OrderInfoScreen = ({ match }) => {
   const dispatch = useDispatch()
 
   // redux stores
@@ -260,4 +260,4 @@ const OrderInfoScreen = ({ match, history }) => {
   )
 }
 
-export default OrderInfoScreen
+export default withRouter(OrderInfoScreen)

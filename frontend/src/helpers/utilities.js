@@ -17,6 +17,23 @@ export const pluralize = (n, t = 'review') => {
   return n === 0 ? `No ${t}s` : n === 1 ? `${n} ${t}` : `${n} ${t}s`
 }
 
+export const isDate = (param) => Boolean(param?.getTime)
+
+export const isObject = (param) => param && typeof param === 'object'
+
+/**
+ * @desc checks whether an element is defined and contains value
+ * @elem array|object|variable|null|undefined|NaN
+ * @returns true|false
+ */
+export const isNone = (elem, exceptZero = false) => {
+  if (exceptZero && elem === 0) return false
+  if (!elem) return true
+  if (isDate(elem)) return false
+  if (isObject(elem)) return Object.keys(elem).length < 1
+  return !Boolean(elem)
+}
+
 export const getQueries = (loc) => {
   let values = {}
   let property

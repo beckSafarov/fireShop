@@ -75,7 +75,7 @@ const Header = () => {
                   </NavDropdown.Item>
                 </NavDropdown>
               ) : (
-                <NavLink>
+                <NavLink to='/signin'>
                   <i className='fas fa-user'></i> Sign in
                 </NavLink>
               )}

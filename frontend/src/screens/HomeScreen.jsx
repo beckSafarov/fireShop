@@ -4,26 +4,34 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // -- UI COMPONENTS
-import { Loader, Product, FlashMsg } from '../components'
+import { Loader, Product, FlashMsg, Spinner } from '../components'
 import { Row, Col } from 'react-bootstrap'
 
 // -- REDUX RELATED IMPORTS
 import { listProducts } from '../actions/productActions.js'
+import Paginate from '../components/Paginate'
 
-const HomeScreen = ({}) => {
+const HomeScreen = ({ match }) => {
   const dispatch = useDispatch()
-  const { loading, error, products } = useSelector((state) => state.productList)
+  const {
+    loading,
+    error,
+    products,
+    pages,
+    page: currPage,
+  } = useSelector((state) => state.productList)
+  const pageNumber = match.params.pageNumber || 1
 
   useEffect(() => {
-    if (products.length < 1) dispatch(listProducts())
-
+    dispatch(listProducts('', pageNumber))
     return () => axios.CancelToken.source().cancel()
-  }, [dispatch])
+  }, [dispatch, pageNumber])
 
   return (
     <>
       <h1>Latest Products</h1>
-      <Loader hidden={!loading} />
+      <Spinner hidden={!loading} />
+      {/* <Loader hidden={!loading} /> */}
       <FlashMsg variant='danger' permanent>
         {error}
       </FlashMsg>
@@ -43,6 +51,7 @@ const HomeScreen = ({}) => {
           ))}
         </Row>
       )}
+      <Paginate pages={pages} activePage={currPage} />
     </>
   )
 }

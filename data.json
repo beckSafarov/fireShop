@@ -1,0 +1,125 @@
+[
+  {
+    "_id": {
+      "$oid": "823951d9e5c2760843d0c0ab"
+    },
+    "taxPrice": 30,
+    "shippingPrice": 10,
+    "totalPrice": 969.99,
+    "isPaid": true,
+    "deliveryStatus": "Delivered",
+    "isDelivered": true,
+    "orderItems": [
+      {
+        "price": 929.99,
+        "_id": "6029cc67b609791d0b93567e",
+        "name": "Cannon EOS 80D DSLR Camera",
+        "image": "/images/camera.jpg",
+        "qty": 1
+      }
+    ],
+    "user": {
+      "$oid": "60fa1cd7932a2d2a7a37ee6a"
+    },
+    "shippingAddress": {
+      "address": "Lorem street",
+      "city": "New York",
+      "postalCode": "12000",
+      "country": "USA"
+    },
+    "paymentMethod": "Paypal",
+    "paymentResult": {
+      "id": "0US34030WU111372H",
+      "Status": "COMPLETED",
+      "update_time": "2021-12-22T04:34:32Z",
+      "email_address": "sb-gveaq3515485@business.example.com"
+    },
+    "paidAt": {
+      "$date": "2021-12-22T04:34:19.000Z"
+    },
+    "__v": 0,
+    "deliveredAt": "2022-01-13T04:34:19.000Z"
+  },
+  {
+    "_id": {
+      "$oid": "923951d9e5c2760843d0c0ab"
+    },
+    "taxPrice": 30,
+    "shippingPrice": 10,
+    "totalPrice": 439.99,
+    "isPaid": true,
+    "deliveryStatus": "Packed",
+    "isDelivered": false,
+    "orderItems": [
+      {
+        "_id": "6029cc67b609791d0b93567f",
+        "price": 399.99,
+        "name": "Sony Playstation 4 Pro White Version",
+        "image": "/images/playstation.jpg",
+        "qty": 1
+      }
+    ],
+    "user": {
+      "$oid": "6029cc67b609791d0b93567a"
+    },
+    "shippingAddress": {
+      "address": "Burgas, 3, 10",
+      "city": "Manchester",
+      "postalCode": "13004",
+      "country": "UK"
+    },
+    "paymentMethod": "Paypal",
+    "paymentResult": {
+      "id": "1US34030WU111372H",
+      "Status": "COMPLETED",
+      "update_time": "2022-04-01T04:34:32Z",
+      "email_address": "sb-gveaq3515485@business.example.com"
+    },
+    "paidAt": {
+      "$date": "2022-04-01T04:34:19.000Z"
+    },
+    "__v": 0,
+    "deliveredAt": null
+  },
+  {
+    "_id": {
+      "$oid": "023951d9e5c2760843d0c0ab"
+    },
+    "taxPrice": 30,
+    "shippingPrice": 10,
+    "totalPrice": 129.99,
+    "isPaid": true,
+    "deliveryStatus": "Shipped",
+    "isDelivered": false,
+    "orderItems": [
+      {
+        "_id": "6029cc67b609791d0b93567c",
+        "price": "89.99",
+        "name": "Airpods Wireless Bluetooth Headphones",
+        "image": "/images/airpods.jpg",
+        "qty": 1
+      }
+    ],
+    "user": {
+      "$oid": "60fb7d5ce475b40359158e93"
+    },
+    "shippingAddress": {
+      "address": "Opera Street, 2, 1",
+      "city": "Sydney",
+      "postalCode": "14000",
+      "country": "Australia"
+    },
+    "paymentMethod": "Paypal",
+    "paymentResult": {
+      "id": "3US34030WU111372H",
+      "Status": "COMPLETED",
+      "update_time": "2022-03-25T04:34:32Z",
+      "email_address": "sb-gveaq3515485@business.example.com"
+    },
+    "paidAt": {
+      "$date": "2021-03-25T04:34:19.000Z"
+    },
+    "__v": 0,
+    "deliveredAt": null
+  }
+]

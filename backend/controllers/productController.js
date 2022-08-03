@@ -6,6 +6,8 @@ import Order from '../models/orderModel.js'
 //@route GET /api/products
 //@desc  Public
 export const getProducts = asyncHandler(async (req, res) => {
+  const pageSize = 10
+  const page = Number(req.query.pageNumber) || 1
   const keyword = req.query.keyword
     ? {
         name: {
@@ -14,7 +16,11 @@ export const getProducts = asyncHandler(async (req, res) => {
         },
       }
     : {}
+
+  const count = await Product.countDocuments({ ...keyword })
   const products = await Product.find({ ...keyword })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
 
   if (!products || products.length < 1) {
     if (req.query.keyword) {
@@ -24,7 +30,7 @@ export const getProducts = asyncHandler(async (req, res) => {
       throw new Error('Could not get the products')
     }
   }
-  res.json(products)
+  res.json({ products, page, pages: Math.ceil(count / pageSize) })
 })
 
 //@desc  Fetch a single products

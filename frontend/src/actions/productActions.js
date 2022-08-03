@@ -3,27 +3,31 @@ import axios from 'axios'
 import { axiosConfig, config } from '../helpers/axiosConfigs'
 import { getErrMessage } from '../helpers/utilities.js'
 
-export const listProducts = (keyword) => async (dispatch) => {
-  const getDispatchType = (status) =>
-    keyword
-      ? cs[`PRODUCT_SEARCH_${status.toUpperCase()}`]
-      : cs[`PRODUCT_LIST_${status.toUpperCase()}`]
-  try {
-    dispatch({ type: getDispatchType('request') })
+export const listProducts =
+  (keyword = '', pageNumber = '') =>
+  async (dispatch) => {
+    const getDispatchType = (status) =>
+      keyword
+        ? cs[`PRODUCT_SEARCH_${status.toUpperCase()}`]
+        : cs[`PRODUCT_LIST_${status.toUpperCase()}`]
+    try {
+      dispatch({ type: getDispatchType('request') })
 
-    const { data } = await axios.get(
-      `/api/products?keyword=${keyword || ''}`,
-      axiosConfig
-    )
+      const { data } = await axios.get(
+        `/api/products?keyword=${keyword}&pageNumber=${pageNumber}`,
+        axiosConfig
+      )
 
-    dispatch({ type: getDispatchType('success'), payload: data })
-  } catch (err) {
-    dispatch({
-      type: getDispatchType('failure'),
-      payload: getErrMessage(err),
-    })
+      console.log(data)
+
+      dispatch({ type: getDispatchType('success'), payload: { ...data } })
+    } catch (err) {
+      dispatch({
+        type: getDispatchType('failure'),
+        payload: getErrMessage(err),
+      })
+    }
   }
-}
 
 export const listProductDetails = (id) => async (dispatch) => {
   try {

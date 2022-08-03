@@ -37,6 +37,7 @@ import SearchScreen from './screens/SearchScreen'
 
 const publicRoutes = [
   { path: '/', component: HomeScreen, exact: true },
+  { path: '/page/:pageNumber', component: HomeScreen },
   { path: '/search', component: SearchScreen },
   { path: '/product/:id', component: ProductScreen },
   { path: '/cart/:id?', component: CartScreen },
@@ -60,7 +61,18 @@ const protectedRoutes = [
   { path: '/payment-success', component: PaymentSuccess },
   { path: '/payment-failure', component: PaymentFailure },
   { path: '/admin/userslist', component: UserListScreen, adminOnly: true },
-  { path: '/admin/productlist', component: ProductListScreen, adminOnly: true },
+  {
+    path: '/admin/productlist',
+    component: ProductListScreen,
+    adminOnly: true,
+    exact: true,
+  },
+  {
+    path: '/admin/productlist/page/:pageNumber',
+    component: ProductListScreen,
+    adminOnly: true,
+    exact: true,
+  },
   {
     path: '/admin/productedit/:id',
     component: ProductEditScreen,

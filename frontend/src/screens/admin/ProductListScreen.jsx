@@ -19,23 +19,28 @@ import {
   PRODUCT_LIST_PROPERTY_RESET as listReset,
   PRODUCT_SEARCH_RESET as searchReset,
 } from '../../constants'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import Paginate from '../../components/Paginate'
+import { isNone } from '../../helpers/utilities'
 
 const tableHeadings = ['photo', 'name', 'price', 'category', 'brand', 'actions']
 
 const ProductListScreen = ({ history }) => {
   const dispatch = useDispatch()
-
   const [confirmModal, setConfirmModal] = useState({})
   const [flashMsg, setFlashMsg] = useState({})
   const [products, setProducts] = useState([])
   const [lastSearched, setLastSearched] = useState('')
   const [clearSearchField, setClearSearchField] = useState(false)
+  const [currProductsPage, setCurrProductsPage] = useState(1)
+  const pageNumber = +useLocation().pathname.split('/').pop() || 1
 
   const {
     loading: allProductsLoading,
     error,
     products: allProducts,
+    pages,
+    page: currPage,
     success,
     type,
   } = useSelector((state) => state.productList)
@@ -49,28 +54,10 @@ const ProductListScreen = ({ history }) => {
   const loading = allProductsLoading || searchLoading
 
   useEffect(() => {
-    allProducts.length === 0
-      ? dispatch(listProducts())
-      : setProducts(allProducts)
+    handleGetProducts()
 
-    if (success) {
-      switch (type) {
-        case 'update':
-          setFlashMsg({ msg: 'Updated successfully', variant: 'success' })
-          break
-        case 'add':
-          setProducts(allProducts)
-          const newProduct = allProducts.find((p) => p.new)
-          history.push(`/admin/productedit/${newProduct._id}`)
-          break
-      }
-    }
-
-    if (error && type !== 'request') {
-      setFlashMsg({ msg: error, variant: 'danger' })
-      dispatch({ type: listReset, payload: 'error' })
-    }
-
+    if (success) handleSuccess()
+    if (error && type !== 'request') handleError()
     if (searchedProducts) setProducts(searchedProducts)
 
     if (requestError) {
@@ -83,7 +70,42 @@ const ProductListScreen = ({ history }) => {
         handleSearchClear()
       }
     }
-  }, [dispatch, success, error, allProducts, searchedProducts, requestError])
+  }, [
+    dispatch,
+    success,
+    error,
+    allProducts,
+    searchedProducts,
+    requestError,
+    pageNumber,
+  ])
+
+  const handleGetProducts = () => {
+    if (isNone(allProducts) || pageNumber !== currProductsPage) {
+      dispatch(listProducts('', pageNumber))
+      setCurrProductsPage(pageNumber)
+      return
+    }
+    setProducts(allProducts)
+  }
+
+  const handleSuccess = () => {
+    switch (type) {
+      case 'update':
+        setFlashMsg({ msg: 'Updated successfully', variant: 'success' })
+        break
+      case 'add':
+        setProducts(allProducts)
+        const newProduct = allProducts.find((p) => p.new)
+        history.push(`/admin/productedit/${newProduct._id}`)
+        break
+    }
+  }
+
+  const handleError = () => {
+    setFlashMsg({ msg: error, variant: 'danger' })
+    dispatch({ type: listReset, payload: 'error' })
+  }
 
   const handleCreateProduct = () => {
     handleSearchClear()
@@ -209,6 +231,11 @@ const ProductListScreen = ({ history }) => {
           </Table>
         )
       )}
+      <Paginate
+        pages={pages}
+        activePage={currPage}
+        linkHead={'/admin/productlist/page'}
+      />
     </>
   )
 }

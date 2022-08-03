@@ -48,7 +48,7 @@ const tableHeadings = [
   'delivery date',
 ]
 
-const OrdersListScreen = ({ history }) => {
+const OrdersListScreen = () => {
   const dispatch = useDispatch()
 
   const [modal, setModal] = useState({})
@@ -141,106 +141,104 @@ const OrdersListScreen = ({ history }) => {
 
   return (
     <Container>
-      <>
-        <h3 className='mb-3'>All Orders</h3>
-        <Spinner hidden={!loading} />
-        {modal.display && (
-          <UpdateDeliveryModal
-            modal={modal}
-            onClose={() => setModal((m) => ({ ...m, display: false }))}
-          />
-        )}
+      <h3 className='mb-3'>All Orders</h3>
+      <Spinner hidden={!loading} />
+      {modal.display && (
+        <UpdateDeliveryModal
+          modal={modal}
+          onClose={() => setModal((m) => ({ ...m, display: false }))}
+        />
+      )}
 
-        <div className='menu-row'>
-          <ButtonGroup className='menu-row-left'>
-            {['sort', 'filter'].map((btn, i) => (
-              <Button
-                variant='dark'
-                id={i + 1}
-                key={i}
-                disabled={selectedBtn === i + 1}
-                onClick={handleMenuClick}
-              >
-                {btn}
-              </Button>
-            ))}
-          </ButtonGroup>
-          <div className='menu-row-right'>
-            <Fade in={filterOn}>
-              <Button
-                type='button'
-                variant='light'
-                className='rounded'
-                onClick={handleFilterClear}
-              >
-                <i
-                  style={{ fontSize: '20px', color: '#808080' }}
-                  className='fas fa-times'
-                ></i>
-              </Button>
-            </Fade>
-          </div>
+      <div className='menu-row'>
+        <ButtonGroup className='menu-row-left'>
+          {['sort', 'filter'].map((btn, i) => (
+            <Button
+              variant='dark'
+              id={i + 1}
+              key={i}
+              disabled={selectedBtn === i + 1}
+              onClick={handleMenuClick}
+            >
+              {btn}
+            </Button>
+          ))}
+        </ButtonGroup>
+        <div className='menu-row-right'>
+          <Fade in={filterOn}>
+            <Button
+              type='button'
+              variant='light'
+              className='rounded'
+              onClick={handleFilterClear}
+            >
+              <i
+                style={{ fontSize: '20px', color: '#808080' }}
+                className='fas fa-times'
+              ></i>
+            </Button>
+          </Fade>
         </div>
-        <Collapse in={show.sort}>
-          <div className='py-2'>
-            <OrdersSort onSubmit={handleSort} />
-          </div>
-        </Collapse>
+      </div>
+      <Collapse in={show.sort}>
+        <div className='py-2'>
+          <OrdersSort onSubmit={handleSort} />
+        </div>
+      </Collapse>
 
-        <Collapse in={show.filter}>
-          <div className='py-2'>
-            <OrdersFilter onSubmit={handleFilter} />
-          </div>
-        </Collapse>
-        <FlashMsg
-          variant={flashMsg.variant || 'danger'}
-          clearChildren={() => setFlashMsg({})}
-        >
-          {flashMsg.msg || error}
-        </FlashMsg>
-        <Table striped bordered hover responsive className='table-sm'>
-          <thead>
-            <tr>
-              {tableHeadings.map((t, i) => (
-                <th key={i}>{t.toLocaleUpperCase()}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody style={{ textAlign: 'center' }}>
-            {orders &&
-              orders.map((order) => (
-                <tr key={order._id}>
-                  <td>
-                    <LinkContainer to={`/orders/${order._id}`}>
-                      <Button variant='link'>{order._id}</Button>
-                    </LinkContainer>
-                  </td>
-                  <td>{order.user.name}</td>
-                  <td>
-                    {order.paidAt ? order.paidAt.substring(0, 10) : 'undefined'}
-                  </td>
-                  <td>${order.totalPrice}</td>
-                  <td>
-                    <p
-                      title='update status'
-                      onClick={() => handleUpdate(order)}
-                      className='simple-link'
-                    >
-                      {order.deliveryStatus}
-                    </p>
-                  </td>
-                  <td>
-                    {order.deliveredAt ? (
-                      <p>{LocaleDate(order.deliveredAt)}</p>
-                    ) : (
-                      <p>N/A</p>
-                    )}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
-      </>
+      <Collapse in={show.filter}>
+        <div className='py-2'>
+          <OrdersFilter onSubmit={handleFilter} />
+        </div>
+      </Collapse>
+      <FlashMsg
+        variant={flashMsg.variant || 'danger'}
+        clearChildren={() => setFlashMsg({})}
+      >
+        {flashMsg.msg || error}
+      </FlashMsg>
+      <Table striped bordered hover responsive className='table-sm'>
+        <thead>
+          <tr>
+            {tableHeadings.map((t, i) => (
+              <th key={i}>{t.toLocaleUpperCase()}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody style={{ textAlign: 'center' }}>
+          {orders &&
+            orders.map((order) => (
+              <tr key={order._id}>
+                <td>
+                  <LinkContainer to={`/orders/${order._id}`}>
+                    <Button variant='link'>{order._id}</Button>
+                  </LinkContainer>
+                </td>
+                <td>{order.user.name}</td>
+                <td>
+                  {order.paidAt ? order.paidAt.substring(0, 10) : 'undefined'}
+                </td>
+                <td>${order.totalPrice}</td>
+                <td>
+                  <p
+                    title='update status'
+                    onClick={() => handleUpdate(order)}
+                    className='simple-link'
+                  >
+                    {order.deliveryStatus}
+                  </p>
+                </td>
+                <td>
+                  {order.deliveredAt ? (
+                    <p>{LocaleDate(order.deliveredAt)}</p>
+                  ) : (
+                    <p>N/A</p>
+                  )}
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </Table>
     </Container>
   )
 }
