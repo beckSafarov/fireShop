@@ -2,18 +2,12 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
-// -- Helpers
+
+// -- Helpers --
 import * as lcs from '../helpers/cartLCS'
+
 // -- UI COMPONENTS --
-import {
-  Row,
-  Col,
-  Image,
-  ListGroup,
-  Button,
-  Form,
-  Alert,
-} from 'react-bootstrap'
+import { Row, Col, Image, ListGroup, Button, Form } from 'react-bootstrap'
 import { Rating, CountOptions, Spinner } from '../components'
 
 // -- REDUX ACTIONS
@@ -24,6 +18,7 @@ import timeSince from '../helpers/timeSince'
 import { pluralize } from '../helpers/utilities'
 import FlashMsg from '../components/globals/FlashMsg'
 import { withRouter } from 'react-router-dom'
+import Meta from '../components/Meta'
 
 const ProductScreen = ({ match, history }) => {
   // -- hooks --
@@ -44,7 +39,6 @@ const ProductScreen = ({ match, history }) => {
   const dataExists = product && product.name && product._id === match.params.id
 
   useEffect(() => {
-    console.log(history)
     !dataExists && dispatch(getProduct(match.params.id))
 
     if (successType) {
@@ -104,6 +98,7 @@ const ProductScreen = ({ match, history }) => {
 
   return (
     <>
+      <Meta title={product?.name} />
       <div className='btn btn-light my-3 rounded' onClick={sendBack}>
         <i className='fas fa-arrow-left fa-2x'></i>
       </div>

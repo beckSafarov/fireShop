@@ -15,6 +15,7 @@ import { USER_DETAILS_PROPERTY_RESET as userInfoReset } from '../../constants'
 import { USER_INFO_UPDATE } from '../../constants'
 import { areSameObjects } from '../../helpers/utilities'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
+import Meta from '../../components/Meta'
 
 const formFields = [
   { name: 'address', type: 'text', label: 'Address' },
@@ -109,6 +110,7 @@ const ShaddressScreen = ({ history }) => {
   return (
     <Row>
       <>
+        <Meta title={userInfo && `${userInfo.name} | Address`} />
         <Spinner hidden={!loading} />
         <Col md={2} sm={2}>
           <AccountSideMenu active={2} />

@@ -22,6 +22,7 @@ import { qtyReset, removeItem } from '../actions/cartActions'
 import { CART_PROPERTY_RESET as cartReset } from '../constants'
 import FlashMsg from '../components/globals/FlashMsg'
 import { withRouter } from 'react-router-dom'
+import Meta from '../components/Meta'
 
 const CartScreen = ({ history }) => {
   const dispatch = useDispatch()

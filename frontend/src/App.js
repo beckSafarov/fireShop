@@ -34,6 +34,7 @@ import ProductListScreen from './screens/admin/ProductListScreen'
 import ProductEditScreen from './screens/admin/ProductEditScreen'
 import OrdersListScreen from './screens/admin/OrdersListScreen'
 import SearchScreen from './screens/SearchScreen'
+import Meta from './components/Meta'
 
 const publicRoutes = [
   { path: '/', component: HomeScreen, exact: true },
@@ -100,6 +101,7 @@ const App = () => {
 
   return (
     <Router>
+      <Meta />
       <Header />
       <main className='py-3'>
         <Spinner hidden={!loading && window.navigator.onLine} />

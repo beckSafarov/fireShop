@@ -15,6 +15,7 @@ import { Formik, Form as FormikForm } from 'formik'
 import * as Yup from 'yup'
 import { MAX_NAME_CHARS, PASSWORD_LENGTH } from '../../config'
 import FormikFieldGroup from '../../components/FormikFieldGroup'
+import Meta from '../../components/Meta'
 
 const formFields = [
   { name: 'name', label: 'Name', required: true, type: 'text' },
@@ -42,7 +43,7 @@ const validationSchema = Yup.object().shape({
   confirmPass: Yup.string().min(6, 'Too Short!').max(32, 'Too Long!'),
 })
 
-const ProfileScreen = ({ history }) => {
+const ProfileScreen = () => {
   // hooks
   const [updatedVals, setUpdatedVals] = useState({})
   const [editMode, setEditMode] = useState(false)
@@ -128,6 +129,7 @@ const ProfileScreen = ({ history }) => {
 
   return (
     <Row>
+      <Meta title={userInfo && `${userInfo.name} | Profile`} />
       <Spinner hidden={!loading} />
       <Col md={2} sm={2}>
         <AccountSideMenu active={1} />
