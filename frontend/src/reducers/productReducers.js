@@ -77,6 +77,8 @@ export const productSearchReducer = produce((draft = {}, action) => {
   }
 })
 
+
+
 export const productDetailsReducer = produce(
   (draft = { reviews: [] }, action) => {
     const successState = {
@@ -135,3 +137,15 @@ export const productReviewReducer = produce(
     }
   }
 )
+export const productTopReducer = produce((draft = {}, action) => {
+  switch (action.type) {
+    case cs.PRODUCT_TOP_REQUEST:
+      return { loading: true }
+    case cs.PRODUCT_TOP_SUCCESS:
+      return { loading: false, products: action.payload }
+    case cs.PRODUCT_TOP_FAILURE:
+      return { loading: false, error: action.payload }
+    default:
+      return draft
+  }
+})

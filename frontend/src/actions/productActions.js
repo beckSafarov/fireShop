@@ -29,6 +29,21 @@ export const listProducts =
     }
   }
 
+export const listTopProducts = () => async (dispatch) => {
+  try {
+    dispatch({ type: cs.PRODUCT_TOP_REQUEST })
+
+    const { data } = await axios.get(`/api/products/top`, axiosConfig)
+
+    dispatch({ type: cs.PRODUCT_TOP_SUCCESS, payload: data.products })
+  } catch (err) {
+    dispatch({
+      type: cs.PRODUCT_TOP_FAILURE,
+      payload: getErrMessage(err),
+    })
+  }
+}
+
 export const listProductDetails = (id) => async (dispatch) => {
   try {
     dispatch({ type: cs.PRODUCT_DETAILS_REQUEST })

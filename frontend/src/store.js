@@ -14,6 +14,7 @@ const reducer = combineReducers({
   productSearchStore: productReducers.productSearchReducer,
   productDetails: productReducers.productDetailsReducer,
   productReviewStore: productReducers.productReviewReducer,
+  productTopRating: productReducers.productTopReducer,
   cart: cartReducers.cartReducer,
   userLogin: userReducers.userLoginReducer,
   userRegister: userReducers.userRegisterReducer,

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
+import Slider from '../components/Slider'
 import { getURLParam } from '../helpers/utilities'
 
 const TestScreen = ({ history, match }) => {
@@ -40,6 +41,7 @@ const TestScreen = ({ history, match }) => {
       <button onClick={clickMe} className='btn btn-success'>
         Click me
       </button>
+      <Slider />
     </>
   )
 }

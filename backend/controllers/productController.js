@@ -26,11 +26,18 @@ export const getProducts = asyncHandler(async (req, res) => {
     if (req.query.keyword) {
       res.status(400)
       throw new Error(`No result found for ${req.query.keyword}`)
-    } else {
-      throw new Error('Could not get the products')
     }
+    throw new Error('Could not get the products')
   }
   res.json({ products, page, pages: Math.ceil(count / pageSize) })
+})
+
+//@desc  Fetch all products
+//@route GET /api/products/top
+//@desc  Public
+export const getTopProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({}).sort({ rating: -1 }).limit(3)
+  res.status(200).json({ products })
 })
 
 //@desc  Fetch a single products

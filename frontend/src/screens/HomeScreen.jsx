@@ -4,12 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 // -- UI COMPONENTS
-import { Loader, Product, FlashMsg, Spinner } from '../components'
+import { Product, FlashMsg, Spinner } from '../components'
 import { Row, Col } from 'react-bootstrap'
 
 // -- REDUX RELATED IMPORTS
 import { listProducts } from '../actions/productActions.js'
 import Paginate from '../components/Paginate'
+import TopProductsCarousel from '../components/Product/TopProductsCarousel'
 
 const HomeScreen = ({ match }) => {
   const dispatch = useDispatch()
@@ -31,10 +32,10 @@ const HomeScreen = ({ match }) => {
     <>
       <h1>Latest Products</h1>
       <Spinner hidden={!loading} />
-      {/* <Loader hidden={!loading} /> */}
       <FlashMsg variant='danger' permanent>
         {error}
       </FlashMsg>
+      <TopProductsCarousel />
       {products && (
         <Row>
           {products.map((product) => (
