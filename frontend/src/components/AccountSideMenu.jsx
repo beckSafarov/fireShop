@@ -6,7 +6,6 @@ const AccountSideMenu = ({ active }) => {
   const links = [
     { to: '/profile', label: 'Profile' },
     { to: '/address', label: 'Address' },
-    { to: '/myreviews', label: 'My Reviews' },
   ]
 
   return (

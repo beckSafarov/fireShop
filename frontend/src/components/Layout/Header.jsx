@@ -9,7 +9,6 @@ import NavLink from '../NavLink'
 const menuLinks = [
   { to: '/profile', label: 'Profile' },
   { to: '/myorders', label: 'My Orders' },
-  { to: '/purchases', label: 'My Purchases' },
   { to: '/reviews', label: 'My Reviews' },
 ]
 
