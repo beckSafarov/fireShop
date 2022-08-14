@@ -1,6 +1,6 @@
 {
   "name": "fireshop",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "MERN stack e-commerce ",
   "main": "server.js",
   "type": "module",
