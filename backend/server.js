@@ -53,21 +53,21 @@ const PORT = process.env.PORT || 5000
 const server = app.listen(
   PORT,
   console.log(
-    `Server running in ${nodeEnv} mode on port ${PORT}`.yellow.underline.bold
+    `Server running in ${nodeEnv} mode on port ${PORT}`.yellow?.underline?.bold
   )
 )
 
 //handle unhandled rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log('unhandledRejection: ', err.message)
+  console.error('unhandledRejection: ', err.message)
   server.close()
 })
 
 //handling crashes
 process.on('uncaughtException', (err, promise) => {
-  console.log(
-    'Stupid Error that happens when the address is being used'.red.underline
-      .bold
+  console.error(
+    'Stupid Error that happens when the address is being used'?.red?.underline
+      ?.bold
   )
   app.removeAllListeners()
   process.exit(1)
@@ -75,11 +75,11 @@ process.on('uncaughtException', (err, promise) => {
 
 //killing server
 process.on('SIGTERM', (err, promise) => {
-  console.log('SIGTERM', err.message)
+  console.error('SIGTERM', err.message)
   server.close()
 })
 
 process.on('error', (err, promise) => {
-  console.log('random error: ', err.message)
+  console.error('random error: ', err.message)
   server.close()
 })
