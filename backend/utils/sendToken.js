@@ -13,7 +13,7 @@ export const sendToken = (id, res, data = {}) => {
     httpOnly: true,
   };
 
-  if (process.env.NODE_ENV === 'production') options.secure = true;
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true
 
   res.status(200).cookie('token', token, cookieOptions).json({
     success: true,

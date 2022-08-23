@@ -7,18 +7,12 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useCreateIndex: true,
     })
-    if (env === 'production') {
-      console.log(`MongoDB Connected: ${conn.connection.host}`)
-      return
-    }
-    console.log(`MongoDB Connected: ${conn.connection.host}`.cyan.bold)
+    if (env === 'production')
+      return `MongoDB Connected: ${conn.connection.host}`
+    return `MongoDB Connected: ${conn.connection.host}`.cyan.bold
   } catch (error) {
-    if (env === 'production') {
-      console.log(error)
-      return
-    }
-    console.error(`Mongo Error: ${error.message}`.red.underline.bold)
-    process.exit(1)
+    if (env === 'production') return error
+    return `Mongo Error: ${error.message}`.red.underline.bold
   }
 }
 
