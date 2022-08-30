@@ -1,5 +1,4 @@
-import mongoose from 'mongoose';
-const env = process.env.NODE_ENV
+import mongoose from 'mongoose'
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
@@ -7,13 +6,12 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useCreateIndex: true,
     })
-    if (env === 'production')
-      return `MongoDB Connected: ${conn.connection.host}`
-    return `MongoDB Connected: ${conn.connection.host}`.cyan.bold
+    console.log(`MongoDB Connected: ${conn.connection.host}`)
+    return true
   } catch (error) {
-    if (env === 'production') return error
-    return `Mongo Error: ${error.message}`.red.underline.bold
+    console.log(`Mongo Error: ${error.message}`)
+    return false
   }
 }
 
-export default connectDB; 
+export default connectDB
